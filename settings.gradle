@@ -1,0 +1,3 @@
+rootProject.name = 'gradle-web-resource-plugin'
+include ':plugin'
+project(':plugin').name = rootProject.name
