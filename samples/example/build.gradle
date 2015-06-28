@@ -1,0 +1,76 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url uri('../repo')
+        }
+    }
+    dependencies {
+        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:+'
+    }
+}
+
+plugins {
+    id "com.moowork.node" version "0.10"
+}
+
+apply plugin: 'com.github.ksoichiro.web.resource'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
+
+node {
+    version = '0.11.13'
+    npmVersion = '1.4.16'
+    download = true
+    workDir = file("${project.buildDir}/webResource/nodejs")
+    nodeModulesDir = file("${project.buildDir}/webResource")
+}
+
+webResource {
+    base {
+        src = 'src/main'
+        dest = 'src/main/resources/static'
+    }
+    coffeeScript {
+        src = 'coffee'
+        dest = 'js'
+    }
+    less {
+        src = 'less'
+        dest = 'css'
+    }
+    npm = [
+        devDependencies: [
+            bower: "1.3.12",
+            gulp: "3.8.11",
+            del: "1.1.1",
+            "coffee-script": "1.9.1",
+            "main-bower-files": "2.7.0",
+            "gulp-less": "3.0.2",
+            "gulp-minify-css": "1.0.0",
+            "gulp-filter": "2.0.2",
+            "gulp-coffee": "2.3.1",
+            "gulp-uglify": "0.2.1"
+        ]
+    ]
+    bower = [
+        dependencies: [
+            jquery: "1.11.2",
+            bootstrap: "3.3.4",
+        ],
+        overrides: [
+            jquery: [
+                main: "dist/*.min.*"
+            ],
+            bootstrap: [
+                main: ["dist/css/*.min.css", "dist/js/*.min.js", "dist/fonts/*"]
+            ]
+        ]
+    ]
+}
