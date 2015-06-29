@@ -5,6 +5,8 @@
 * Pre-defined tasks to build CoffeeScript, LESS, etc.
 * You can integrate with Spring Boot easily
 
+This plugin depends on [srs/gradle-node-plugin](https://github.com/srs/gradle-node-plugin).
+
 ## Usage
 
 ```gradle
@@ -17,6 +19,10 @@ buildscript {
     dependencies {
         classpath 'com.github.ksoichiro:gradle-web-resource-plugin:0.0.1-SNAPSHOT'
     }
+}
+
+plugins {
+    id "com.moowork.node" version "0.10"
 }
 
 apply plugin: 'com.github.ksoichiro.web.resource'
