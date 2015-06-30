@@ -21,6 +21,10 @@ class NpmInstallWrapperTask extends NpmTask {
     @Override
     void exec() {
         def extension = this.project.webResource as WebResourceExtension
+        def workDir = new File(extension.workDir.toURI())
+        if (!workDir.exists()) {
+            workDir.mkdirs()
+        }
         new File(extension.workDir, 'package.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(extension.npm))
         super.exec()
     }

@@ -11,5 +11,11 @@ class WebResourcePlugin implements Plugin<Project> {
         project.task(InstallBowerTask.NAME, type: InstallBowerTask)
         project.task(NpmInstallWrapperTask.NAME, type: NpmInstallWrapperTask)
         project.task(CompileTask.NAME, type: CompileTask)
+
+//        project.afterEvaluate {
+//            def node = project.node as NodeExtension
+//            node.workDir = project.file("${project.buildDir}/${WebResourceExtension.NAME}/nodejs")
+//            node.nodeModulesDir = project.file("${project.buildDir}/${WebResourceExtension.NAME}")
+//        }
     }
 }
