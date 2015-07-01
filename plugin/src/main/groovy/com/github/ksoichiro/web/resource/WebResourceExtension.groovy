@@ -12,6 +12,7 @@ class WebResourceExtension {
     Processor base
     Processor coffeeScript
     Processor less
+    Processor lib
     Map npm
     Map bower
 
@@ -21,6 +22,7 @@ class WebResourceExtension {
         this.base = new Processor()
         this.coffeeScript = new Processor()
         this.less = new Processor()
+        this.lib = new Processor()
     }
 
     def methodMissing(String name, def args) {

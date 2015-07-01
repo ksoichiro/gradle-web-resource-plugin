@@ -5,16 +5,85 @@ import org.gradle.api.tasks.TaskAction
 
 class CompileTask extends NodeTask {
     static final String NAME = "webCompile"
+    private String srcCoffee
+    private String destCoffee
+    private String srcLess
+    private String destLess
+    private String destLib
 
     CompileTask() {
         dependsOn([BowerInstallTask.NAME])
+        this.project.afterEvaluate {
+            WebResourceExtension extension = this.project.webResource
+            setDirs(extension)
+            getInputs().files(srcCoffee, srcLess)
+            setWorkingDir(extension.workDir)
+        }
     }
 
     @TaskAction
     void exec() {
-        // TODO write gulpfile.js to build/webResource/gulpfile.js
-        // TODO node node_modules/gulp/bin/gulp.js
-        def gulp = this.project.file(new File(this.project.node.nodeModulesDir, "node_modules/gulp/bin/gulp.js"))
+        def extension = this.project.webResource as WebResourceExtension
+        def gulp = this.project.file(new File(extension.workDir, "node_modules/gulp/bin/gulp.js"))
         setScript(gulp)
+        new File(extension.workDir, "gulpfile.js").text = """\
+var gulpFilter = require('gulp-filter');
+var uglify = require('gulp-uglify');
+var mainBowerFiles = require('main-bower-files');
+var coffee = require('gulp-coffee');
+var less = require('gulp-less');
+var cssmin = require('gulp-minify-css');
+var gulp = require('gulp');
+
+gulp.task('less', function() {
+    return gulp.src('${srcLess}/*.less')
+        .pipe(less())
+        .pipe(cssmin({root: '${srcLess}'}))
+        .pipe(gulp.dest('${destLess}'));
+});
+
+gulp.task('coffee', function() {
+    gulp.src('${srcCoffee}/*.coffee')
+        .pipe(coffee())
+        .pipe(uglify())
+        .pipe(gulp.dest('${destCoffee}'));
+});
+
+gulp.task('bower-files', function() {
+    gulp.src(mainBowerFiles(), { base: '${extension.workDir}/bower_components' })
+        .pipe(gulp.dest('${destLib}'));
+});
+
+gulp.task('default', ['less', 'coffee', 'bower-files'], function() {
+});
+"""
+        super.exec()
+    }
+
+    private void setDirs(WebResourceExtension extension) {
+        srcCoffee = "../../"
+        destCoffee = "../../"
+        if (extension.coffeeScript) {
+            srcCoffee += extension.base?.src ? "${extension.base?.src}/" : ""
+            srcCoffee += extension.coffeeScript.src
+            destCoffee += extension.base?.dest ? "${extension.base?.dest}/" : ""
+            destCoffee += extension.coffeeScript.dest
+            project.file(destCoffee).mkdirs()
+        }
+        srcLess = "../../"
+        destLess = "../../"
+        if (extension.less) {
+            srcLess += extension.base?.src ? "${extension.base?.src}/" : ""
+            srcLess += extension.less.src
+            destLess += extension.base?.dest ? "${extension.base?.dest}/" : ""
+            destLess += extension.less.dest
+            project.file(destLess).mkdirs()
+        }
+        destLib = "../../"
+        if (extension.lib) {
+            destLib += extension.base?.dest ? "${extension.base?.dest}/" : ""
+            destLib += extension.lib.dest
+            project.file(destLib).mkdirs()
+        }
     }
 }
