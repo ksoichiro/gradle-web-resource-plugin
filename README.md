@@ -40,6 +40,9 @@ webResource {
         src = 'less'
         dest = 'css'
     }
+    lib {
+        dest = 'lib'
+    }
     npm {
         devDependencies: [
             bower: "1.3.12",
@@ -52,12 +55,6 @@ webResource {
             gulp-filter: "2.0.2",
             gulp-coffee: "2.3.1",
             gulp-uglify: "0.2.1"
-        ],
-        scripts: [
-            prepublish: "bower install --config.interactive=false",
-            build: "gulp build",
-            clean: "gulp clean",
-            watch: "gulp watch"
         ]
     }
     bower {
