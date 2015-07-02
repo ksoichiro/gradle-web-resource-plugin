@@ -1,9 +1,11 @@
 package com.github.ksoichiro.web.resource
 
+import groovy.transform.ToString
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
 
+@ToString
 class WebResourceExtension {
     static final NAME = 'webResource'
 
