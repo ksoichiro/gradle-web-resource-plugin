@@ -28,7 +28,6 @@ class CompileTask extends NodeTask {
         setScript(gulp)
         setArgs(['default'])
         new File(extension.workDir, "gulpfile.js").text = """\
-var gulpFilter = require('gulp-filter');
 var uglify = require('gulp-uglify');
 var mainBowerFiles = require('main-bower-files');
 var coffee = require('gulp-coffee');

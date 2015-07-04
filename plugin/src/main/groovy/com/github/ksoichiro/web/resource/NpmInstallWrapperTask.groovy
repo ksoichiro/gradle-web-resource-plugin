@@ -38,7 +38,6 @@ class NpmInstallWrapperTask extends NpmTask {
                 "main-bower-files": "2.7.0",
                 "gulp-less"       : "3.0.2",
                 "gulp-minify-css" : "1.0.0",
-                "gulp-filter"     : "2.0.2",
                 "gulp-coffee"     : "2.3.1",
                 "gulp-uglify"     : "0.2.1"
         ].each { name, version ->
