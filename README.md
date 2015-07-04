@@ -2,8 +2,6 @@
 
 * Use CoffeeScript, LESS and JavaScript libraries from Gradle
 * You can write all settings to build.gradle
-* Pre-defined tasks to build CoffeeScript, LESS, etc.
-* You can integrate with Spring Boot easily
 
 This plugin depends on [srs/gradle-node-plugin](https://github.com/srs/gradle-node-plugin).
 
@@ -24,20 +22,20 @@ buildscript {
 apply plugin: 'com.github.ksoichiro.web.resource'
 
 webResource {
-    bower {
+    bower = [
         dependencies: [
             jquery: "1.11.2",
             bootstrap: "3.3.4",
         ],
         overrides: [
-            jquery: {
-              "main": "dist/*.min.*"
-            },
-            "bootstrap": {
-              "main": ["dist/css/*.min.css", "dist/js/*.min.js", "dist/fonts/*"]
-            }
+            jquery: [
+                main: "dist/*.min.*"
+            ],
+            bootstrap: [
+                main: ["dist/css/*.min.css", "dist/js/*.min.js", "dist/fonts/*"]
+            ]
         ]
-    }
+    ]
 }
 ```
 
