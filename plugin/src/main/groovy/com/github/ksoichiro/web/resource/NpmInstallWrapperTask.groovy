@@ -30,6 +30,14 @@ class NpmInstallWrapperTask extends NpmTask {
         if (!npmConfig.containsKey('devDependencies')) {
             npmConfig['devDependencies'] = [:] as Map
         }
+        // Suppress warning: npm WARN package.json @ No description
+        if (!npmConfig.containsKey('description')) {
+            npmConfig['description'] = "Auto-configured dependencies with gradle-web-resource plugin"
+        }
+        // Suppress warning: npm WARN package.json @ No repository field.
+        if (!npmConfig.containsKey('repository')) {
+            npmConfig['repository'] = [type: "git", url: "https://github.com/ksoichiro/gradle-web-resource-plugin"]
+        }
 
         [
                 "bower"           : "1.3.12",
@@ -47,6 +55,8 @@ class NpmInstallWrapperTask extends NpmTask {
         }
 
         new File(extension.workDir, 'package.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(npmConfig))
+        // Suppress warning: npm WARN package.json @ No README data
+        new File(extension.workDir, 'README.md').text = "WebResource npm packages"
         super.exec()
     }
 }
