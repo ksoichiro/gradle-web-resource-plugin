@@ -3,16 +3,16 @@ package com.github.ksoichiro.web.resource
 import com.moowork.gradle.node.task.NodeTask
 import org.gradle.api.tasks.TaskAction
 
-class CompileTask extends NodeTask {
-    static final String NAME = "webCompile"
+class WebResourceCompileTask extends NodeTask {
+    static final String NAME = "webResourceCompile"
     String srcCoffee
     String destCoffee
     String srcLess
     String destLess
     String destLib
 
-    CompileTask() {
-        dependsOn([BowerInstallTask.NAME])
+    WebResourceCompileTask() {
+        dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
         this.project.afterEvaluate {
             WebResourceExtension extension = this.project.extensions.webResource
             this.setDirs(extension)

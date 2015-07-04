@@ -3,11 +3,11 @@ package com.github.ksoichiro.web.resource
 import com.moowork.gradle.node.task.NodeTask
 import groovy.json.JsonOutput
 
-class BowerInstallTask extends NodeTask {
-    static final String NAME = "bowerInstall"
+class WebResourceInstallBowerDependenciesTask extends NodeTask {
+    static final String NAME = "webResourceInstallBowerDependencies"
 
-    BowerInstallTask() {
-        dependsOn([NpmInstallWrapperTask.NAME])
+    WebResourceInstallBowerDependenciesTask() {
+        dependsOn([WebResourceInstallDependenciesTask.NAME])
         this.project.afterEvaluate {
             WebResourceExtension extension = this.project.webResource
             getInputs().property('bower', extension.bower)

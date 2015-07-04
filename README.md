@@ -57,7 +57,7 @@ webResource {
 ```
 
 ```sh
-./gradlew webCompile
+./gradlew webResourceCompile
 ```
 
 ## License

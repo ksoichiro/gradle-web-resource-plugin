@@ -4,10 +4,10 @@ import com.moowork.gradle.node.task.NpmSetupTask
 import com.moowork.gradle.node.task.NpmTask
 import groovy.json.JsonOutput
 
-class NpmInstallWrapperTask extends NpmTask {
-    static final String NAME = 'npmInstallWrapper'
+class WebResourceInstallDependenciesTask extends NpmTask {
+    static final String NAME = 'webResourceInstallDependencies'
 
-    NpmInstallWrapperTask() {
+    WebResourceInstallDependenciesTask() {
         setNpmCommand('install')
         dependsOn([NpmSetupTask.NAME])
 

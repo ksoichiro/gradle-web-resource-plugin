@@ -22,8 +22,8 @@ class WebResourcePlugin implements Plugin<Project> {
         node.nodeModulesDir = project.file("${project.buildDir}/${WebResourceExtension.NAME}")
 
         project.extensions.create(WebResourceExtension.NAME, WebResourceExtension, project)
-        project.task(BowerInstallTask.NAME, type: BowerInstallTask)
-        project.task(NpmInstallWrapperTask.NAME, type: NpmInstallWrapperTask)
-        project.task(CompileTask.NAME, type: CompileTask)
+        project.task(WebResourceInstallBowerDependenciesTask.NAME, type: WebResourceInstallBowerDependenciesTask)
+        project.task(WebResourceInstallDependenciesTask.NAME, type: WebResourceInstallDependenciesTask)
+        project.task(WebResourceCompileTask.NAME, type: WebResourceCompileTask)
     }
 }
