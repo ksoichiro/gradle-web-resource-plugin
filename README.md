@@ -24,10 +24,6 @@ buildscript {
 apply plugin: 'com.github.ksoichiro.web.resource'
 
 webResource {
-    base {
-        src = 'src/main'
-        dest = 'src/main/resources/static'
-    }
     coffeeScript {
         src = 'coffee'
         dest = 'js'
@@ -58,6 +54,17 @@ webResource {
 
 ```sh
 ./gradlew webResourceCompile
+```
+
+## Configuration
+
+```gradle
+webResource {
+    // (Option) Change base directories for src/dest
+    base {
+        src = 'src/main'
+        dest = 'src/main/resources/static'
+    }
 ```
 
 ## License

@@ -21,7 +21,7 @@ class WebResourceExtension {
     WebResourceExtension(Project project) {
         this.project = project
         this.workDir = project.file("${this.project.buildDir}/webResource");
-        this.base = new WebResourceProcessor()
+        this.base = new WebResourceProcessor("src/main", "${this.project.buildDir.name}/webResource/outputs")
         this.coffeeScript = new WebResourceProcessor()
         this.less = new WebResourceProcessor()
         this.lib = new WebResourceProcessor()

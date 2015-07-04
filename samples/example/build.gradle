@@ -19,10 +19,6 @@ repositories {
 }
 
 webResource {
-    base {
-        src = 'src/main'
-        dest = 'dest'
-    }
     coffeeScript {
         src = 'coffee'
         dest = 'js'
