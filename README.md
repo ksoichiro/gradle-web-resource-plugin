@@ -7,6 +7,8 @@ This plugin depends on [srs/gradle-node-plugin](https://github.com/srs/gradle-no
 
 ## Usage
 
+Write build.gradle:
+
 ```gradle
 buildscript {
     repositories {
@@ -22,6 +24,7 @@ buildscript {
 apply plugin: 'com.github.ksoichiro.web.resource'
 
 webResource {
+    // (Option) Write dependecies if you want to use library from bower
     bower = [
         dependencies: [
             jquery: "1.11.2",
@@ -39,13 +42,45 @@ webResource {
 }
 ```
 
+Put your CoffeeScript and LESS script:
+
+```
+src
+└── main
+    ├── coffee
+    │   └── app.coffee
+    └── less
+        └── app.less
+```
+
+Execute build task:
+
 ```sh
-./gradlew webResourceCompile
+$ ./gradlew webResourceCompile
+```
+
+You can see the built resources:
+
+```sh
+build/webResource/outputs
+├── css
+│   └── app.css
+├── js
+│   └── app.js
+└── lib
+    ├── bootstrap
+:
 ```
 
 ## Configuration
 
 ```gradle
+node {
+    // (Option) Set node/npm versions
+    version = '0.11.13'
+    npmVersion = '1.4.16'
+}
+
 webResource {
     // (Option) Change base directories for src/dest
     base {
@@ -66,6 +101,35 @@ webResource {
     lib {
         dest = 'lib'
     }
+    // (Option) Change versions of npm libraries that are internally used for bower and gulp.
+    npm = [
+        devDependencies: [
+            bower: "1.3.12",
+            gulp: "3.8.11",
+            "coffee-script": "1.9.1",
+            "main-bower-files": "2.7.0",
+            "gulp-less": "3.0.2",
+            "gulp-minify-css": "1.0.0",
+            "gulp-filter": "2.0.2",
+            "gulp-coffee": "2.3.1",
+            "gulp-uglify": "0.2.1"
+        ]
+    ]
+}
+```
+
+## Sample
+
+See [samples/example](samples/example) directory.
+
+To build this project:
+
+```sh
+$ git clone https://github.com/ksoichiro/gradle-web-resource-plugin.git
+$ cd gradlew-web-resource-plugin
+$ ./gradlew uploadArchives
+$ cd samples/example
+$ ./gradlew webResourceCompile
 ```
 
 ## License
