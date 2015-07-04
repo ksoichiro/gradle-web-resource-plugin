@@ -5,7 +5,6 @@ import groovy.json.JsonOutput
 
 class BowerInstallTask extends NodeTask {
     static final String NAME = "bowerInstall"
-    private WebResourceExtension extension
 
     BowerInstallTask() {
         dependsOn([NpmInstallWrapperTask.NAME])
@@ -19,7 +18,7 @@ class BowerInstallTask extends NodeTask {
 
     @Override
     void exec() {
-        extension = project.webResource
+        def extension = project.webResource as WebResourceExtension
         if (!extension.bower) {
             println "No bower config"
             return
@@ -30,7 +29,6 @@ class BowerInstallTask extends NodeTask {
 
         def bowerConfig = extension.bower.clone() as Map
         if (!bowerConfig.containsKey('name')) {
-            println "Added name property to bower"
             bowerConfig['name'] = 'webResource'
         }
         new File(extension.workDir, 'bower.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(bowerConfig))
