@@ -24,17 +24,6 @@ buildscript {
 apply plugin: 'com.github.ksoichiro.web.resource'
 
 webResource {
-    coffeeScript {
-        src = 'coffee'
-        dest = 'js'
-    }
-    less {
-        src = 'less'
-        dest = 'css'
-    }
-    lib {
-        dest = 'lib'
-    }
     bower {
         dependencies: [
             jquery: "1.11.2",
@@ -64,6 +53,20 @@ webResource {
     base {
         src = 'src/main'
         dest = 'src/main/resources/static'
+    }
+    // (Option) Change CoffeeScript src/dest directories
+    coffeeScript {
+        src = 'coffee'
+        dest = 'js'
+    }
+    // (Option) Change LESS src/dest directories
+    less {
+        src = 'less'
+        dest = 'css'
+    }
+    // (Option) Change directories for libraries downloaded with bower
+    lib {
+        dest = 'lib'
     }
 ```
 

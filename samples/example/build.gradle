@@ -19,17 +19,6 @@ repositories {
 }
 
 webResource {
-    coffeeScript {
-        src = 'coffee'
-        dest = 'js'
-    }
-    less {
-        src = 'less'
-        dest = 'css'
-    }
-    lib {
-        dest = 'lib'
-    }
     bower = [
         dependencies: [
             jquery: "1.11.2",

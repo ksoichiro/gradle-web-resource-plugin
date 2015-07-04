@@ -22,9 +22,9 @@ class WebResourceExtension {
         this.project = project
         this.workDir = project.file("${this.project.buildDir}/webResource");
         this.base = new WebResourceProcessor("src/main", "${this.project.buildDir.name}/webResource/outputs")
-        this.coffeeScript = new WebResourceProcessor()
-        this.less = new WebResourceProcessor()
-        this.lib = new WebResourceProcessor()
+        this.coffeeScript = new WebResourceProcessor("coffee", "js")
+        this.less = new WebResourceProcessor("less", "css")
+        this.lib = new WebResourceProcessor(null, "lib")
     }
 
     def methodMissing(String name, def args) {
