@@ -34,7 +34,7 @@ class WebResourceCompileTask extends NodeTask {
                 srcCoffee : srcCoffee,
                 destCoffee: destCoffee,
                 destLib   : destLib,
-                workDir   : extension.workDir
+                workDir   : "../../${extension.workDir.absolutePath.replace(this.project.projectDir.absolutePath, "").replaceAll("^/", "")}"
         ]
         new File(extension.workDir, "gulpfile.js").text =
                 new SimpleTemplateEngine()
