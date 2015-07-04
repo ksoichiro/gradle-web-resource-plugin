@@ -28,6 +28,7 @@ class WebResourceCompileTask extends NodeTask {
         setScript(gulp)
         setArgs(['default'])
         new File(extension.workDir, "gulpfile.js").text = """\
+var fs = require('fs');
 var uglify = require('gulp-uglify');
 var mainBowerFiles = require('main-bower-files');
 var coffee = require('gulp-coffee');
@@ -50,8 +51,10 @@ gulp.task('coffee', function() {
 });
 
 gulp.task('bower-files', function() {
-    gulp.src(mainBowerFiles(), { base: '${extension.workDir}/bower_components' })
-        .pipe(gulp.dest('${destLib}'));
+    if (fs.existsSync('bower.json')) {
+        gulp.src(mainBowerFiles(), { base: '${extension.workDir}/bower_components' })
+            .pipe(gulp.dest('${destLib}'));
+    }
 });
 
 gulp.task('default', ['less', 'coffee', 'bower-files'], function() {
