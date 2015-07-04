@@ -11,20 +11,20 @@ class WebResourceExtension {
 
     Project project
     File workDir
-    Processor base
-    Processor coffeeScript
-    Processor less
-    Processor lib
+    WebResourceProcessor base
+    WebResourceProcessor coffeeScript
+    WebResourceProcessor less
+    WebResourceProcessor lib
     Map npm
     Map bower
 
     WebResourceExtension(Project project) {
         this.project = project
         this.workDir = project.file("${this.project.buildDir}/webResource");
-        this.base = new Processor()
-        this.coffeeScript = new Processor()
-        this.less = new Processor()
-        this.lib = new Processor()
+        this.base = new WebResourceProcessor()
+        this.coffeeScript = new WebResourceProcessor()
+        this.less = new WebResourceProcessor()
+        this.lib = new WebResourceProcessor()
     }
 
     def methodMissing(String name, def args) {
