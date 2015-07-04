@@ -21,10 +21,6 @@ buildscript {
     }
 }
 
-plugins {
-    id "com.moowork.node" version "0.10"
-}
-
 apply plugin: 'com.github.ksoichiro.web.resource'
 
 webResource {
