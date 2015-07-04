@@ -11,10 +11,6 @@ buildscript {
     }
 }
 
-plugins {
-    id "com.moowork.node" version "0.10"
-}
-
 apply plugin: 'java'
 apply plugin: 'com.github.ksoichiro.web.resource'
 
@@ -28,9 +24,6 @@ dependencies {
 node {
     version = '0.11.13'
     npmVersion = '1.4.16'
-    download = true
-    workDir = file("${project.buildDir}/webResource/nodejs")
-    nodeModulesDir = file("${project.buildDir}/webResource")
 }
 
 webResource {

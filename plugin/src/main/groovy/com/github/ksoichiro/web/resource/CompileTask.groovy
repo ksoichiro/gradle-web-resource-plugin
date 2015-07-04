@@ -5,17 +5,17 @@ import org.gradle.api.tasks.TaskAction
 
 class CompileTask extends NodeTask {
     static final String NAME = "webCompile"
-    private String srcCoffee
-    private String destCoffee
-    private String srcLess
-    private String destLess
-    private String destLib
+    String srcCoffee
+    String destCoffee
+    String srcLess
+    String destLess
+    String destLib
 
     CompileTask() {
         dependsOn([BowerInstallTask.NAME])
         this.project.afterEvaluate {
-            WebResourceExtension extension = this.project.webResource
-            setDirs(extension)
+            WebResourceExtension extension = this.project.extensions.webResource
+            this.setDirs(extension)
             getInputs().files(srcCoffee, srcLess)
             setWorkingDir(extension.workDir)
         }
@@ -26,6 +26,7 @@ class CompileTask extends NodeTask {
         def extension = this.project.webResource as WebResourceExtension
         def gulp = this.project.file(new File(extension.workDir, "node_modules/gulp/bin/gulp.js"))
         setScript(gulp)
+        setArgs(['default'])
         new File(extension.workDir, "gulpfile.js").text = """\
 var gulpFilter = require('gulp-filter');
 var uglify = require('gulp-uglify');
@@ -60,30 +61,33 @@ gulp.task('default', ['less', 'coffee', 'bower-files'], function() {
         super.exec()
     }
 
-    private void setDirs(WebResourceExtension extension) {
+    def setDirs(WebResourceExtension extension) {
         srcCoffee = "../../"
-        destCoffee = "../../"
+        destCoffee = ""
         if (extension.coffeeScript) {
             srcCoffee += extension.base?.src ? "${extension.base?.src}/" : ""
             srcCoffee += extension.coffeeScript.src
-            destCoffee += extension.base?.dest ? "${extension.base?.dest}/" : ""
+            destCoffee = extension.base?.dest ? "${extension.base?.dest}/" : ""
             destCoffee += extension.coffeeScript.dest
             project.file(destCoffee).mkdirs()
+            destCoffee = "../../" + destCoffee
         }
         srcLess = "../../"
-        destLess = "../../"
+        destLess = ""
         if (extension.less) {
             srcLess += extension.base?.src ? "${extension.base?.src}/" : ""
             srcLess += extension.less.src
-            destLess += extension.base?.dest ? "${extension.base?.dest}/" : ""
+            destLess = extension.base?.dest ? "${extension.base?.dest}/" : ""
             destLess += extension.less.dest
             project.file(destLess).mkdirs()
+            destLess = "../../" + destLess
         }
-        destLib = "../../"
+        destLib = ""
         if (extension.lib) {
-            destLib += extension.base?.dest ? "${extension.base?.dest}/" : ""
+            destLib = extension.base?.dest ? "${extension.base?.dest}/" : ""
             destLib += extension.lib.dest
             project.file(destLib).mkdirs()
+            destLib = "../../" + destLib
         }
     }
 }
