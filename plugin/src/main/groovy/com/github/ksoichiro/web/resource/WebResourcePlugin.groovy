@@ -23,7 +23,6 @@ class WebResourcePlugin implements Plugin<Project> {
 
         project.extensions.create(WebResourceExtension.NAME, WebResourceExtension, project)
         project.task(BowerInstallTask.NAME, type: BowerInstallTask)
-        project.task(InstallBowerTask.NAME, type: InstallBowerTask)
         project.task(NpmInstallWrapperTask.NAME, type: NpmInstallWrapperTask)
         project.task(CompileTask.NAME, type: CompileTask)
     }
