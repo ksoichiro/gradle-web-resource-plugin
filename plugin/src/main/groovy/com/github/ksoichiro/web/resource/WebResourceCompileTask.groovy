@@ -1,6 +1,7 @@
 package com.github.ksoichiro.web.resource
 
 import com.moowork.gradle.node.task.NodeTask
+import groovy.text.SimpleTemplateEngine
 import org.gradle.api.tasks.TaskAction
 
 class WebResourceCompileTask extends NodeTask {
@@ -27,39 +28,18 @@ class WebResourceCompileTask extends NodeTask {
         def gulp = this.project.file(new File(extension.workDir, "node_modules/gulp/bin/gulp.js"))
         setScript(gulp)
         setArgs(['default'])
-        new File(extension.workDir, "gulpfile.js").text = """\
-var fs = require('fs');
-var uglify = require('gulp-uglify');
-var mainBowerFiles = require('main-bower-files');
-var coffee = require('gulp-coffee');
-var less = require('gulp-less');
-var cssmin = require('gulp-minify-css');
-var gulp = require('gulp');
-
-gulp.task('less', function() {
-    return gulp.src('${srcLess}/*.less')
-        .pipe(less())
-        .pipe(cssmin({root: '${srcLess}'}))
-        .pipe(gulp.dest('${destLess}'));
-});
-
-gulp.task('coffee', function() {
-    gulp.src('${srcCoffee}/*.coffee')
-        .pipe(coffee())
-        .pipe(uglify())
-        .pipe(gulp.dest('${destCoffee}'));
-});
-
-gulp.task('bower-files', function() {
-    if (fs.existsSync('bower.json')) {
-        gulp.src(mainBowerFiles(), { base: '${extension.workDir}/bower_components' })
-            .pipe(gulp.dest('${destLib}'));
-    }
-});
-
-gulp.task('default', ['less', 'coffee', 'bower-files'], function() {
-});
-"""
+        def bindings = [
+                srcLess   : srcLess,
+                destLess  : destLess,
+                srcCoffee : srcCoffee,
+                destCoffee: destCoffee,
+                destLib   : destLib,
+                workDir   : extension.workDir
+        ]
+        new File(extension.workDir, "gulpfile.js").text =
+                new SimpleTemplateEngine()
+                        .createTemplate(getClass().getResourceAsStream('/gulpfile.js').text)
+                        .make(bindings)
         super.exec()
     }
 
