@@ -88,6 +88,10 @@ webResource {
     base {
         src = 'src/main'
         dest = 'src/main/resources/static'
+
+        // You can omit '=' like this:
+        // src 'src/main'
+        // dest 'src/main/resources/static'
     }
     // (Option) Change CoffeeScript src/dest directories
     coffeeScript {

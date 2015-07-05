@@ -8,4 +8,8 @@ import groovy.transform.TupleConstructor
 class WebResourceProcessor {
     String src
     String dest
+
+    def methodMissing(String name, args) {
+        this."$name" = args[0] as String
+    }
 }
