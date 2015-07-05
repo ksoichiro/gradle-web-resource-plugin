@@ -1,10 +1,12 @@
 plugins {
+    id 'maven'
+    id 'maven-publish'
+    id "com.jfrog.bintray" version "1.2"
     id 'net.saliman.cobertura' version '2.2.5'
     id 'com.github.kt3k.coveralls' version '2.3.1'
 }
 
 apply plugin: 'groovy'
-apply plugin: 'maven'
 apply plugin: 'signing'
 
 group = GROUP
@@ -36,6 +38,9 @@ if (isReleaseBuild) {
 // and signing.keyId, signing.password, signing.secretKeyRingFile, too.
 def username = hasProperty("nexusUsername") ? project.getProperty("nexusUsername") : ""
 def password = hasProperty("nexusPassword") ? project.getProperty("nexusPassword") : ""
+
+def bintrayUsername = hasProperty("bintrayUsername") ? project.getProperty("bintrayUsername") : ""
+def bintrayApiKey = hasProperty("bintrayApiKey") ? project.getProperty("bintrayApiKey") : ""
 
 dependencies {
     compile gradleApi()
@@ -121,13 +126,51 @@ afterEvaluate { project ->
         from sourceSets.main.allSource
     }
 
-    task javadocJar(type: Jar, dependsOn: javadoc) {
+    task javadocJar(type: Jar) {
         classifier = 'javadoc'
-        from javadoc.destinationDir
+        from groovydoc
     }
 
     artifacts {
         archives sourcesJar
         archives javadocJar
+    }
+
+    publishing {
+        publications {
+            plugin(MavenPublication) {
+                from components.java
+                artifact sourcesJar
+                artifact javadocJar
+            }
+        }
+    }
+}
+
+def gpgPassphrase = hasProperty('bintrayGpgPassphrase') ? project.getProperty('bintrayGpgPassphrase') : ''
+
+bintray {
+    user = bintrayUsername
+    key = bintrayApiKey
+
+    publications = ['plugin']
+
+    pkg {
+        repo = 'maven'
+        name = POM_NAME
+        desc = POM_DESCRIPTION
+        websiteUrl = POM_URL
+        issueTrackerUrl = BINTRAY_ISSUE_TRACKER_URL
+        vcsUrl = BINTRAY_VCS_URL
+        licenses = ['Apache-2.0']
+        labels = ['gradle', 'plugin', 'CoffeeScript', 'LESS']
+        publicDownloadNumbers = true
+        version {
+            attributes = ['gradle-plugin': 'com.github.ksoichiro.web.resource:com.github.ksoichiro:gradle-web-resource-plugin']
+            gpg {
+                sign = true
+                passphrase = gpgPassphrase
+            }
+        }
     }
 }
