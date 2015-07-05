@@ -1,6 +1,7 @@
 package com.github.ksoichiro.web.resource
 
 import com.moowork.gradle.node.task.NodeTask
+import groovy.json.JsonOutput
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.tasks.TaskAction
 
@@ -31,6 +32,7 @@ class WebResourceCompileTask extends NodeTask {
         def bindings = [
                 srcLess   : srcLess,
                 destLess  : destLess,
+                filterLess: extension.less.filter ? JsonOutput.toJson(extension.less.filter).toString() : "['*', '!**/_*.less']",
                 srcCoffee : srcCoffee,
                 destCoffee: destCoffee,
                 destLib   : destLib,

@@ -99,10 +99,12 @@ webResource {
         src = 'coffee'
         dest = 'js'
     }
-    // (Option) Change LESS src/dest directories
+    // (Option) Change LESS src/dest directories and filter setting
     less {
         src = 'less'
         dest = 'css'
+        // Default: ['*', '!**/_*.less']
+        filter = ["app.less"]
     }
     // (Option) Change directories for libraries downloaded with bower
     lib {
@@ -119,6 +121,7 @@ webResource {
             "gulp-minify-css": "1.0.0",
             "gulp-filter": "2.0.2",
             "gulp-coffee": "2.3.1",
+            "gulp-filter": "2.0.2",
             "gulp-uglify": "0.2.1"
         ]
     ]

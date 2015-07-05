@@ -5,10 +5,12 @@
     var coffee = require('gulp-coffee');
     var less = require('gulp-less');
     var cssmin = require('gulp-minify-css');
+    var gulpFilter = require('gulp-filter');
     var gulp = require('gulp');
 
     gulp.task('less', function() {
         return gulp.src('${srcLess}/*.less')
+            .pipe(gulpFilter(${filterLess}))
             .pipe(less())
             .pipe(cssmin({root: '${srcLess}'}))
             .pipe(gulp.dest('${destLess}'));
