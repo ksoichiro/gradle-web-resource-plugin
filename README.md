@@ -1,5 +1,7 @@
 # gradle-web-resource-plugin
 
+[![Build Status](https://travis-ci.org/ksoichiro/gradle-web-resource-plugin.svg?branch=master)](https://travis-ci.org/ksoichiro/gradle-web-resource-plugin)
+
 Gradle plugin to use CoffeeScript, LESS and Bower libraries to focus on writing CoffeeScript and LESS files.  
 You don't have to install `node`, `npm`, `bower`, `gulp`, etc.  
 You don't have to write `package.json`, `bower.json`, `gulpfile.js`, etc.  
