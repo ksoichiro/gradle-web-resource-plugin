@@ -26,7 +26,7 @@ buildscript {
 apply plugin: 'com.github.ksoichiro.web.resource'
 
 webResource {
-    // (Option) Write dependecies if you want to use library from bower
+    // (Option) Write dependencies if you want to use library from bower
     bower = [
         dependencies: [
             jquery: "1.11.2",
