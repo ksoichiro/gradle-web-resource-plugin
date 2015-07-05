@@ -1,6 +1,7 @@
 # gradle-web-resource-plugin
 
 [![Build Status](https://travis-ci.org/ksoichiro/gradle-web-resource-plugin.svg?branch=master)](https://travis-ci.org/ksoichiro/gradle-web-resource-plugin)
+[![Maven Central](http://img.shields.io/maven-central/v/com.github.ksoichiro/gradle-web-resource-plugin.svg?style=flat)](https://github.com/ksoichiro/gradle-web-resource-plugin/releases/latest)
 
 Gradle plugin to use CoffeeScript, LESS and Bower libraries to focus on writing CoffeeScript and LESS files.  
 You don't have to install `node`, `npm`, `bower`, `gulp`, etc.  
@@ -16,12 +17,18 @@ Write build.gradle:
 ```gradle
 buildscript {
     repositories {
-        maven {
-            url uri('https://oss.sonatype.org/content/repositories/snapshots/')
-        }
+        // This plugin is not released to jcenter() yet,
+        // so both the jcenter() and mavenCentral() are required to resolve dependencies.
+        jcenter()
+        mavenCentral()
+
+        // for '-SNAPSHOT' version
+        //maven {
+        //    url uri('https://oss.sonatype.org/content/repositories/snapshots/')
+        //}
     }
     dependencies {
-        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:0.0.1-SNAPSHOT'
+        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:0.1.0'
     }
 }
 
