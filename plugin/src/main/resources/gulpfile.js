@@ -1,5 +1,5 @@
 (function() {
-    var fs = require('fs');
+    var fs = require('fs-extra');
     var uglify = require('gulp-uglify');
     var mainBowerFiles = require('main-bower-files');
     var coffee = require('gulp-coffee');
@@ -9,18 +9,28 @@
     var gulp = require('gulp');
 
     gulp.task('less', function() {
-        return gulp.src('${srcLess}/*.less')
-            .pipe(gulpFilter(${filterLess}))
-            .pipe(less())
-            .pipe(cssmin({root: '${srcLess}'}))
-            .pipe(gulp.dest('${destLess}'));
+        if (fs.existsSync('${srcLess}')) {
+            if (!fs.existsSync('${destLess}')) {
+                fs.mkdirsSync('${destLess}');
+            }
+            return gulp.src('${srcLess}/*.less')
+                .pipe(gulpFilter(${filterLess}))
+                .pipe(less())
+                .pipe(cssmin({root: '${srcLess}'}))
+                .pipe(gulp.dest('${destLess}'));
+        }
     });
 
     gulp.task('coffee', function() {
-        gulp.src('${srcCoffee}/*.coffee')
-            .pipe(coffee())
-            .pipe(uglify())
-            .pipe(gulp.dest('${destCoffee}'));
+        if (fs.existsSync('${srcCoffee}')) {
+            if (!fs.existsSync('${destCoffee}')) {
+                fs.mkdirsSync('${destCoffee}');
+            }
+            return gulp.src('${srcCoffee}/*.coffee')
+                .pipe(coffee())
+                .pipe(uglify())
+                .pipe(gulp.dest('${destCoffee}'));
+        }
     });
 
     gulp.task('bower-files', function() {

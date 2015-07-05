@@ -48,7 +48,8 @@ class WebResourceInstallDependenciesTask extends NpmTask {
                 "gulp-minify-css" : "1.0.0",
                 "gulp-coffee"     : "2.3.1",
                 "gulp-filter"     : "2.0.2",
-                "gulp-uglify"     : "0.2.1"
+                "gulp-uglify"     : "0.2.1",
+                "fs-extra"        : "0.21.0"
         ].each { name, version ->
             if (!npmConfig.devDependencies.containsKey(name)) {
                 npmConfig.devDependencies[name] = version

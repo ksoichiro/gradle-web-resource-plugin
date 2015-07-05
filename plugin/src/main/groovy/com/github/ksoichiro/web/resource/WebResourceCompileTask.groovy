@@ -54,7 +54,6 @@ class WebResourceCompileTask extends NodeTask {
         if (path) {
             dest = extension.base?.dest ? "${extension.base?.dest}/" : ""
             dest += path
-            project.file(dest).mkdirs()
             dest = "../../${dest}"
         }
         dest
