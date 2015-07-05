@@ -20,17 +20,9 @@ repositories {
 
 webResource {
     bower = [
-        dependencies: [
-            jquery: "1.11.2",
-            bootstrap: "3.3.4",
-        ],
-        overrides: [
-            jquery: [
-                main: "dist/*.min.*"
-            ],
-            bootstrap: [
-                main: ["dist/css/*.min.css", "dist/js/*.min.js", "dist/fonts/*"]
+            dependencies: [
+                    jquery   : "1.11.2",
+                    bootstrap: "3.3.4",
             ]
-        ]
     ]
 }

@@ -31,14 +31,6 @@ webResource {
         dependencies: [
             jquery: "1.11.2",
             bootstrap: "3.3.4",
-        ],
-        overrides: [
-            jquery: [
-                main: "dist/*.min.*"
-            ],
-            bootstrap: [
-                main: ["dist/css/*.min.css", "dist/js/*.min.js", "dist/fonts/*"]
-            ]
         ]
     ]
 }
@@ -119,6 +111,21 @@ webResource {
             "gulp-filter": "2.0.2",
             "gulp-coffee": "2.3.1",
             "gulp-uglify": "0.2.1"
+        ]
+    ]
+    bower = [
+        dependencies: [
+            jquery: "1.11.2",
+            bootstrap: "3.3.4",
+        ],
+        // (Option) Filter files using main-bower-files
+        overrides: [
+            jquery: [
+                main: "dist/*.min.*"
+            ],
+            bootstrap: [
+                main: ["dist/css/*.min.css", "dist/js/*.min.js", "dist/fonts/*"]
+            ]
         ]
     ]
 }
