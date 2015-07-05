@@ -19,7 +19,7 @@ class WebResourceInstallBowerDependenciesTask extends NodeTask {
     @Override
     void exec() {
         def extension = project.webResource as WebResourceExtension
-        if (!extension.bower) {
+        if (!extension.bower || !extension.bower.containsKey('dependencies')) {
             println "No bower config"
             return
         }
