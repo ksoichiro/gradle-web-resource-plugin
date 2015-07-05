@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         jcenter()
-        mavenCentral()
         maven {
             url uri('../repo')
         }
@@ -13,10 +12,6 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'com.github.ksoichiro.web.resource'
-
-repositories {
-    mavenCentral()
-}
 
 webResource {
     bower = [

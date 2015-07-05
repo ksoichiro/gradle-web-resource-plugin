@@ -17,10 +17,7 @@ Write build.gradle:
 ```gradle
 buildscript {
     repositories {
-        // This plugin is not released to jcenter() yet,
-        // so both the jcenter() and mavenCentral() are required to resolve dependencies.
         jcenter()
-        mavenCentral()
 
         // for '-SNAPSHOT' version
         //maven {
