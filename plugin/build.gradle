@@ -1,3 +1,14 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:0.9.0"
+    }
+}
+
 plugins {
     id 'maven'
     id 'maven-publish'
@@ -6,6 +17,7 @@ plugins {
     id 'com.github.kt3k.coveralls' version '2.3.1'
 }
 
+apply plugin: "com.gradle.plugin-publish"
 apply plugin: 'groovy'
 apply plugin: 'signing'
 
@@ -116,10 +128,10 @@ afterEvaluate { project ->
         }
     }
 
-    signing {
-        required { isReleaseBuild && gradle.taskGraph.hasTask("uploadArchives") }
-        sign configurations.archives
-    }
+//    signing {
+//        required { isReleaseBuild && gradle.taskGraph.hasTask("uploadArchives") }
+//        sign configurations.archives
+//    }
 
     task sourcesJar(type: Jar, dependsOn: classes) {
         classifier = 'sources'
@@ -147,8 +159,6 @@ afterEvaluate { project ->
     }
 }
 
-def gpgPassphrase = hasProperty('bintrayGpgPassphrase') ? project.getProperty('bintrayGpgPassphrase') : ''
-
 bintray {
     user = bintrayUsername
     key = bintrayApiKey
@@ -167,10 +177,21 @@ bintray {
         publicDownloadNumbers = true
         version {
             attributes = ['gradle-plugin': 'com.github.ksoichiro.web.resource:com.github.ksoichiro:gradle-web-resource-plugin']
-            gpg {
-                sign = true
-                passphrase = gpgPassphrase
-            }
+        }
+    }
+}
+
+pluginBundle {
+    website = POM_URL
+    vcsUrl = BINTRAY_VCS_URL
+
+    description = POM_DESCRIPTION
+
+    plugins {
+        webResourcePlugin {
+            id = GRADLE_PLUGIN_ID
+            displayName = POM_NAME
+            tags = ['CoffeeScript', 'LESS']
         }
     }
 }
