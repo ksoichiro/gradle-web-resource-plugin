@@ -13,7 +13,8 @@ class WebResourceCompileTask extends NodeTask {
         dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
         this.project.afterEvaluate {
             extension = this.project.extensions.webResource
-            getInputs().files(getSrcCoffee(), getSrcLess())
+            getInputs().files(retrieveValidPaths(getSrcCoffee(), getSrcLess()))
+            getOutputs().files(retrieveValidPaths(getDestCoffee(), getDestLess(), getDestLib()))
             setWorkingDir(extension.workDir)
         }
     }
@@ -73,5 +74,19 @@ class WebResourceCompileTask extends NodeTask {
 
     String getDestLess() {
         resolveDestPath(extension.less?.dest)
+    }
+
+    String getDestLib() {
+        resolveDestPath(extension.lib?.dest)
+    }
+
+    List retrieveValidPaths(String... paths) {
+        List result = []
+        paths.each {
+            if (project.file("${extension.workDir}/${it}")) {
+                result += "${extension.workDir}/${it}"
+            }
+        }
+        result
     }
 }
