@@ -101,7 +101,7 @@ webResource {
     less {
         src = 'less'
         dest = 'css'
-        // Default: ['*', '!**/_*.less']
+        // Default: ['**/*', '!**/_*.less']
         filter = ["app.less"]
     }
     // (Option) Change directories for libraries downloaded with bower

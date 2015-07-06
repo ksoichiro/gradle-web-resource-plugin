@@ -13,7 +13,7 @@
             if (!fs.existsSync('${destLess}')) {
                 fs.mkdirsSync('${destLess}');
             }
-            return gulp.src('${srcLess}/*.less')
+            return gulp.src('${srcLess}/**/*.less')
                 .pipe(gulpFilter(${filterLess}))
                 .pipe(less())
                 .pipe(cssmin({root: '${srcLess}'}))
@@ -26,7 +26,7 @@
             if (!fs.existsSync('${destCoffee}')) {
                 fs.mkdirsSync('${destCoffee}');
             }
-            return gulp.src('${srcCoffee}/*.coffee')
+            return gulp.src('${srcCoffee}/**/*.coffee')
                 .pipe(coffee())
                 .pipe(uglify())
                 .pipe(gulp.dest('${destCoffee}'));

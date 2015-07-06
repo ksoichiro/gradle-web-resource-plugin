@@ -27,7 +27,7 @@ class WebResourceCompileTask extends NodeTask {
         def bindings = [
                 srcLess   : getSrcLess(),
                 destLess  : getDestLess(),
-                filterLess: extension.less.filter ? JsonOutput.toJson(extension.less.filter).toString() : "['*', '!**/_*.less']",
+                filterLess: extension.less.filter ? JsonOutput.toJson(extension.less.filter).toString() : "['**/*', '!**/_*.less']",
                 srcCoffee : getSrcCoffee(),
                 destCoffee: getDestCoffee(),
                 destLib   : resolveDestPath(extension.lib?.dest),
