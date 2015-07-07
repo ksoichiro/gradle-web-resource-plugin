@@ -96,6 +96,8 @@ webResource {
     coffeeScript {
         src = 'coffee'
         dest = 'js'
+        // Default: ['**/*', '!**/_*.coffee']
+        filter = ["app.coffee"]
     }
     // (Option) Change LESS src/dest directories and filter setting
     less {
@@ -153,6 +155,71 @@ $ cd gradlew-web-resource-plugin
 $ ./gradlew uploadArchives
 $ cd samples/example
 $ ./gradlew webResourceCompile
+```
+
+## Include/exclude files
+
+By default, the .coffee/.less files that has prefix '`_`' will be excluded (filtered).  
+So if you want to include files into some specific files, and want to filter those files,  
+please try the following instructions.
+
+### CoffeeScript
+
+Use `include` directive provided by [wiledal/gulp-include](https://github.com/wiledal/gulp-include).  
+This plugin will include this library as a dependency, so you can use it without any configurations.
+
+For example, in `app.coffee`, you can include `a/_b.coffee` by writing this:
+
+```coffee
+#=include a/_b.coffee
+```
+
+Then `a/_b.coffee` will be exploded into the `app.coffee` just before compiling,  
+and `_b.coffee` itself will be filtered.  
+As a result, you can see the compiled and concatenated JavaScript file `app.js`.
+
+```coffee
+# a.coffee:
+#=include _b.coffee
+console.log 'a'
+
+# _b.coffee:
+console.log 'b'
+↓
+// a.js:
+console.log 'b'
+console.log 'a'
+
+// b.js: (will not be generated)
+```
+
+### LESS
+
+Use `import` directive (this feature is provided by LESS).
+
+For example, in `app.less`, you can include `a/_b.less` by writing this:
+
+```less
+@import 'a/_b.less';
+```
+
+Then `a/_b.less` will be exploded into the `app.less` just before compiling,  
+and `_b.less` itself will be filtered.  
+As a result, you can see the compiled and concatenated CSS file `app.css`.
+
+```less
+// a.less:
+@import '_b.less';
+#a1 { color #f00; }
+
+// _b.less:
+#b1 { color #fff; }
+↓
+/* a.css: */
+#b1 { color #fff; }
+#a1 { color #f00; }
+
+/* b.css: (will not be generated) */
 ```
 
 ## License
