@@ -7,6 +7,7 @@
     var cssmin = require('gulp-minify-css');
     var gulpFilter = require('gulp-filter');
     var gulp = require('gulp');
+    var include = require("gulp-include");
 
     gulp.task('less', function() {
         if (fs.existsSync('${srcLess}')) {
@@ -27,6 +28,7 @@
                 fs.mkdirsSync('${destCoffee}');
             }
             return gulp.src('${srcCoffee}/**/*.coffee')
+                .pipe(include())
                 .pipe(coffee())
                 .pipe(uglify())
                 .pipe(gulp.dest('${destCoffee}'));
