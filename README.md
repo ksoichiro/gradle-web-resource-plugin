@@ -196,10 +196,13 @@ console.log 'a'
 
 # _b.coffee:
 console.log 'b'
+```
+
 ↓
+
+```javascript
 // a.js:
-console.log 'b'
-console.log 'a'
+(function(){console.log("b"),console.log("a")}).call(this);
 
 // b.js: (will not be generated)
 ```
@@ -225,10 +228,13 @@ As a result, you can see the compiled and concatenated CSS file `app.css`.
 
 // _b.less:
 #b1 { color #fff; }
+```
+
 ↓
+
+```css
 /* a.css: */
-#b1 { color #fff; }
-#a1 { color #f00; }
+#b1{color #fff;}#a1{color #f00;}
 
 /* b.css: (will not be generated) */
 ```
