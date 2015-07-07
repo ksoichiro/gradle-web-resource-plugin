@@ -14,7 +14,7 @@ class WebResourceInstallDependenciesTask extends NpmTask {
         this.project.afterEvaluate {
             def extension = this.project.webResource as WebResourceExtension
             getInputs().property('npm', extension.npm)
-            getOutputs().dir(new File(extension.workDir, 'node_modules'))
+            getOutputs().files(new File(extension.workDir, 'package.json'), new File(extension.workDir, 'node_modules'))
             setWorkingDir(extension.workDir)
         }
     }
