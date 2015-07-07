@@ -14,15 +14,16 @@ class WebResourceExtension {
     Map resources
     Map npm
     Map bower
-    LessProcessor less
+    FilterableProcessor coffeeScript
+    FilterableProcessor less
 
     WebResourceExtension(Project project) {
         this.project = project
         this.workDir = project.file("${this.project.buildDir}/webResource");
         this.resources = [:]
         this.base = new WebResourceProcessor("src/main", "${this.project.buildDir.name}/webResource/outputs")
-        this.coffeeScript = new WebResourceProcessor("coffee", "js")
-        this.less = new LessProcessor()
+        this.coffeeScript = new FilterableProcessor("coffee", "js")
+        this.less = new FilterableProcessor("less", "css")
         this.lib = new WebResourceProcessor(null, "lib")
     }
 

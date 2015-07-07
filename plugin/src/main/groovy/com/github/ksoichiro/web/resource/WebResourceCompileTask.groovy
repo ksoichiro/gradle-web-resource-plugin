@@ -25,13 +25,14 @@ class WebResourceCompileTask extends NodeTask {
         setScript(gulp)
         setArgs(['default'])
         def bindings = [
-                srcLess   : getSrcLess(),
-                destLess  : getDestLess(),
-                filterLess: extension.less.filter ? JsonOutput.toJson(extension.less.filter).toString() : "['**/*', '!**/_*.less']",
-                srcCoffee : getSrcCoffee(),
-                destCoffee: getDestCoffee(),
-                destLib   : resolveDestPath(extension.lib?.dest),
-                workDir   : "../../${extension.workDir.absolutePath.replace(this.project.projectDir.absolutePath, "").replaceAll("^/", "")}"
+                srcLess     : getSrcLess(),
+                destLess    : getDestLess(),
+                filterLess  : extension.less.filter ? JsonOutput.toJson(extension.less.filter).toString() : "['**/*', '!**/_*.less']",
+                srcCoffee   : getSrcCoffee(),
+                destCoffee  : getDestCoffee(),
+                filterCoffee: extension.coffeeScript.filter ? JsonOutput.toJson(extension.coffeeScript.filter).toString() : "['**/*', '!**/_*.coffee']",
+                destLib     : resolveDestPath(extension.lib?.dest),
+                workDir     : "../../${extension.workDir.absolutePath.replace(this.project.projectDir.absolutePath, "").replaceAll("^/", "")}"
         ]
         new File(extension.workDir, "gulpfile.js").text =
                 new SimpleTemplateEngine()

@@ -29,6 +29,7 @@
             }
             return gulp.src('${srcCoffee}/**/*.coffee')
                 .pipe(include())
+                .pipe(gulpFilter(${filterCoffee}))
                 .pipe(coffee())
                 .pipe(uglify())
                 .pipe(gulp.dest('${destCoffee}'));
