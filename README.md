@@ -13,9 +13,15 @@ This plugin depends on [srs/gradle-node-plugin](https://github.com/srs/gradle-no
 
 ## Usage
 
-Write build.gradle:
+Apply plugin in build.gradle:
 
 ```gradle
+// Gradle 2.1+
+plugins {
+    id "com.github.ksoichiro.web.resource" version "0.1.3"
+}
+
+// Gradle 2.0 and former
 buildscript {
     repositories {
         jcenter()
@@ -26,12 +32,16 @@ buildscript {
         //}
     }
     dependencies {
-        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:0.1.0'
+        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:0.1.3'
     }
 }
 
 apply plugin: 'com.github.ksoichiro.web.resource'
+```
 
+Configure plugin if needed:
+
+```gradle
 webResource {
     // (Option) Write dependencies if you want to use library from bower
     bower = [
@@ -122,7 +132,8 @@ webResource {
             "gulp-filter": "2.0.2",
             "gulp-coffee": "2.3.1",
             "gulp-filter": "2.0.2",
-            "gulp-uglify": "0.2.1"
+            "gulp-uglify": "0.2.1",
+            "gulp-include": "2.0.1"
         ]
     ]
     bower = [
