@@ -14,7 +14,7 @@ class WebResourceCompileTask extends NodeTask {
         this.project.afterEvaluate {
             extension = this.project.extensions.webResource
             getInputs().files(retrieveValidPaths(getSrcCoffee(), getSrcLess()))
-            getOutputs().files(retrieveValidPaths(getDestCoffee(), getDestLess(), getDestLib()))
+            getOutputs().files(retrieveValidPaths(getDestCoffee(), getDestLess(), getDestLib()), getGulpfile())
             setWorkingDir(extension.workDir)
         }
     }
@@ -34,7 +34,7 @@ class WebResourceCompileTask extends NodeTask {
                 destLib     : resolveDestPath(extension.lib?.dest),
                 workDir     : "../../${extension.workDir.absolutePath.replace(this.project.projectDir.absolutePath, "").replaceAll("\\\\", "/").replaceAll("^/", "")}"
         ]
-        new File(extension.workDir, "gulpfile.js").text =
+        getGulpfile().text =
                 new SimpleTemplateEngine()
                         .createTemplate(getClass().getResourceAsStream('/gulpfile.js').text)
                         .make(bindings)
@@ -88,5 +88,9 @@ class WebResourceCompileTask extends NodeTask {
             }
         }
         result
+    }
+
+    File getGulpfile() {
+        new File(extension.workDir, "gulpfile.js")
     }
 }
