@@ -43,6 +43,15 @@
         }
     });
 
+    gulp.task('watch', function() {
+        if (fs.existsSync('${srcLess}')) {
+            gulp.watch('${srcLess}/**/*.less', ['less']);
+        }
+        if (fs.existsSync('${srcCoffee}')) {
+            gulp.watch('${srcCoffee}/**/*.coffee', ['coffee']);
+        }
+    });
+
     gulp.task('default', ['less', 'coffee', 'bower-files'], function() {
     });
 })();

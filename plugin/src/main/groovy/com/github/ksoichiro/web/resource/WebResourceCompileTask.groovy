@@ -6,8 +6,9 @@ import groovy.text.SimpleTemplateEngine
 import org.gradle.api.tasks.TaskAction
 
 class WebResourceCompileTask extends NodeTask {
-    static final String NAME = "webResourceCompile"
+    static String NAME = "webResourceCompile"
     WebResourceExtension extension
+    String gulpCommand = 'default'
 
     WebResourceCompileTask() {
         dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
@@ -23,7 +24,7 @@ class WebResourceCompileTask extends NodeTask {
     void exec() {
         def gulp = this.project.file(new File(extension.workDir, "node_modules/gulp/bin/gulp.js"))
         setScript(gulp)
-        setArgs(['default'])
+        setArgs([gulpCommand])
         def bindings = [
                 srcLess     : getSrcLess(),
                 destLess    : getDestLess(),
