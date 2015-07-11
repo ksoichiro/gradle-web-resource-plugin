@@ -51,7 +51,4 @@
             gulp.watch('${srcCoffee}/**/*.coffee', ['coffee']);
         }
     });
-
-    gulp.task('default', ['less', 'coffee', 'bower-files'], function() {
-    });
 })();

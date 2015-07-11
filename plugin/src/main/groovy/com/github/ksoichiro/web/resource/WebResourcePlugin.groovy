@@ -24,6 +24,9 @@ class WebResourcePlugin implements Plugin<Project> {
         project.extensions.create(WebResourceExtension.NAME, WebResourceExtension, project)
         project.task(WebResourceInstallBowerDependenciesTask.NAME, type: WebResourceInstallBowerDependenciesTask)
         project.task(WebResourceInstallDependenciesTask.NAME, type: WebResourceInstallDependenciesTask)
+        project.task(WebResourceCompileCoffeeScriptTask.NAME, type: WebResourceCompileCoffeeScriptTask)
+        project.task(WebResourceCompileLessTask.NAME, type: WebResourceCompileLessTask)
+        project.task(WebResourceCompileBowerTask.NAME, type: WebResourceCompileBowerTask)
         project.task(WebResourceCompileTask.NAME, type: WebResourceCompileTask)
         project.task(WebResourceWatchTask.NAME, type: WebResourceWatchTask)
     }
