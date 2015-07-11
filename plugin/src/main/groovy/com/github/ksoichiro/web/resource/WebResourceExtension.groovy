@@ -7,8 +7,8 @@ import org.gradle.util.ConfigureUtil
 
 @ToString
 class WebResourceExtension {
-    static final NAME = 'webResource'
-    static final VERSION = '0.1.5-SNAPSHOT'
+    static final String NAME = 'webResource'
+    static final String VERSION = '0.1.5-SNAPSHOT'
 
     Project project
     File workDir
@@ -39,9 +39,9 @@ class WebResourceExtension {
     }
 
     def methodMissing(String name, def args) {
-        if (this.metaClass.hasProperty(this, name)) {
+        if (metaClass.hasProperty(this, name)) {
             return ConfigureUtil.configure(args[0] as Closure, this."$name")
-        } else if (this.resources.containsKey(name)) {
+        } else if (resources.containsKey(name)) {
             return ConfigureUtil.configure(args[0] as Closure, this.resources."$name")
         } else {
             throw new GradleException("Missing method: ${name}")

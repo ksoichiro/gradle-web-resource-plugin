@@ -12,7 +12,7 @@ class WebResourceInstallDependenciesTask extends NpmTask {
         dependsOn([NpmSetupTask.NAME])
 
         this.project.afterEvaluate {
-            def extension = this.project.webResource as WebResourceExtension
+            def extension = project.webResource as WebResourceExtension
             getInputs()
                     .property('npm', extension.npm)
                     .property('version', WebResourceExtension.VERSION)
@@ -23,7 +23,7 @@ class WebResourceInstallDependenciesTask extends NpmTask {
 
     @Override
     void exec() {
-        def extension = this.project.webResource as WebResourceExtension
+        def extension = project.webResource as WebResourceExtension
         def workDir = new File(extension.workDir.toURI())
         if (!workDir.exists()) {
             workDir.mkdirs()

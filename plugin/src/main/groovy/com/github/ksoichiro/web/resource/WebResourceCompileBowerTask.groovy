@@ -6,8 +6,8 @@ class WebResourceCompileBowerTask extends WebResourceCompileBaseTask {
     WebResourceCompileBowerTask() {
         dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
         gulpCommand = 'bower-files'
-        this.project.afterEvaluate {
-            extension = this.project.extensions.webResource
+        project.afterEvaluate {
+            extension = project.extensions.webResource
             getInputs()
                     .property('bower', extension.bower)
                     .property('version', WebResourceExtension.VERSION)

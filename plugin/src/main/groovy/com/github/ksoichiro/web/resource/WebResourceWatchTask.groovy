@@ -5,8 +5,8 @@ class WebResourceWatchTask extends WebResourceCompileBaseTask {
     WebResourceWatchTask() {
         dependsOn([WebResourceCompileTask.NAME])
         gulpCommand = 'watch'
-        this.project.afterEvaluate {
-            extension = this.project.extensions.webResource
+        project.afterEvaluate {
+            extension = project.extensions.webResource
             getInputs().files(retrieveValidPaths(getSrcCoffee(), getSrcLess()))
             getOutputs().files(retrieveValidPaths(getDestCoffee(), getDestLess(), getDestLib()), getGulpfile())
         }

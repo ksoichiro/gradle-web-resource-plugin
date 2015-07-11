@@ -11,15 +11,15 @@ class WebResourceCompileBaseTask extends NodeTask {
 
     WebResourceCompileBaseTask() {
         dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
-        this.project.afterEvaluate {
-            extension = this.project.extensions.webResource
+        project.afterEvaluate {
+            extension = project.extensions.webResource
             setWorkingDir(extension.workDir)
         }
     }
 
     @TaskAction
     void exec() {
-        def gulp = this.project.file(new File(extension.workDir, "node_modules/gulp/bin/gulp.js"))
+        def gulp = project.file(new File(extension.workDir, "node_modules/gulp/bin/gulp.js"))
         setScript(gulp)
         setArgs([gulpCommand])
         def bindings = [
@@ -30,7 +30,7 @@ class WebResourceCompileBaseTask extends NodeTask {
                 destCoffee  : getDestCoffee(),
                 filterCoffee: extension.coffeeScript.filter ? JsonOutput.toJson(extension.coffeeScript.filter).toString() : "['**/*', '!**/_*.coffee']",
                 destLib     : resolveDestPath(extension.lib?.dest),
-                workDir     : "../../${extension.workDir.absolutePath.replace(this.project.projectDir.absolutePath, "").replaceAll("\\\\", "/").replaceAll("^/", "")}"
+                workDir     : "../../${extension.workDir.absolutePath.replace(project.projectDir.absolutePath, "").replaceAll("\\\\", "/").replaceAll("^/", "")}"
         ]
         getGulpfile().text =
                 new SimpleTemplateEngine()

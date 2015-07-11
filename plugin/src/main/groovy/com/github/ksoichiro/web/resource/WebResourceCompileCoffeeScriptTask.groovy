@@ -6,8 +6,8 @@ class WebResourceCompileCoffeeScriptTask extends WebResourceCompileBaseTask {
     WebResourceCompileCoffeeScriptTask() {
         dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
         gulpCommand = 'coffee'
-        this.project.afterEvaluate {
-            extension = this.project.extensions.webResource
+        project.afterEvaluate {
+            extension = project.extensions.webResource
             getInputs()
                     .files(retrieveValidPaths(getSrcCoffee()))
                     .property('version', WebResourceExtension.VERSION)

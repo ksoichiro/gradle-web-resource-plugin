@@ -9,8 +9,8 @@ class WebResourceInstallBowerDependenciesTask extends NodeTask {
 
     WebResourceInstallBowerDependenciesTask() {
         dependsOn([WebResourceInstallDependenciesTask.NAME])
-        this.project.afterEvaluate {
-            extension = this.project.webResource
+        project.afterEvaluate {
+            extension = project.webResource
             getInputs()
                     .property('bower', extension.bower)
                     .property('version', WebResourceExtension.VERSION)
@@ -26,7 +26,7 @@ class WebResourceInstallBowerDependenciesTask extends NodeTask {
             println "No bower config"
             return
         }
-        def bower = this.project.file(new File(extension.workDir, "node_modules/bower/bin/bower"))
+        def bower = project.file(new File(extension.workDir, "node_modules/bower/bin/bower"))
         setScript(bower)
         setWorkingDir(extension.workDir)
 

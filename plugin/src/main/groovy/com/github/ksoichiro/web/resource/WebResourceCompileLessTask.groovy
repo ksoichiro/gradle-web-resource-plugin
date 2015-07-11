@@ -6,8 +6,8 @@ class WebResourceCompileLessTask extends WebResourceCompileBaseTask {
     WebResourceCompileLessTask() {
         dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
         gulpCommand = 'less'
-        this.project.afterEvaluate {
-            extension = this.project.extensions.webResource
+        project.afterEvaluate {
+            extension = project.extensions.webResource
             getInputs()
                     .files(retrieveValidPaths(getSrcLess()))
                     .property('version', WebResourceExtension.VERSION)
