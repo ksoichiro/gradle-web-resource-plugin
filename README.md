@@ -92,9 +92,10 @@ node {
     npmVersion = '1.4.16'
 }
 
+// All configurations are optional.
 webResource {
-    // (Option) Change base directories for src/dest
     base {
+        // Change base directories for src/dest
         src = 'src/main'
         dest = 'src/main/resources/static'
 
@@ -102,26 +103,30 @@ webResource {
         // src 'src/main'
         // dest 'src/main/resources/static'
     }
-    // (Option) Change CoffeeScript src/dest directories
     coffeeScript {
+        // Change CoffeeScript src/dest directories
         src = 'coffee'
         dest = 'js'
         // Default: ['**/*', '!**/_*.coffee']
         filter = ["app.coffee"]
+        // Default: true
+        minify = false
     }
-    // (Option) Change LESS src/dest directories and filter setting
     less {
+        // Change LESS src/dest directories and filter setting
         src = 'less'
         dest = 'css'
         // Default: ['**/*', '!**/_*.less']
         filter = ["app.less"]
+        // Default: true
+        minify = false
     }
-    // (Option) Change directories for libraries downloaded with bower
     lib {
+        // Change directories for libraries downloaded with bower
         dest = 'lib'
     }
-    // (Option) Change versions of npm libraries that are internally used for bower and gulp.
     npm = [
+        // Change versions of npm libraries that are internally used for bower and gulp.
         devDependencies: [
             bower: "1.3.12",
             gulp: "3.8.11",
@@ -141,7 +146,7 @@ webResource {
             jquery: "1.11.2",
             bootstrap: "3.3.4",
         ],
-        // (Option) Filter files using main-bower-files
+        // Filter files using main-bower-files
         overrides: [
             jquery: [
                 main: "dist/*.min.*"

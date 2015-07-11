@@ -14,11 +14,13 @@
             if (!fs.existsSync('${destLess}')) {
                 fs.mkdirsSync('${destLess}');
             }
-            return gulp.src('${srcLess}/**/*.less')
+            var g = gulp.src('${srcLess}/**/*.less')
                 .pipe(gulpFilter(${filterLess}))
-                .pipe(less())
-                .pipe(cssmin({root: '${srcLess}'}))
-                .pipe(gulp.dest('${destLess}'));
+                .pipe(less());
+            if (${minifyLess}) {
+                g = g.pipe(cssmin({root: '${srcLess}'}));
+            }
+            g.pipe(gulp.dest('${destLess}'));
         }
     });
 
@@ -27,12 +29,14 @@
             if (!fs.existsSync('${destCoffee}')) {
                 fs.mkdirsSync('${destCoffee}');
             }
-            return gulp.src('${srcCoffee}/**/*.coffee')
+            var g = gulp.src('${srcCoffee}/**/*.coffee')
                 .pipe(include())
                 .pipe(gulpFilter(${filterCoffee}))
                 .pipe(coffee())
-                .pipe(uglify())
-                .pipe(gulp.dest('${destCoffee}'));
+            if (${minifyCoffee}) {
+                g = g.pipe(uglify())
+            }
+            g.pipe(gulp.dest('${destCoffee}'));
         }
     });
 

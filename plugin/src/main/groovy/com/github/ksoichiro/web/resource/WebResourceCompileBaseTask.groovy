@@ -26,9 +26,11 @@ class WebResourceCompileBaseTask extends NodeTask {
                 srcLess     : getSrcLess(),
                 destLess    : getDestLess(),
                 filterLess  : extension.less.filter ? JsonOutput.toJson(extension.less.filter).toString() : "['**/*', '!**/_*.less']",
+                minifyLess  : extension.less.minify,
                 srcCoffee   : getSrcCoffee(),
                 destCoffee  : getDestCoffee(),
                 filterCoffee: extension.coffeeScript.filter ? JsonOutput.toJson(extension.coffeeScript.filter).toString() : "['**/*', '!**/_*.coffee']",
+                minifyCoffee: extension.coffeeScript.minify,
                 destLib     : resolveDestPath(extension.lib?.dest),
                 workDir     : "../../${extension.workDir.absolutePath.replace(project.projectDir.absolutePath, "").replaceAll("\\\\", "/").replaceAll("^/", "")}"
         ]
