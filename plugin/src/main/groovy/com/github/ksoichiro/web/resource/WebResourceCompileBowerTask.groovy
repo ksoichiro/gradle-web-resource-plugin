@@ -8,7 +8,9 @@ class WebResourceCompileBowerTask extends WebResourceCompileBaseTask {
         gulpCommand = 'bower-files'
         this.project.afterEvaluate {
             extension = this.project.extensions.webResource
-            getInputs().property('bower', extension.bower)
+            getInputs()
+                    .property('bower', extension.bower)
+                    .property('version', WebResourceExtension.VERSION)
             getOutputs().files(retrieveValidPaths(getDestLib()), getGulpfile())
         }
     }

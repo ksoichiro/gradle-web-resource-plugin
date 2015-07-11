@@ -11,7 +11,9 @@ class WebResourceInstallBowerDependenciesTask extends NodeTask {
         dependsOn([WebResourceInstallDependenciesTask.NAME])
         this.project.afterEvaluate {
             extension = this.project.webResource
-            getInputs().property('bower', extension.bower)
+            getInputs()
+                    .property('bower', extension.bower)
+                    .property('version', WebResourceExtension.VERSION)
             getOutputs().files(new File(extension.workDir, 'bower_components'), getBowerJson())
             setWorkingDir(extension.workDir)
         }

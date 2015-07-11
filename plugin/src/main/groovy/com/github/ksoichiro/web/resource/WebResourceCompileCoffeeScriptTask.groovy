@@ -8,7 +8,9 @@ class WebResourceCompileCoffeeScriptTask extends WebResourceCompileBaseTask {
         gulpCommand = 'coffee'
         this.project.afterEvaluate {
             extension = this.project.extensions.webResource
-            getInputs().files(retrieveValidPaths(getSrcCoffee()))
+            getInputs()
+                    .files(retrieveValidPaths(getSrcCoffee()))
+                    .property('version', WebResourceExtension.VERSION)
             getOutputs().files(retrieveValidPaths(getDestCoffee(), getDestLib()), getGulpfile())
         }
     }

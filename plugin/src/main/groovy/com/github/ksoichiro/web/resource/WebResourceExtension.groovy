@@ -8,6 +8,7 @@ import org.gradle.util.ConfigureUtil
 @ToString
 class WebResourceExtension {
     static final NAME = 'webResource'
+    static final VERSION = '0.1.5-SNAPSHOT'
 
     Project project
     File workDir
