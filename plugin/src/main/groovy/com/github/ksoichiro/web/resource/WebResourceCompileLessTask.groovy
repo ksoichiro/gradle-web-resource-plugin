@@ -10,6 +10,7 @@ class WebResourceCompileLessTask extends WebResourceCompileBaseTask {
             extension = project.extensions.webResource
             getInputs()
                     .files(retrieveValidPaths(getSrcLess()))
+                    .property('less.minify', extension.less?.minify)
                     .property('version', WebResourceExtension.VERSION)
             getOutputs().files(retrieveValidPaths(getDestLess()), getGulpfile())
         }
