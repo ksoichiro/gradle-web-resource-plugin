@@ -10,6 +10,6 @@ class WebResourceProcessor {
     String dest
 
     def methodMissing(String name, args) {
-        this."$name" = args[0] as String
+        this."$name" = args[0]
     }
 }
