@@ -82,10 +82,8 @@ class WebResourceCompileBaseTask extends NodeTask {
 
     List retrieveValidPaths(String... paths) {
         List result = []
-        paths.each {
-            if (project.file("${extension.workDir}/${it}")) {
-                result += "${extension.workDir}/${it}"
-            }
+        paths.findAll { project.file("${extension.workDir}/${it}") }.each {
+            result += "${extension.workDir}/${it}"
         }
         result
     }
