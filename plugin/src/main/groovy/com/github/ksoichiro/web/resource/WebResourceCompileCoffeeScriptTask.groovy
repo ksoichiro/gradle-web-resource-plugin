@@ -12,7 +12,7 @@ class WebResourceCompileCoffeeScriptTask extends WebResourceCompileBaseTask {
                     .files(retrieveValidPaths(getSrcCoffee()))
                     .property('coffeeScript.minify', extension.coffeeScript?.minify)
                     .property('version', WebResourceExtension.VERSION)
-            getOutputs().files(retrieveValidPaths(getDestCoffee(), getDestLib()), getGulpfile())
+            getOutputs().files(retrieveValidPaths(getDestCoffee(), getDestLib()))
         }
     }
 }

@@ -8,7 +8,7 @@ class WebResourceWatchTask extends WebResourceCompileBaseTask {
         project.afterEvaluate {
             extension = project.extensions.webResource
             getInputs().files(retrieveValidPaths(getSrcCoffee(), getSrcLess()))
-            getOutputs().files(retrieveValidPaths(getDestCoffee(), getDestLess(), getDestLib()), getGulpfile())
+            getOutputs().files(retrieveValidPaths(getDestCoffee(), getDestLess(), getDestLib()))
         }
     }
 }

@@ -11,7 +11,7 @@ class WebResourceCompileBowerTask extends WebResourceCompileBaseTask {
             getInputs()
                     .property('bower', extension.bower)
                     .property('version', WebResourceExtension.VERSION)
-            getOutputs().files(retrieveValidPaths(getDestLib()), getGulpfile())
+            getOutputs().files(retrieveValidPaths(getDestLib()))
         }
     }
 }
