@@ -21,7 +21,7 @@ class WebResourceExtension {
 
     WebResourceExtension(Project project) {
         this.project = project
-        this.workDir = project.file("${this.project.buildDir}/${PLUGIN_DIR_NAME}");
+        this.workDir = project.file("${this.project.buildDir}/${PLUGIN_DIR_NAME}")
         this.resources = [:]
         this.base = new WebResourceProcessor("src/main", "${this.project.buildDir.name}/${PLUGIN_DIR_NAME}/outputs")
         this.coffeeScript = new FilterableProcessor("coffee", "js")
