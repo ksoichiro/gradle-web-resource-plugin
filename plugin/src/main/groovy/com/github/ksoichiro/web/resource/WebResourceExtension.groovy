@@ -9,6 +9,7 @@ import org.gradle.util.ConfigureUtil
 class WebResourceExtension {
     static final String NAME = 'webResource'
     static final String VERSION = '0.1.5-SNAPSHOT'
+    static final String PLUGIN_DIR_NAME = 'webResource'
 
     Project project
     File workDir
@@ -20,9 +21,9 @@ class WebResourceExtension {
 
     WebResourceExtension(Project project) {
         this.project = project
-        this.workDir = project.file("${this.project.buildDir}/webResource");
+        this.workDir = project.file("${this.project.buildDir}/${PLUGIN_DIR_NAME}");
         this.resources = [:]
-        this.base = new WebResourceProcessor("src/main", "${this.project.buildDir.name}/webResource/outputs")
+        this.base = new WebResourceProcessor("src/main", "${this.project.buildDir.name}/${PLUGIN_DIR_NAME}/outputs")
         this.coffeeScript = new FilterableProcessor("coffee", "js")
         this.less = new FilterableProcessor("less", "css")
         this.lib = new WebResourceProcessor(null, "lib")
