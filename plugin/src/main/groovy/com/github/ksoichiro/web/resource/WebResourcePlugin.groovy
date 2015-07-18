@@ -6,8 +6,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 class WebResourcePlugin implements Plugin<Project> {
-    static final String DEFAULT_NODE_VERSION = '0.11.13'
-    static final String DEFAULT_NPM_VERSION = '1.4.16'
+    static final String DEFAULT_NODE_VERSION = '0.12.7'
+    static final String DEFAULT_NPM_VERSION = '2.13.1'
 
     @Override
     void apply(Project project) {
