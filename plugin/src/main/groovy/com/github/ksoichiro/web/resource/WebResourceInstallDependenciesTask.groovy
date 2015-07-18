@@ -42,17 +42,16 @@ class WebResourceInstallDependenciesTask extends NpmTask {
         }
 
         [
-                "bower"           : "1.3.12",
-                "gulp"            : "3.8.11",
-                "coffee-script"   : "1.9.1",
-                "main-bower-files": "2.7.0",
-                "gulp-less"       : "3.0.2",
-                "gulp-minify-css" : "1.0.0",
+                "gulp"            : "3.9.0",
+                "bower"           : "1.4.1",
+                "main-bower-files": "2.9.0",
+                "gulp-less"       : "3.0.3",
+                "gulp-minify-css" : "1.2.0",
                 "gulp-coffee"     : "2.3.1",
                 "gulp-filter"     : "2.0.2",
-                "gulp-uglify"     : "0.2.1",
-                "gulp-include"    : "2.0.1",
-                "fs-extra"        : "0.21.0"
+                "gulp-uglify"     : "1.2.0",
+                "gulp-include"    : "2.0.2",
+                "fs-extra"        : "0.22.1"
         ].each { name, version ->
             if (!npmConfig.devDependencies.containsKey(name)) {
                 npmConfig.devDependencies[name] = version
