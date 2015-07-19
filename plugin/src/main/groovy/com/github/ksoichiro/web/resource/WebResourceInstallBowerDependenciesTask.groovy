@@ -23,7 +23,7 @@ class WebResourceInstallBowerDependenciesTask extends NodeTask {
     void exec() {
         extension = project.webResource
         if (!extension.bower || !extension.bower.containsKey('dependencies')) {
-            println "No bower config"
+            logger.info "No bower config"
             return
         }
         def bower = project.file(new File(extension.workDir, "node_modules/bower/bin/bower"))
