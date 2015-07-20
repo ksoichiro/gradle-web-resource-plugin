@@ -8,7 +8,7 @@ import org.gradle.util.ConfigureUtil
 @ToString
 class WebResourceExtension {
     static final String NAME = 'webResource'
-    static final String VERSION = '0.1.5-SNAPSHOT'
+    static final String VERSION = '0.1.6'
     static final String PLUGIN_DIR_NAME = 'webResource'
 
     Project project
