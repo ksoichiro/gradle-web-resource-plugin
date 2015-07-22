@@ -54,10 +54,14 @@ class PluginSpec extends Specification {
                 less {
                     src = 'stylesheets'
                     dest = 'stylesheets'
+                    filter = ['*.less']
+                    minify = false
                 }
                 coffeeScript {
                     src = 'stylesheets'
                     dest = 'stylesheets'
+                    filter = ['*.coffee']
+                    minify = false
                 }
                 npm = [
                         devDependencies: [
@@ -109,6 +113,21 @@ class PluginSpec extends Specification {
 
         then:
         project
+    }
+
+    def "gulp tasks"() {
+        setup:
+        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/projects/compile")).build().with { project ->
+            apply plugin: PLUGIN_ID
+            evaluate()
+            project
+        }
+
+        expect:
+        project.tasks.webResourceCompileCoffeeScript.gulpCommand == 'coffee'
+        project.tasks.webResourceCompileLess.gulpCommand == 'less'
+        project.tasks.webResourceCompileBower.gulpCommand == 'bower-files'
+        project.tasks.webResourceWatch.gulpCommand == 'watch'
     }
 
     void deleteOutputs(Project project) {
