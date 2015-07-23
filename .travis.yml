@@ -6,4 +6,7 @@ jdk:
   - oraclejdk8
 
 script:
-  - ./gradlew clean build uploadArchives
+  - ./gradlew clean build check uploadArchives
+
+after_success:
+  - ./gradlew cobertura coveralls
