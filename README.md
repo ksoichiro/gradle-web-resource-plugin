@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/ksoichiro/gradle-web-resource-plugin.svg?branch=master)](https://travis-ci.org/ksoichiro/gradle-web-resource-plugin)
 [![jcenter](https://api.bintray.com/packages/ksoichiro/maven/gradle-web-resource-plugin/images/download.svg)](https://bintray.com/ksoichiro/maven/gradle-web-resource-plugin/_latestVersion)
 [![Maven Central](http://img.shields.io/maven-central/v/com.github.ksoichiro/gradle-web-resource-plugin.svg?style=flat)](https://github.com/ksoichiro/gradle-web-resource-plugin/releases/latest)
+[![Coverage Status](https://coveralls.io/repos/ksoichiro/gradle-web-resource-plugin/badge.svg?branch=master&service=github)](https://coveralls.io/github/ksoichiro/gradle-web-resource-plugin?branch=master)
 
 Gradle plugin to use CoffeeScript, LESS and Bower libraries to focus on writing CoffeeScript and LESS files.  
 You don't have to install `node`, `npm`, `bower`, `gulp`, etc.  
