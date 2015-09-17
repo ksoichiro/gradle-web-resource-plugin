@@ -40,6 +40,10 @@ class WebResourceInstallDependenciesTask extends NpmTask {
         if (!npmConfig.containsKey('repository')) {
             npmConfig['repository'] = [type: "git", url: "https://github.com/ksoichiro/gradle-web-resource-plugin"]
         }
+        // Suppress warning: npm WARN package.json @ No license field.
+        if (!npmConfig.containsKey('license')) {
+            npmConfig['license'] = "Apache-2.0"
+        }
 
         [
                 "gulp"            : "3.9.0",
