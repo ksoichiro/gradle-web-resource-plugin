@@ -8,6 +8,7 @@ class WebResourceCompileBowerTask extends WebResourceCompileBaseTask {
         gulpCommand = 'bower-files'
         project.afterEvaluate {
             extension = project.extensions.webResource
+            gulpEnabled = extension.bower && !extension.bower.isEmpty()
             getInputs()
                     .property('bower', extension.bower)
                     .property('version', WebResourceExtension.VERSION)

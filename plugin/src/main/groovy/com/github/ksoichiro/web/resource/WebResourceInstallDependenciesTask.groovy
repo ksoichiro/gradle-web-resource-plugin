@@ -15,6 +15,7 @@ class WebResourceInstallDependenciesTask extends NpmTask {
             def extension = project.webResource as WebResourceExtension
             getInputs()
                     .property('npm', extension.npm)
+                    .property('bower', extension.bower && !extension.bower.isEmpty())
                     .property('version', WebResourceExtension.VERSION)
             getOutputs().files(new File(extension.workDir, 'package.json'), new File(extension.workDir, 'node_modules'))
             setWorkingDir(extension.workDir)
@@ -45,7 +46,7 @@ class WebResourceInstallDependenciesTask extends NpmTask {
             npmConfig['license'] = "Apache-2.0"
         }
 
-        [
+        def dependencies = [
                 "gulp"            : "3.9.0",
                 "bower"           : "1.4.1",
                 "main-bower-files": "2.9.0",
@@ -56,7 +57,12 @@ class WebResourceInstallDependenciesTask extends NpmTask {
                 "gulp-uglify"     : "1.2.0",
                 "gulp-include"    : "2.0.2",
                 "fs-extra"        : "0.22.1"
-        ].each { name, version ->
+        ] as Map
+        if (!extension.bower || extension.bower.isEmpty()) {
+            dependencies.remove("bower")
+            dependencies.remove("main-bower-files")
+        }
+        dependencies.each { name, version ->
             if (!npmConfig.devDependencies.containsKey(name)) {
                 npmConfig.devDependencies[name] = version
             }

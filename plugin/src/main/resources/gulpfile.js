@@ -1,7 +1,7 @@
 (function() {
     var fs = require('fs-extra');
     var uglify = require('gulp-uglify');
-    var mainBowerFiles = require('main-bower-files');
+    if (${bowerEnabled}) var mainBowerFiles = require('main-bower-files');
     var coffee = require('gulp-coffee');
     var less = require('gulp-less');
     var cssmin = require('gulp-minify-css');
@@ -40,12 +40,14 @@
         }
     });
 
-    gulp.task('bower-files', function() {
-        if (fs.existsSync('bower.json')) {
-            gulp.src(mainBowerFiles(), { base: '${workDir}/bower_components' })
-                .pipe(gulp.dest('${destLib}'));
-        }
-    });
+    if (${bowerEnabled}) {
+        gulp.task('bower-files', function() {
+            if (fs.existsSync('bower.json')) {
+                gulp.src(mainBowerFiles(), { base: '${workDir}/bower_components' })
+                    .pipe(gulp.dest('${destLib}'));
+            }
+        });
+    }
 
     gulp.task('watch', function() {
         if (fs.existsSync('${srcLess}')) {

@@ -8,6 +8,7 @@ import org.gradle.api.tasks.TaskAction
 class WebResourceCompileBaseTask extends NodeTask {
     WebResourceExtension extension
     String gulpCommand = 'default'
+    boolean gulpEnabled = true
 
     WebResourceCompileBaseTask() {
         dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
@@ -19,6 +20,9 @@ class WebResourceCompileBaseTask extends NodeTask {
 
     @TaskAction
     void exec() {
+        if (!gulpEnabled) {
+            return
+        }
         def gulp = project.file(new File(extension.workDir, "node_modules/gulp/bin/gulp.js"))
         setScript(gulp)
         setArgs([gulpCommand])
@@ -31,6 +35,7 @@ class WebResourceCompileBaseTask extends NodeTask {
                 destCoffee  : getDestCoffee(),
                 filterCoffee: extension.coffeeScript.filter ? JsonOutput.toJson(extension.coffeeScript.filter).toString() : "['**/*', '!**/_*.coffee']",
                 minifyCoffee: extension.coffeeScript.minify,
+                bowerEnabled: extension.bower && !extension.bower.isEmpty(),
                 destLib     : resolveDestPath(extension.lib?.dest),
                 workDir     : "../../${extension.workDir.absolutePath.replace(project.projectDir.absolutePath, "").replaceAll("\\\\", "/").replaceAll("^/", "")}"
         ]
