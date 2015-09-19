@@ -8,6 +8,7 @@ class WebResourceCompileLessTask extends WebResourceCompileBaseTask {
         gulpCommand = 'less'
         project.afterEvaluate {
             extension = project.extensions.webResource
+            gulpEnabled = extension.less.enabled
             getInputs()
                     .files(retrieveValidPaths(getSrcLess()))
                     .property('less.minify', extension.less?.minify)

@@ -3,26 +3,28 @@
     var uglify = require('gulp-uglify');
     if (${bowerEnabled}) var mainBowerFiles = require('main-bower-files');
     var coffee = require('gulp-coffee');
-    var less = require('gulp-less');
-    var cssmin = require('gulp-minify-css');
+    var less = ${lessEnabled} ? require('gulp-less') : 0;
+    var cssmin = ${lessEnabled} ? require('gulp-minify-css') : 0;
     var gulpFilter = require('gulp-filter');
     var gulp = require('gulp');
     var include = require("gulp-include");
 
-    gulp.task('less', function() {
-        if (fs.existsSync('${srcLess}')) {
-            if (!fs.existsSync('${destLess}')) {
-                fs.mkdirsSync('${destLess}');
+    if (${lessEnabled}) {
+        gulp.task('less', function() {
+            if (fs.existsSync('${srcLess}')) {
+                if (!fs.existsSync('${destLess}')) {
+                    fs.mkdirsSync('${destLess}');
+                }
+                var g = gulp.src('${srcLess}/**/*.less')
+                    .pipe(gulpFilter(${filterLess}))
+                    .pipe(less());
+                if (${minifyLess}) {
+                    g = g.pipe(cssmin({root: '${srcLess}'}));
+                }
+                g.pipe(gulp.dest('${destLess}'));
             }
-            var g = gulp.src('${srcLess}/**/*.less')
-                .pipe(gulpFilter(${filterLess}))
-                .pipe(less());
-            if (${minifyLess}) {
-                g = g.pipe(cssmin({root: '${srcLess}'}));
-            }
-            g.pipe(gulp.dest('${destLess}'));
-        }
-    });
+        });
+    }
 
     gulp.task('coffee', function() {
         if (fs.existsSync('${srcCoffee}')) {

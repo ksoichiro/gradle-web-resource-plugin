@@ -29,6 +29,7 @@ class WebResourceCompileBaseTask extends NodeTask {
         def bindings = [
                 srcLess     : getSrcLess(),
                 destLess    : getDestLess(),
+                lessEnabled : extension.less.enabled,
                 filterLess  : extension.less.filter ? JsonOutput.toJson(extension.less.filter).toString() : "['**/*', '!**/_*.less']",
                 minifyLess  : extension.less.minify,
                 srcCoffee   : getSrcCoffee(),

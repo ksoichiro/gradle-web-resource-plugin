@@ -15,6 +15,7 @@ class WebResourceInstallDependenciesTask extends NpmTask {
             def extension = project.webResource as WebResourceExtension
             getInputs()
                     .property('npm', extension.npm)
+                    .property('less', extension.less && extension.less.enabled)
                     .property('bower', extension.bower && !extension.bower.isEmpty())
                     .property('version', WebResourceExtension.VERSION)
             getOutputs().files(new File(extension.workDir, 'package.json'), new File(extension.workDir, 'node_modules'))
@@ -58,6 +59,10 @@ class WebResourceInstallDependenciesTask extends NpmTask {
                 "gulp-include"    : "2.0.2",
                 "fs-extra"        : "0.22.1"
         ] as Map
+        if (!extension.less.enabled) {
+            dependencies.remove("gulp-less")
+            dependencies.remove("gulp-minify-css")
+        }
         if (!extension.bower || extension.bower.isEmpty()) {
             dependencies.remove("bower")
             dependencies.remove("main-bower-files")

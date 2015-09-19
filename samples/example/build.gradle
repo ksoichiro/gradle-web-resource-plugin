@@ -20,6 +20,8 @@ apply plugin: 'java'
 apply plugin: 'com.github.ksoichiro.web.resource'
 
 webResource {
+    // You can disable less dependencies installation:
+    // less.enabled false
     bower = [
             dependencies: [
                     jquery   : "1.11.2",
