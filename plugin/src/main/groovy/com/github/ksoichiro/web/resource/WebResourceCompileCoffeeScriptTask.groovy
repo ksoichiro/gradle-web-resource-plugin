@@ -8,6 +8,7 @@ class WebResourceCompileCoffeeScriptTask extends WebResourceCompileBaseTask {
         gulpCommand = 'coffee'
         project.afterEvaluate {
             extension = project.extensions.webResource
+            gulpEnabled = extension.coffeeScript.enabled
             getInputs()
                     .files(retrieveValidPaths(getSrcCoffee()))
                     .property('coffeeScript.minify', extension.coffeeScript?.minify)

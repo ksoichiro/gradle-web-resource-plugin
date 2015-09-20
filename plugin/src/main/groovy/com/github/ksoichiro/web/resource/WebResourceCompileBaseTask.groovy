@@ -27,23 +27,24 @@ class WebResourceCompileBaseTask extends NodeTask {
         setScript(gulp)
         setArgs([gulpCommand])
         def bindings = [
-                srcLess     : getSrcLess(),
-                destLess    : getDestLess(),
-                lessEnabled : extension.less.enabled,
-                filterLess  : extension.less.filter ? JsonOutput.toJson(extension.less.filter).toString() : "['**/*', '!**/_*.less']",
-                minifyLess  : extension.less.minify,
-                srcCoffee   : getSrcCoffee(),
-                destCoffee  : getDestCoffee(),
-                filterCoffee: extension.coffeeScript.filter ? JsonOutput.toJson(extension.coffeeScript.filter).toString() : "['**/*', '!**/_*.coffee']",
-                minifyCoffee: extension.coffeeScript.minify,
-                bowerEnabled: extension.bower && !extension.bower.isEmpty(),
-                destLib     : resolveDestPath(extension.lib?.dest),
-                workDir     : "../../${extension.workDir.absolutePath.replace(project.projectDir.absolutePath, "").replaceAll("\\\\", "/").replaceAll("^/", "")}"
+            srcLess      : getSrcLess(),
+            destLess     : getDestLess(),
+            lessEnabled  : extension.less.enabled,
+            filterLess   : extension.less.filter ? JsonOutput.toJson(extension.less.filter).toString() : "['**/*', '!**/_*.less']",
+            minifyLess   : extension.less.minify,
+            srcCoffee    : getSrcCoffee(),
+            destCoffee   : getDestCoffee(),
+            coffeeEnabled: extension.coffeeScript.enabled,
+            filterCoffee : extension.coffeeScript.filter ? JsonOutput.toJson(extension.coffeeScript.filter).toString() : "['**/*', '!**/_*.coffee']",
+            minifyCoffee : extension.coffeeScript.minify,
+            bowerEnabled : extension.bower && !extension.bower.isEmpty(),
+            destLib      : resolveDestPath(extension.lib?.dest),
+            workDir      : "../../${extension.workDir.absolutePath.replace(project.projectDir.absolutePath, "").replaceAll("\\\\", "/").replaceAll("^/", "")}"
         ]
         getGulpfile().text =
-                new SimpleTemplateEngine()
-                        .createTemplate(getClass().getResourceAsStream('/gulpfile.js').text)
-                        .make(bindings)
+            new SimpleTemplateEngine()
+                .createTemplate(getClass().getResourceAsStream('/gulpfile.js').text)
+                .make(bindings)
         super.exec()
     }
 
