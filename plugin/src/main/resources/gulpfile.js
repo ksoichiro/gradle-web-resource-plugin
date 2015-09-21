@@ -1,15 +1,11 @@
 (function() {
     var fs = require('fs-extra');
-    var uglify = ${coffeeEnabled} ? require('gulp-uglify') : 0;
-    if (${bowerEnabled}) var mainBowerFiles = require('main-bower-files');
-    var coffee = ${coffeeEnabled} ? require('gulp-coffee') : 0;
-    var less = ${lessEnabled} ? require('gulp-less') : 0;
-    var cssmin = ${lessEnabled} ? require('gulp-minify-css') : 0;
-    var gulpFilter = require('gulp-filter');
     var gulp = require('gulp');
-    var include = ${coffeeEnabled} ? require("gulp-include") : 0;
+    var gulpFilter = ${lessEnabled} && ${coffeeEnabled} : require('gulp-filter');
 
     if (${lessEnabled}) {
+        var less = require('gulp-less');
+        var cssmin = require('gulp-minify-css');
         gulp.task('less', function() {
             if (fs.existsSync('${srcLess}')) {
                 if (!fs.existsSync('${destLess}')) {
@@ -27,6 +23,9 @@
     }
 
     if (${coffeeEnabled}) {
+        var coffee = require('gulp-coffee');
+        var uglify = require('gulp-uglify');
+        var include = require("gulp-include");
         gulp.task('coffee', function() {
             if (fs.existsSync('${srcCoffee}')) {
                 if (!fs.existsSync('${destCoffee}')) {
@@ -45,6 +44,7 @@
     }
 
     if (${bowerEnabled}) {
+        var mainBowerFiles = require('main-bower-files');
         gulp.task('bower-files', function() {
             if (fs.existsSync('bower.json')) {
                 gulp.src(mainBowerFiles(), { base: '${workDir}/bower_components' })
