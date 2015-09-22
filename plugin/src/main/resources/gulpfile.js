@@ -1,7 +1,7 @@
 (function() {
     var fs = require('fs-extra');
     var gulp = require('gulp');
-    var gulpFilter = ${lessEnabled} && ${coffeeEnabled} : require('gulp-filter');
+    var gulpFilter = ${lessEnabled} && ${coffeeEnabled} ? require('gulp-filter') : 0;
 
     if (${lessEnabled}) {
         var less = require('gulp-less');
