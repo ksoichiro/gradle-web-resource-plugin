@@ -1,7 +1,20 @@
 (function() {
-  var fs = require('fs-extra');
+  var fs = require('fs');
   var gulp = require('gulp');
   var gulpFilter = ${lessEnabled} && ${coffeeEnabled} ? require('gulp-filter') : 0;
+
+  var mkdirsSync = function(dir) {
+    console.log("mkdirsSync: " + dir);
+    var fs = require('fs');
+    var dirs = dir.split('/');
+    var s = '';
+    for (var i = 0; i < dirs.length; i++) {
+      s += (s.length == 0 ? '' : '/') + dirs[i];
+      if (!fs.existsSync(s)) {
+        fs.mkdirSync(s);
+      }
+    }
+  }
 
   if (${lessEnabled}) {
     var less = require('gulp-less');
@@ -9,7 +22,7 @@
     gulp.task('less', function() {
       if (fs.existsSync('${srcLess}')) {
         if (!fs.existsSync('${destLess}')) {
-          fs.mkdirsSync('${destLess}');
+          mkdirsSync('${destLess}');
         }
         var g = gulp.src('${srcLess}/**/*.less')
           .pipe(gulpFilter(${filterLess}))
@@ -29,7 +42,7 @@
     gulp.task('coffee', function() {
       if (fs.existsSync('${srcCoffee}')) {
         if (!fs.existsSync('${destCoffee}')) {
-          fs.mkdirsSync('${destCoffee}');
+          mkdirsSync('${destCoffee}');
         }
         var g = gulp.src('${srcCoffee}/**/*.coffee')
           .pipe(include())

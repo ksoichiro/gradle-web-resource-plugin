@@ -58,7 +58,6 @@ class WebResourceInstallDependenciesTask extends NpmTask {
                 "gulp-filter"     : "2.0.2",
                 "gulp-uglify"     : "1.2.0",
                 "gulp-include"    : "2.0.2",
-                "fs-extra"        : "0.22.1"
         ] as Map
         if (!extension.less.enabled) {
             dependencies.remove("gulp-less")
