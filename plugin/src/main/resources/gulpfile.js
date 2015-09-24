@@ -4,7 +4,6 @@
   var gulpFilter = ${lessEnabled} && ${coffeeEnabled} ? require('gulp-filter') : 0;
 
   var mkdirsSync = function(dir) {
-    console.log("mkdirsSync: " + dir);
     var fs = require('fs');
     var dirs = dir.split('/');
     var s = '';
