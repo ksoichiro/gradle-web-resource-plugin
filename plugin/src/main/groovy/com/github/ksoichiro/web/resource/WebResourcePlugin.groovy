@@ -29,5 +29,7 @@ class WebResourcePlugin implements Plugin<Project> {
         project.task(WebResourceCompileBowerTask.NAME, type: WebResourceCompileBowerTask)
         project.task(WebResourceCompileTask.NAME, type: WebResourceCompileTask)
         project.task(WebResourceWatchTask.NAME, type: WebResourceWatchTask)
+        project.task(TriremeWebResourceInstallDependenciesTask.NAME, type: TriremeWebResourceInstallDependenciesTask)
+        project.task(TriremeBowerTask.NAME, type: TriremeBowerTask)
     }
 }
