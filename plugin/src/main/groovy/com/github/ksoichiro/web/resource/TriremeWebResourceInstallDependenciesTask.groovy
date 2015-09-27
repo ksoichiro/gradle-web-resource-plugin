@@ -82,7 +82,7 @@ if (process.argv.length != 3) {
 
 var workingDir = process.argv[2];
 
-console.log('Running NPM update in %s', workingDir);
+console.log('Running NPM install in %s', workingDir);
 process.chdir(workingDir);
 
 var npm = require('npm');
@@ -96,12 +96,6 @@ npm.load(config, function(err, n) {
   }
 
   npm.commands.install([], function(err) {
-    if (err) {
-      console.log('Error running NPM: %s', err);
-      process.exit(2);
-    }
-  });
-  npm.commands.update([], function(err) {
     if (err) {
       console.log('Error running NPM: %s', err);
       process.exit(2);
