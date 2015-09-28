@@ -46,6 +46,7 @@ class TriremeNodeTask extends DefaultTask {
         NodeEnvironment env = new NodeEnvironment()
         File path = scriptPath ? new File(scriptPath) : new File(workingDir, scriptName)
         NodeScript script = env.createScript(scriptName, path, args)
+        script.setWorkingDirectory(workingDir.absolutePath)
         script.setNodeVersion("0.12")
         status = script.execute().get()
         env.close()

@@ -3,17 +3,17 @@ package com.github.ksoichiro.web.resource
 import groovy.json.JsonOutput
 import org.gradle.api.tasks.TaskAction
 
-class TriremeBowerTask extends TriremeNodeTask {
+class TriremeWebResourceInstallBowerDependenciesTask extends TriremeNodeTask {
     static final String NAME = "triremeWebResourceInstallBowerDependencies"
     WebResourceExtension extension
     String gulpCommand = 'default'
 
-    TriremeBowerTask() {
+    TriremeWebResourceInstallBowerDependenciesTask() {
         setScriptName('node_modules/bower/bin/bower')
         this.project.afterEvaluate {
             extension = project.webResource
             setWorkingDir(extension.workDir)
-            setArgs(extension.workDir.absolutePath, 'install', '--config.interactive=false')
+            setArgs(['install', '--config.interactive=false'] as String[])
         }
     }
 
@@ -24,6 +24,10 @@ class TriremeBowerTask extends TriremeNodeTask {
             bowerConfig['name'] = 'webResource'
         }
         getBowerJson().text = JsonOutput.prettyPrint(JsonOutput.toJson(bowerConfig))
+        File bowerComponentsDir = new File(extension.getWorkDir(), "bower_components")
+        if (!bowerComponentsDir.exists()) {
+            bowerComponentsDir.mkdirs()
+        }
         super.exec()
     }
 
