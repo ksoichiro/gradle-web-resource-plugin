@@ -4,6 +4,7 @@ import groovy.json.JsonOutput
 
 class TriremeWebResourceInstallDependenciesTask extends TriremeNodeTask {
     static final String NAME = 'triremeWebResourceInstallDependencies'
+    String loglevel = "warn"
 
     TriremeWebResourceInstallDependenciesTask() {
         setScriptName('start.js')
@@ -87,7 +88,7 @@ process.chdir(workingDir);
 
 var npm = require('npm');
 
-var config = {"loglevel": "warn"};
+var config = {"loglevel": "${loglevel}"};
 
 npm.load(config, function(err, n) {
   if (err) {
