@@ -11,7 +11,7 @@ class TriremeNodeTask extends DefaultTask {
     String scriptName
     String scriptPath
     // Currently only npm versions that are provided as webjars are available
-    String npmVersion = "1.3.26"
+    String npmVersion = "2.11.2" // "1.3.26"
     String[] args
     ScriptStatus status
 
@@ -33,6 +33,16 @@ class TriremeNodeTask extends DefaultTask {
             into npmInstallDir
         }
         project.delete("${npmInstallDir}/tmp")
+        if (npmVersion == "2.11.2") {
+            // We should fix/overwrite npm's package.json because that of webjars' doesn't include
+            // 'main' attribute in it and trireme doesn't recognize npm.
+            new File("${npmInstallDir}/package.json").text = """\
+{
+  "name": "npm",
+  "main": "./lib/npm.js"
+}
+"""
+        }
         NodeEnvironment env = new NodeEnvironment()
         File path = scriptPath ? new File(scriptPath) : new File(workingDir, scriptName)
         NodeScript script = env.createScript(scriptName, path, args)
