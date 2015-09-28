@@ -10,6 +10,8 @@ class TriremeNodeTask extends DefaultTask {
     File workingDir
     String scriptName
     String scriptPath
+    // Currently only npm versions that are provided as webjars are available
+    String npmVersion = "1.3.26"
     String[] args
     ScriptStatus status
 
@@ -27,7 +29,7 @@ class TriremeNodeTask extends DefaultTask {
             into "${npmInstallDir}/tmp"
         }
         project.copy {
-            from project.fileTree("${npmInstallDir}/tmp/META-INF/resources/webjars/npm/1.3.26")
+            from project.fileTree("${npmInstallDir}/tmp/META-INF/resources/webjars/npm/${npmVersion}")
             into npmInstallDir
         }
         project.delete("${npmInstallDir}/tmp")
