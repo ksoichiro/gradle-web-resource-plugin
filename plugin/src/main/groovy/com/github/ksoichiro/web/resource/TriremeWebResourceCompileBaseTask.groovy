@@ -1,5 +1,7 @@
 package com.github.ksoichiro.web.resource
 
+import groovy.json.JsonOutput
+import groovy.text.SimpleTemplateEngine
 import org.gradle.api.tasks.TaskAction
 
 class TriremeWebResourceCompileBaseTask extends TriremeNodeTask {
@@ -8,7 +10,6 @@ class TriremeWebResourceCompileBaseTask extends TriremeNodeTask {
     boolean gulpEnabled = true
 
     TriremeWebResourceCompileBaseTask() {
-        dependsOn([TriremeWebResourceInstallBowerDependenciesTask.NAME])
         project.afterEvaluate {
             extension = project.extensions.webResource
             setWorkingDir(extension.workDir)
@@ -17,11 +18,81 @@ class TriremeWebResourceCompileBaseTask extends TriremeNodeTask {
 
     @TaskAction
     void exec() {
-        setScriptName('node_modules/gulp/bin/gulp.js')
-        this.project.afterEvaluate {
-            def extension = project.webResource as WebResourceExtension
-            setWorkingDir(extension.workDir)
-            setArgs(extension.workDir.absolutePath, gulpCommand)
+        if (!gulpEnabled) {
+            return
         }
+        setScriptName('node_modules/gulp/bin/gulp.js')
+        setArgs(gulpCommand)
+        def bindings = [
+            srcLess      : getSrcLess(),
+            destLess     : getDestLess(),
+            lessEnabled  : extension.less.enabled,
+            filterLess   : extension.less.filter ? JsonOutput.toJson(extension.less.filter).toString() : "['**/*', '!**/_*.less']",
+            minifyLess   : extension.less.minify,
+            srcCoffee    : getSrcCoffee(),
+            destCoffee   : getDestCoffee(),
+            coffeeEnabled: extension.coffeeScript.enabled,
+            filterCoffee : extension.coffeeScript.filter ? JsonOutput.toJson(extension.coffeeScript.filter).toString() : "['**/*', '!**/_*.coffee']",
+            minifyCoffee : extension.coffeeScript.minify,
+            bowerEnabled : extension.bower && !extension.bower.isEmpty(),
+            destLib      : resolveDestPath(extension.lib?.dest),
+            workDir      : "../../${extension.workDir.absolutePath.replace(project.projectDir.absolutePath, "").replaceAll("\\\\", "/").replaceAll("^/", "")}"
+        ]
+        getGulpfile().text =
+            new SimpleTemplateEngine()
+                .createTemplate(getClass().getResourceAsStream('/gulpfile.js').text)
+                .make(bindings)
+        super.exec()
+    }
+
+    String resolveSrcPath(def path) {
+        String src = "../../"
+        if (path) {
+            src += extension.base?.src ? "${extension.base?.src}/" : ""
+            src += path
+        }
+        src
+    }
+
+    String resolveDestPath(def path) {
+        String dest = ""
+        if (path) {
+            dest = extension.base?.dest ? "${extension.base?.dest}/" : ""
+            dest += path
+            dest = "../../${dest}"
+        }
+        dest
+    }
+
+    String getSrcCoffee() {
+        resolveSrcPath(extension.coffeeScript?.src)
+    }
+
+    String getSrcLess() {
+        resolveSrcPath(extension.less?.src)
+    }
+
+    String getDestCoffee() {
+        resolveDestPath(extension.coffeeScript?.dest)
+    }
+
+    String getDestLess() {
+        resolveDestPath(extension.less?.dest)
+    }
+
+    String getDestLib() {
+        resolveDestPath(extension.lib?.dest)
+    }
+
+    List retrieveValidPaths(String... paths) {
+        List result = []
+        paths.findAll { project.file("${extension.workDir}/${it}") }.each {
+            result += "${extension.workDir}/${it}"
+        }
+        result
+    }
+
+    File getGulpfile() {
+        new File(extension.workDir, "gulpfile.js")
     }
 }
