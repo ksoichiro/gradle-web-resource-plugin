@@ -18,7 +18,7 @@ class TriremeWebResourceInstallDependenciesTask extends TriremeNodeTask {
                     .property('version', WebResourceExtension.VERSION)
             getOutputs().files(new File(extension.workDir, 'package.json'), new File(extension.workDir, 'node_modules'))
             setWorkingDir(extension.workDir)
-            setArgs(extension.workDir.absolutePath)
+            setArgs([extension.workDir.absolutePath, loglevel] as String[])
         }
     }
 
@@ -76,34 +76,7 @@ class TriremeWebResourceInstallDependenciesTask extends TriremeNodeTask {
             }
         }
 
-        new File(extension.workDir, 'start.js').text = """
-if (process.argv.length != 3) {
-  console.log('start: <working dir>');
-}
-
-var workingDir = process.argv[2];
-
-console.log('Running NPM install in %s', workingDir);
-process.chdir(workingDir);
-
-var npm = require('npm');
-
-var config = {"loglevel": "${loglevel}"};
-
-npm.load(config, function(err, n) {
-  if (err) {
-    console.log('Error initializing NPM: %s', er);
-    return;
-  }
-
-  npm.commands.install([], function(err) {
-    if (err) {
-      console.log('Error running NPM: %s', err);
-      process.exit(2);
-    }
-  });
-});
-"""
+        new File(extension.workDir, 'start.js').text = getClass().getResourceAsStream('/start.js').text
         new File(extension.workDir, 'package.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(npmConfig))
         // Suppress warning: npm WARN package.json @ No README data
         new File(extension.workDir, 'README.md').text = "WebResource npm packages"
