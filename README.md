@@ -88,9 +88,8 @@ build/webResource/outputs
 
 ```gradle
 node {
-    // (Option) Set node/npm versions
+    // (Option) Set node versions
     version = '0.11.13'
-    npmVersion = '1.4.16'
 }
 
 // All configurations are optional.
@@ -130,22 +129,6 @@ webResource {
         // Change directories for libraries downloaded with bower
         dest = 'lib'
     }
-    npm = [
-        // Change versions of npm libraries that are internally used for bower and gulp.
-        devDependencies: [
-            bower: "1.3.12",
-            gulp: "3.8.11",
-            "coffee-script": "1.9.1",
-            "main-bower-files": "2.7.0",
-            "gulp-less": "3.0.2",
-            "gulp-minify-css": "1.0.0",
-            "gulp-filter": "2.0.2",
-            "gulp-coffee": "2.3.1",
-            "gulp-filter": "2.0.2",
-            "gulp-uglify": "0.2.1",
-            "gulp-include": "2.0.1"
-        ]
-    ]
     bower = [
         dependencies: [
             jquery: "1.11.2",

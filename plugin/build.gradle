@@ -6,6 +6,7 @@ buildscript {
     }
     dependencies {
         classpath "com.gradle.publish:plugin-publish-plugin:0.9.0"
+        classpath 'com.moowork.gradle:gradle-node-plugin:0.10'
     }
 }
 
@@ -20,6 +21,23 @@ plugins {
 apply plugin: "com.gradle.plugin-publish"
 apply plugin: 'groovy'
 apply plugin: 'signing'
+apply plugin: 'com.moowork.node'
+
+node {
+    version = '0.12.7'
+    npmVersion = '2.11.2'
+    download = true
+    workDir = file("${project.buildDir}/nodejs")
+    nodeModulesDir = file("src/main/resources")
+}
+
+compileGroovy.dependsOn('npmInstall')
+
+task cleanNodeModules << {
+    project.delete("src/main/resources/node_modules")
+}
+
+clean.dependsOn('cleanNodeModules')
 
 group = GROUP
 version = VERSION_NAME

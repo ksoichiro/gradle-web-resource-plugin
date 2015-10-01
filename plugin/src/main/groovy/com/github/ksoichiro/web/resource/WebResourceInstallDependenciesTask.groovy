@@ -1,86 +1,60 @@
 package com.github.ksoichiro.web.resource
 
-import com.moowork.gradle.node.task.NpmSetupTask
-import com.moowork.gradle.node.task.NpmTask
-import groovy.json.JsonOutput
+import com.moowork.gradle.node.task.SetupTask
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-class WebResourceInstallDependenciesTask extends NpmTask {
+class WebResourceInstallDependenciesTask extends DefaultTask {
     static final String NAME = 'webResourceInstallDependencies'
+    static final String PRE_INSTALLED_NODE_MODULES_DIR = "node_modules"
+    WebResourceExtension extension
 
     WebResourceInstallDependenciesTask() {
-        setNpmCommand('install')
-        dependsOn([NpmSetupTask.NAME])
+        dependsOn([SetupTask.NAME])
 
         this.project.afterEvaluate {
-            def extension = project.webResource as WebResourceExtension
+            extension = project.webResource
             getInputs()
-                    .property('npm', extension.npm)
                     .property('less', extension.less && extension.less.enabled)
                     .property('coffeeScript', extension.coffeeScript && extension.coffeeScript.enabled)
                     .property('bower', extension.bower && !extension.bower.isEmpty())
                     .property('version', WebResourceExtension.VERSION)
-            getOutputs().files(new File(extension.workDir, 'package.json'), new File(extension.workDir, 'node_modules'))
-            setWorkingDir(extension.workDir)
+            getOutputs().files(new File(extension.workDir, 'node_modules'))
         }
     }
 
-    @Override
+    @TaskAction
     void exec() {
-        def extension = project.webResource as WebResourceExtension
-        def workDir = new File(extension.workDir.toURI())
+        def workDir = extension.workDir
         if (!workDir.exists()) {
             workDir.mkdirs()
         }
-        def npmConfig = extension.npm ? extension.npm.clone() as Map : [:]
-        if (!npmConfig.containsKey('devDependencies')) {
-            npmConfig['devDependencies'] = [:] as Map
+        [
+            "bower",
+            "gulp",
+            "gulp-coffee",
+            "gulp-filter",
+            "gulp-include",
+            "gulp-less",
+            "gulp-minify-css",
+            "gulp-uglify",
+            "main-bower-files",
+        ].each {
+            copyDependencies(it)
         }
-        // Suppress warning: npm WARN package.json @ No description
-        if (!npmConfig.containsKey('description')) {
-            npmConfig['description'] = "Auto-configured dependencies with gradle-web-resource plugin"
-        }
-        // Suppress warning: npm WARN package.json @ No repository field.
-        if (!npmConfig.containsKey('repository')) {
-            npmConfig['repository'] = [type: "git", url: "https://github.com/ksoichiro/gradle-web-resource-plugin"]
-        }
-        // Suppress warning: npm WARN package.json @ No license field.
-        if (!npmConfig.containsKey('license')) {
-            npmConfig['license'] = "Apache-2.0"
-        }
+    }
 
-        def dependencies = [
-                "gulp"            : "3.9.0",
-                "bower"           : "1.4.1",
-                "main-bower-files": "2.9.0",
-                "gulp-less"       : "3.0.3",
-                "gulp-minify-css" : "1.2.0",
-                "gulp-coffee"     : "2.3.1",
-                "gulp-filter"     : "2.0.2",
-                "gulp-uglify"     : "1.2.0",
-                "gulp-include"    : "2.0.2",
-        ] as Map
-        if (!extension.less.enabled) {
-            dependencies.remove("gulp-less")
-            dependencies.remove("gulp-minify-css")
+    void copyDependencies(String name) {
+        URL url = getClass().getResource("/${PRE_INSTALLED_NODE_MODULES_DIR}/${name}")
+        String jarPath = url.toString().replaceAll("jar:file:", "").replaceAll("!.*\$", "")
+        String installPath = "${extension.workDir}"
+        File installDir = new File(installPath)
+        if (!installDir.exists()) {
+            installDir.mkdirs()
         }
-        if (!extension.coffeeScript.enabled) {
-            dependencies.remove("gulp-coffee")
-            dependencies.remove("gulp-uglify")
-            dependencies.remove("gulp-include")
+        project.copy {
+            from project.zipTree(new File(jarPath)).matching { it.include("${PRE_INSTALLED_NODE_MODULES_DIR}/${name}/**") }
+            into installDir
         }
-        if (!extension.bower || extension.bower.isEmpty()) {
-            dependencies.remove("bower")
-            dependencies.remove("main-bower-files")
-        }
-        dependencies.each { name, version ->
-            if (!npmConfig.devDependencies.containsKey(name)) {
-                npmConfig.devDependencies[name] = version
-            }
-        }
-
-        new File(extension.workDir, 'package.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(npmConfig))
-        // Suppress warning: npm WARN package.json @ No README data
-        new File(extension.workDir, 'README.md').text = "WebResource npm packages"
-        super.exec()
     }
 }

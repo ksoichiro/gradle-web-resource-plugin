@@ -14,7 +14,6 @@ class WebResourceExtension {
     Project project
     File workDir
     Map resources
-    Map npm
     Map bower
     FilterableProcessor coffeeScript
     FilterableProcessor less

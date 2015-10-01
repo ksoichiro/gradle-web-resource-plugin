@@ -6,20 +6,16 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 class WebResourcePlugin implements Plugin<Project> {
-    static final String DEFAULT_NODE_VERSION = '0.12.7'
-    static final String DEFAULT_NPM_VERSION = '2.13.1'
-
     @Override
     void apply(Project project) {
         project.plugins.apply(NodePlugin.class)
         def node = project.node as NodeExtension
-        if (!node.npmVersion) {
-            node.version = DEFAULT_NODE_VERSION
-            node.npmVersion = DEFAULT_NPM_VERSION
+        node.with {
+            version = '0.12.7'
+            download = true
+            workDir = project.file("${project.buildDir}/${WebResourceExtension.NAME}/nodejs")
+            nodeModulesDir = project.file("${project.buildDir}/${WebResourceExtension.NAME}")
         }
-        node.download = true
-        node.workDir = project.file("${project.buildDir}/${WebResourceExtension.NAME}/nodejs")
-        node.nodeModulesDir = project.file("${project.buildDir}/${WebResourceExtension.NAME}")
 
         project.extensions.create(WebResourceExtension.NAME, WebResourceExtension, project)
         project.task(WebResourceInstallBowerDependenciesTask.NAME, type: WebResourceInstallBowerDependenciesTask)
@@ -29,7 +25,6 @@ class WebResourcePlugin implements Plugin<Project> {
         project.task(WebResourceCompileBowerTask.NAME, type: WebResourceCompileBowerTask)
         project.task(WebResourceCompileTask.NAME, type: WebResourceCompileTask)
         project.task(WebResourceWatchTask.NAME, type: WebResourceWatchTask)
-        project.task(TriremeWebResourceInstallDependenciesTask.NAME, type: TriremeWebResourceInstallDependenciesTask)
         project.task(TriremeWebResourceInstallBowerDependenciesTask.NAME, type: TriremeWebResourceInstallBowerDependenciesTask)
     }
 }

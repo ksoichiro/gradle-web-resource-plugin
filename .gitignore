@@ -2,4 +2,5 @@ build/
 .gradle/
 .idea/
 *.iml
+plugin/src/main/resources/node_modules/
 samples/repo/
