@@ -29,23 +29,7 @@ class WebResourceInstallDependenciesTask extends DefaultTask {
         if (!workDir.exists()) {
             workDir.mkdirs()
         }
-        [
-            "bower",
-            "gulp",
-            "gulp-coffee",
-            "gulp-filter",
-            "gulp-include",
-            "gulp-less",
-            "gulp-minify-css",
-            "gulp-uglify",
-            "main-bower-files",
-        ].each {
-            copyDependencies(it)
-        }
-    }
-
-    void copyDependencies(String name) {
-        URL url = getClass().getResource("/${PRE_INSTALLED_NODE_MODULES_DIR}/${name}")
+        URL url = getClass().getResource("/${PRE_INSTALLED_NODE_MODULES_DIR}")
         String jarPath = url.toString().replaceAll("jar:file:", "").replaceAll("!.*\$", "")
         String installPath = "${extension.workDir}"
         File installDir = new File(installPath)
@@ -53,7 +37,21 @@ class WebResourceInstallDependenciesTask extends DefaultTask {
             installDir.mkdirs()
         }
         project.copy {
-            from project.zipTree(new File(jarPath)).matching { it.include("${PRE_INSTALLED_NODE_MODULES_DIR}/${name}/**") }
+            from project.zipTree(new File(jarPath)).matching { p ->
+                [
+                    "bower",
+                    "gulp",
+                    "gulp-coffee",
+                    "gulp-filter",
+                    "gulp-include",
+                    "gulp-less",
+                    "gulp-minify-css",
+                    "gulp-uglify",
+                    "main-bower-files",
+                ].each {
+                    p.include("${PRE_INSTALLED_NODE_MODULES_DIR}/${it}/**")
+                }
+            }
             into installDir
         }
     }
