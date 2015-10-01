@@ -105,6 +105,8 @@ webResource {
         // dest 'src/main/resources/static'
     }
     coffeeScript {
+        // Set false if you don't use CoffeeScript related features
+        enabled = true
         // Change CoffeeScript src/dest directories
         src = 'coffee'
         dest = 'js'
@@ -114,6 +116,8 @@ webResource {
         minify = false
     }
     less {
+        // Set false if you don't use LESS related features
+        enabled = true
         // Change LESS src/dest directories and filter setting
         src = 'less'
         dest = 'css'
