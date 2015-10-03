@@ -17,6 +17,7 @@ class WebResourceExtension {
     Map bower
     FilterableProcessor coffeeScript
     FilterableProcessor less
+    WebResourceProcessor lib
 
     WebResourceExtension(Project project) {
         this.project = project

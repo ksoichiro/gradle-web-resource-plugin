@@ -26,6 +26,12 @@ webResource {
             dependencies: [
                     jquery   : "1.11.2",
                     bootstrap: "3.3.4",
+            ],
+            // You can filter library files like 'main-bower-files'.
+            "overrides": [
+                "jquery": [
+                    "main": "dist/*.min.*"
+                ]
             ]
     ]
 }

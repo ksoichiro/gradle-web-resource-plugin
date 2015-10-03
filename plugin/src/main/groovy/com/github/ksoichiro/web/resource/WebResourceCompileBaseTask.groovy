@@ -37,8 +37,6 @@ class WebResourceCompileBaseTask extends NodeTask {
             coffeeEnabled: extension.coffeeScript.enabled,
             filterCoffee : extension.coffeeScript.filter ? JsonOutput.toJson(extension.coffeeScript.filter).toString() : "['**/*', '!**/_*.coffee']",
             minifyCoffee : extension.coffeeScript.minify,
-            bowerEnabled : extension.bower && !extension.bower.isEmpty(),
-            destLib      : resolveDestPath(extension.lib?.dest),
             workDir      : "../../${extension.workDir.absolutePath.replace(project.projectDir.absolutePath, "").replaceAll("\\\\", "/").replaceAll("^/", "")}"
         ]
         getGulpfile().text =
@@ -81,10 +79,6 @@ class WebResourceCompileBaseTask extends NodeTask {
 
     String getDestLess() {
         resolveDestPath(extension.less?.dest)
-    }
-
-    String getDestLib() {
-        resolveDestPath(extension.lib?.dest)
     }
 
     List retrieveValidPaths(String... paths) {

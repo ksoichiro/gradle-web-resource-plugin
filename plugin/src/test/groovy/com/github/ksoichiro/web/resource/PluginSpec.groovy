@@ -112,7 +112,6 @@ class PluginSpec extends Specification {
         expect:
         project.tasks.webResourceCompileCoffeeScript.gulpCommand == 'coffee'
         project.tasks.webResourceCompileLess.gulpCommand == 'less'
-        project.tasks.webResourceCompileBower.gulpCommand == 'bower-files'
         project.tasks.webResourceWatch.gulpCommand == 'watch'
     }
 

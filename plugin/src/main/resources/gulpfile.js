@@ -55,16 +55,6 @@
     });
   }
 
-  if (${bowerEnabled}) {
-    var mainBowerFiles = require('main-bower-files');
-    gulp.task('bower-files', function() {
-      if (fs.existsSync('bower.json')) {
-        gulp.src(mainBowerFiles(), { base: '${workDir}/bower_components' })
-          .pipe(gulp.dest('${destLib}'));
-      }
-    });
-  }
-
   gulp.task('watch', function() {
     if (fs.existsSync('${srcLess}')) {
       gulp.watch('${srcLess}/**/*.less', ['less']);
