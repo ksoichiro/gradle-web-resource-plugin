@@ -29,10 +29,31 @@ node {
     npmVersion = '2.11.2'
     download = true
     workDir = file("${project.buildDir}/nodejs")
-    nodeModulesDir = file("src/main/resources")
+    nodeModulesDir = project.buildDir
 }
 
-compileGroovy.dependsOn('npmInstall')
+task copyPackageInfo << {
+    copy {
+        from "src/main/javascript/package.json"
+        into project.buildDir
+    }
+}
+
+task copyNodeModules(type: Copy) {
+    from("${project.buildDir}/node_modules") {
+        exclude '.bin'
+        exclude 'npm'
+        exclude '**/test/**'
+        exclude '**/.*'
+        exclude 'bower/templates'
+        exclude 'gulp/completion'
+    }
+    into "src/main/resources/node_modules"
+}
+
+npmInstall.dependsOn('copyPackageInfo')
+copyNodeModules.dependsOn('npmInstall')
+compileGroovy.dependsOn('copyNodeModules')
 
 task cleanNodeModules << {
     project.delete("src/main/resources/node_modules")

@@ -37,22 +37,7 @@ class WebResourceInstallDependenciesTask extends DefaultTask {
             installDir.mkdirs()
         }
         project.copy {
-            from project.zipTree(new File(jarPath)).matching { p ->
-                p.include("${PRE_INSTALLED_NODE_MODULES_DIR}/**")
-                [
-                    ".bin",
-                    "npm",
-                    "bower/test",
-                    "gulp/completion",
-                    "gulp-coffee/test",
-                    "gulp-include/test",
-                    "gulp-uglify/.idea",
-                    "gulp-uglify/test",
-                    "main-bower-files/test",
-                ].each {
-                    p.exclude("${PRE_INSTALLED_NODE_MODULES_DIR}/${it}/**")
-                }
-            }
+            from project.zipTree(new File(jarPath)).matching { it.include("${PRE_INSTALLED_NODE_MODULES_DIR}/**") }
             into installDir
         }
     }
