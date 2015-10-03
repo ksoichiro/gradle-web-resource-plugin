@@ -7,3 +7,14 @@ allprojects {
     sourceCompatibility = 1.6
     targetCompatibility = 1.6
 }
+
+apply plugin: 'idea'
+
+idea {
+    module {
+        excludeDirs += [
+            file('samples/example/.gradle'),
+            file('samples/example/build'),
+        ]
+    }
+}
