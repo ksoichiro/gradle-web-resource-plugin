@@ -22,6 +22,7 @@ apply plugin: "com.gradle.plugin-publish"
 apply plugin: 'groovy'
 apply plugin: 'signing'
 apply plugin: 'com.moowork.node'
+apply plugin: 'idea'
 
 node {
     version = '0.12.7'
@@ -82,6 +83,14 @@ dependencies {
 repositories {
     jcenter()
     mavenCentral()
+}
+
+idea {
+    module {
+        excludeDirs += [
+            file('src/main/resources/node_modules'),
+        ]
+    }
 }
 
 install {
