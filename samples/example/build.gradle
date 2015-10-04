@@ -22,16 +22,14 @@ apply plugin: 'com.github.ksoichiro.web.resource'
 webResource {
     // You can disable less dependencies installation:
     // less.enabled false
-    bower = [
-            dependencies: [
-                    jquery   : "1.11.2",
-                    bootstrap: "3.3.4",
-            ],
-            // You can filter library files like 'main-bower-files'.
-            "overrides": [
-                "jquery": [
-                    "main": "dist/*.min.*"
-                ]
-            ]
-    ]
+    bower {
+        dependencies {
+            install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
+            install name: "chartjs", version: "1.0.2", cacheName: "Chart.js", filter: ["*.min.*"]
+            install name: "bootstrap", version: "3.3.4", filter: ["dist/css/*.min.css", "dist/js/*.min.js", "dist/fonts/*"]
+            install name: "respond-minmax", version: "1.4.2", cacheName: "respond", filter: ["dest/*.min.js"]
+            install name: "html5shiv", version: "3.7.2", filter: ["dist/*.min.js"]
+            install name: "slimscroll", version: "1.3.6", cacheName: "slimScroll", filter: ["*.js"]
+        }
+    }
 }

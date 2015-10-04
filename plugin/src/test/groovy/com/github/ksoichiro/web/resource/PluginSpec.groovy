@@ -31,12 +31,12 @@ class PluginSpec extends Specification {
         Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/projects/compile")).build().with { project ->
             apply plugin: PLUGIN_ID
             webResource {
-                bower = [
-                        dependencies: [
-                                jquery   : "1.11.2",
-                                bootstrap: "3.3.4",
-                        ]
-                ]
+                bower {
+                    dependencies {
+                        install name: 'jquery', version: "1.11.2"
+                        install name: 'bootstrap', version: "3.3.4"
+                    }
+                }
             }
             evaluate()
             project
@@ -63,12 +63,12 @@ class PluginSpec extends Specification {
                     filter = ['*.coffee']
                     minify = false
                 }
-                bower = [
-                        dependencies: [
-                                jquery   : "1.11.2",
-                                bootstrap: "3.3.4",
-                        ]
-                ]
+                bower {
+                    dependencies {
+                        install name: 'jquery', version: "1.11.2"
+                        install name: 'bootstrap', version: "3.3.4"
+                    }
+                }
             }
             evaluate()
             project

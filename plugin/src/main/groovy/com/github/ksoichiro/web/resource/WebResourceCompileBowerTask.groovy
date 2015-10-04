@@ -22,13 +22,13 @@ class WebResourceCompileBowerTask extends DefaultTask {
     void exec() {
         project.copy {
             from project.fileTree("${extension.workDir}/bower_components").matching {
-                if (extension.bower.overrides) {
-                    extension.bower.overrides.each { k, v ->
-                        String expr = v.main
-                        if (v.containsKey('main')) {
-                            it.include("${k}/${expr}")
+                if (!extension.bower.dependencies.isEmpty()) {
+                    extension.bower.dependencies.each { dependency ->
+                        String[] expr = dependency.filter
+                        if (expr) {
+                            expr.each { e -> it.include("${dependency.name}/${e}") }
                         } else {
-                            it.include("${k}/**/*")
+                            it.include("${dependency.name}/**/*")
                         }
                     }
                 } else {

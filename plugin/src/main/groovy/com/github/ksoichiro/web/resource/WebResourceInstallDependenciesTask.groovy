@@ -14,11 +14,7 @@ class WebResourceInstallDependenciesTask extends DefaultTask {
 
         this.project.afterEvaluate {
             extension = project.webResource
-            getInputs()
-                    .property('less', extension.less && extension.less.enabled)
-                    .property('coffeeScript', extension.coffeeScript && extension.coffeeScript.enabled)
-                    .property('bower', extension.bower && !extension.bower.isEmpty())
-                    .property('version', WebResourceExtension.VERSION)
+            getInputs().property('version', WebResourceExtension.VERSION)
             getOutputs().files(new File(extension.workDir, 'node_modules'))
         }
     }

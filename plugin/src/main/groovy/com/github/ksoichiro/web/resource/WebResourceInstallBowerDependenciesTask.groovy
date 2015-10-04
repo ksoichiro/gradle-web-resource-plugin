@@ -23,16 +23,22 @@ class WebResourceInstallBowerDependenciesTask extends NodeTask {
     @Override
     void exec() {
         extension = project.webResource
-        if (!extension.bower || !extension.bower.containsKey('dependencies')) {
-            logger.info "No bower config"
+        if (!extension.bower) {
             return
         }
         setScript(getBowerScript())
         setWorkingDir(extension.workDir)
 
-        def bowerConfig = extension.bower.clone() as Map
-        def dependencies = bowerConfig.containsKey('dependencies') ?
-            JsonOutput.prettyPrint(JsonOutput.toJson(bowerConfig.dependencies)) : '[]'
+        List bowerConfig = []
+        extension.bower.dependencies.each {
+            Map dependency = [name: it.name, version: it.version]
+            if (it.cacheName) {
+                dependency['cacheName'] = it.cacheName
+            }
+            bowerConfig.add(dependency)
+        }
+        def dependencies = bowerConfig.isEmpty() ? '[]'
+            : JsonOutput.prettyPrint(JsonOutput.toJson(bowerConfig))
         def bindings = [
             dependencies: dependencies
         ]

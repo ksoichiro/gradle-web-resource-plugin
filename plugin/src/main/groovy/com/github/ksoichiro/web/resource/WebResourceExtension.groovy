@@ -14,7 +14,7 @@ class WebResourceExtension {
     Project project
     File workDir
     Map resources
-    Map bower
+    BowerConfig bower
     FilterableProcessor coffeeScript
     FilterableProcessor less
     WebResourceProcessor lib
@@ -24,6 +24,7 @@ class WebResourceExtension {
         this.workDir = project.file("${this.project.buildDir}/${PLUGIN_DIR_NAME}")
         this.resources = [:]
         this.base = new WebResourceProcessor("src/main", "${this.project.buildDir.name}/${PLUGIN_DIR_NAME}/outputs")
+        this.bower = new BowerConfig()
         this.coffeeScript = new FilterableProcessor("coffee", "js")
         this.less = new FilterableProcessor("less", "css")
         this.lib = new WebResourceProcessor(null, "lib")
