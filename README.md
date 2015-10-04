@@ -19,7 +19,7 @@ Apply plugin in build.gradle:
 ```gradle
 // Gradle 2.1+
 plugins {
-    id "com.github.ksoichiro.web.resource" version "0.1.5"
+    id "com.github.ksoichiro.web.resource" version "0.1.6"
 }
 
 // Gradle 2.0 and former
@@ -33,7 +33,7 @@ buildscript {
         //}
     }
     dependencies {
-        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:0.1.5'
+        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:0.1.6'
     }
 }
 
@@ -45,12 +45,12 @@ Configure plugin if needed:
 ```gradle
 webResource {
     // (Option) Write dependencies if you want to use library from bower
-    bower = [
-        dependencies: [
-            jquery: "1.11.2",
-            bootstrap: "3.3.4",
-        ]
-    ]
+    bower {
+        dependencies {
+            install name: "jquery", version: "1.11.2"
+            install name: "bootstrap", version: "3.3.4"
+        }
+    }
 }
 ```
 
@@ -129,21 +129,13 @@ webResource {
         // Change directories for libraries downloaded with bower
         dest = 'lib'
     }
-    bower = [
-        dependencies: [
-            jquery: "1.11.2",
-            bootstrap: "3.3.4",
-        ],
-        // Filter files using main-bower-files
-        overrides: [
-            jquery: [
-                main: "dist/*.min.*"
-            ],
-            bootstrap: [
-                main: ["dist/css/*.min.css", "dist/js/*.min.js", "dist/fonts/*"]
-            ]
-        ]
-    ]
+    bower {
+        dependencies {
+            // 'filter' filters files like main-bower-files
+            install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
+            install name: "bootstrap", version: "3.3.4", filter: ["dist/css/*.min.css", "dist/js/*.min.js", "dist/fonts/*"]
+        }
+    }
 }
 ```
 
