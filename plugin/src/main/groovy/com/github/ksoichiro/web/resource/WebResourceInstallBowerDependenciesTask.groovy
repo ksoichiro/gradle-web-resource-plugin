@@ -2,6 +2,7 @@ package com.github.ksoichiro.web.resource
 
 import com.moowork.gradle.node.task.NodeTask
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
 
 class WebResourceInstallBowerDependenciesTask extends NodeTask {
@@ -31,6 +32,17 @@ class WebResourceInstallBowerDependenciesTask extends NodeTask {
 
         List bowerConfig = []
         extension.bower.dependencies.each {
+            File bowerJson = new File(extension.workDir, "bower_components/${it.name}/bower.json")
+            if (bowerJson.exists()) {
+                // already installed
+                def pkg = new JsonSlurper().parseText(bowerJson.text)
+                if (pkg.version) {
+                    if (pkg.version != it.version) {
+                        // should be updated, so remove it before install
+                        project.delete("${extension.workDir}/bower_components/${it.name}")
+                    }
+                }
+            }
             Map dependency = [name: it.name, version: it.version]
             if (it.cacheName) {
                 dependency['cacheName'] = it.cacheName
