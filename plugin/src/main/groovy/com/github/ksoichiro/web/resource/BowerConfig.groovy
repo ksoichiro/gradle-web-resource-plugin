@@ -5,6 +5,7 @@ import groovy.transform.EqualsAndHashCode
 // @EqualsAndHashCode is required to execute valid up-to-date check.
 @EqualsAndHashCode
 class BowerConfig implements Serializable {
+    static final long serialVersionUID = -1L
     List<BowerDependency> dependencies
 
     BowerConfig() {
