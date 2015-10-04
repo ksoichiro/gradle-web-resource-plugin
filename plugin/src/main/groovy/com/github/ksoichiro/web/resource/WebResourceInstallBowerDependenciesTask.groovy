@@ -30,6 +30,12 @@ class WebResourceInstallBowerDependenciesTask extends NodeTask {
         setScript(getBowerScript())
         setWorkingDir(extension.workDir)
 
+        // Ensure bower.json does not exist since it affects bower's installation.
+        def rootBowerJson = new File(extension.workDir, 'bower.json')
+        if (rootBowerJson.exists()) {
+            project.delete(rootBowerJson)
+        }
+
         List bowerConfig = []
         extension.bower.dependencies.each {
             File bowerJson = new File(extension.workDir, "bower_components/${it.name}/bower.json")
