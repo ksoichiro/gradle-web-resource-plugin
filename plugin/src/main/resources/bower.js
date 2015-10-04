@@ -1,8 +1,9 @@
 var fs = require('fs');
+var util = require('util');
 var bower = require('bower');
 
 // [ {name: 'foo', version: '1.0.0', cacheName: 'Foo.js' }, ... ];
-var packages = ${dependencies};
+var packages = JSON.parse(fs.readFileSync('bowerPackages.json', 'utf8'));
 
 installWithCacheIfPossible(0);
 
@@ -25,6 +26,10 @@ function installWithCacheIfPossible(idx) {
 function checkCache(name, version, cacheName) {
   return new Promise(function(resolve, reject) {
     bower.commands.cache.list([cacheName], {}, {})
+    .on('error', function(err) {
+      console.log(err);
+      process.exit(1);
+    })
     .on('end', function (r) {
       var offline = false;
       for (var i = 0; i < r.length; i++) {
@@ -61,6 +66,7 @@ function install(data) {
     var cached = false;
     var validate = false;
     var validCacheName = name;
+    var writingProgress = false;
     bower.commands.install([name + '#' + version], {}, { 'offline': offline })
     .on('log', function (log) {
       if (log.id === 'cached') {
@@ -68,6 +74,20 @@ function install(data) {
       } else if (log.id === 'validate') {
         validCacheName = log.data.pkgMeta.name;
         validate = true;
+      } else if (log.id === 'resolve') {
+        console.log("resolving %s#%s", name, version);
+      } else if (log.id === 'download') {
+        console.log("downloading %s#%s", name, version);
+      } else if (log.id === 'progress') {
+        if (writingProgress) {
+          process.stdout.write("\x1B[0G");
+        }
+        writingProgress = true;
+        process.stdout.write(util.format("downloading %s#%s: %s", name, version, log.message));
+      } else if (log.id === 'extract') {
+        if (writingProgress) {
+          console.log('');
+        }
       }
     })
     .on('error', function (err) {

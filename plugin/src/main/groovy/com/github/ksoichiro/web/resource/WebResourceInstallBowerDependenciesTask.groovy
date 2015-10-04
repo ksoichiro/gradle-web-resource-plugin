@@ -51,13 +51,8 @@ class WebResourceInstallBowerDependenciesTask extends NodeTask {
         }
         def dependencies = bowerConfig.isEmpty() ? '[]'
             : JsonOutput.prettyPrint(JsonOutput.toJson(bowerConfig))
-        def bindings = [
-            dependencies: dependencies
-        ]
-        getBowerScript().text =
-            new SimpleTemplateEngine()
-                .createTemplate(getClass().getResourceAsStream('/bower.js').text)
-                .make(bindings)
+        new File(extension.workDir, 'bowerPackages.json').text = dependencies
+        getBowerScript().text = getClass().getResourceAsStream('/bower.js').text
         super.exec()
     }
 
