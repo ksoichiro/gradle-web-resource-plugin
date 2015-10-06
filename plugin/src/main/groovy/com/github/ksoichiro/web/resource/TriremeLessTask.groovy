@@ -1,16 +1,17 @@
 package com.github.ksoichiro.web.resource
 
+import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-class TriremeLessTask extends TriremeNodeTask {
+class TriremeLessTask extends DefaultTask {
     static final String NAME = "triremeLess"
     WebResourceExtension extension
+    TriremeNodeRunner triremeNodeRunner
 
     TriremeLessTask() {
-        setScriptName('less.js')
         this.project.afterEvaluate {
             extension = project.webResource
-            setWorkingDir(extension.workDir)
+            triremeNodeRunner = new TriremeNodeRunner(scriptName: 'less.js', workingDir: extension.workDir)
         }
     }
 
@@ -24,7 +25,7 @@ class TriremeLessTask extends TriremeNodeTask {
         src.exclude '**/_*.less'
         src.each { File file ->
             println "Less: ${file}"
-            setArgs([
+            triremeNodeRunner.setArgs([
                 // lessSrcPath
                 file.absolutePath,
                 // lessSrcName
@@ -36,7 +37,7 @@ class TriremeLessTask extends TriremeNodeTask {
                         .replaceAll("^/", "")
                         .replaceAll("/\$", ""),
             ] as String[])
-            execNode()
+            triremeNodeRunner.exec()
         }
     }
 }
