@@ -38,6 +38,7 @@ function lessConvert(filepath, filename, searchPaths, outputPath) {
         if (err) {
           console.log(err);
         }
+        console.log('LESS: processed ' + filepath);
       });
     });
 }

@@ -99,6 +99,7 @@ dependencies {
     compile localGroovy()
     compile 'com.moowork.gradle:gradle-node-plugin:0.10'
     compile 'io.apigee.trireme:trireme-jar:0.8.8'
+    compile 'org.codehaus.gpars:gpars:1.2.1'
     testCompile ('org.spockframework:spock-core:1.0-groovy-2.3')
 }
 
