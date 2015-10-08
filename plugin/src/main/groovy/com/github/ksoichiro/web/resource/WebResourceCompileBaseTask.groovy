@@ -7,6 +7,7 @@ import org.gradle.api.tasks.TaskAction
 
 class WebResourceCompileBaseTask extends NodeTask {
     WebResourceExtension extension
+    PathResolver pathResolver
     String gulpCommand = 'default'
     boolean gulpEnabled = true
 
@@ -14,6 +15,7 @@ class WebResourceCompileBaseTask extends NodeTask {
         dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
         project.afterEvaluate {
             extension = project.extensions.webResource
+            pathResolver = new PathResolver(project, extension)
             setWorkingDir(extension.workDir)
         }
     }
@@ -27,13 +29,13 @@ class WebResourceCompileBaseTask extends NodeTask {
         setScript(gulp)
         setArgs([gulpCommand])
         def bindings = [
-            srcLess      : getSrcLess(),
-            destLess     : getDestLess(),
+            srcLess      : pathResolver.getSrcLess(),
+            destLess     : pathResolver.getDestLess(),
             lessEnabled  : extension.less.enabled,
             filterLess   : extension.less.filter ? JsonOutput.toJson(extension.less.filter).toString() : "['**/*', '!**/_*.less']",
             minifyLess   : extension.less.minify,
-            srcCoffee    : getSrcCoffee(),
-            destCoffee   : getDestCoffee(),
+            srcCoffee    : pathResolver.getSrcCoffee(),
+            destCoffee   : pathResolver.getDestCoffee(),
             coffeeEnabled: extension.coffeeScript.enabled,
             filterCoffee : extension.coffeeScript.filter ? JsonOutput.toJson(extension.coffeeScript.filter).toString() : "['**/*', '!**/_*.coffee']",
             minifyCoffee : extension.coffeeScript.minify,
@@ -44,49 +46,6 @@ class WebResourceCompileBaseTask extends NodeTask {
                 .createTemplate(getClass().getResourceAsStream('/gulpfile.js').text)
                 .make(bindings)
         super.exec()
-    }
-
-    String resolveSrcPath(def path) {
-        String src = "../../"
-        if (path) {
-            src += extension.base?.src ? "${extension.base?.src}/" : ""
-            src += path
-        }
-        src
-    }
-
-    String resolveDestPath(def path) {
-        String dest = ""
-        if (path) {
-            dest = extension.base?.dest ? "${extension.base?.dest}/" : ""
-            dest += path
-            dest = "../../${dest}"
-        }
-        dest
-    }
-
-    String getSrcCoffee() {
-        resolveSrcPath(extension.coffeeScript?.src)
-    }
-
-    String getSrcLess() {
-        resolveSrcPath(extension.less?.src)
-    }
-
-    String getDestCoffee() {
-        resolveDestPath(extension.coffeeScript?.dest)
-    }
-
-    String getDestLess() {
-        resolveDestPath(extension.less?.dest)
-    }
-
-    List retrieveValidPaths(String... paths) {
-        List result = []
-        paths.findAll { project.file("${extension.workDir}/${it}") }.each {
-            result += "${extension.workDir}/${it}"
-        }
-        result
     }
 
     File getGulpfile() {

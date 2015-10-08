@@ -8,15 +8,17 @@ class TriremeCoffeeScriptTask extends DefaultTask {
     static final String NAME = "triremeCoffeeScript"
     static final int NUM_OF_THREADS = 8
     WebResourceExtension extension
+    PathResolver pathResolver
 
     TriremeCoffeeScriptTask() {
         project.afterEvaluate {
             extension = project.extensions.webResource
+            pathResolver = new PathResolver(project, extension)
             getInputs()
-                .files(retrieveValidPaths(getSrcCoffee()))
+                .files(pathResolver.retrieveValidPaths(pathResolver.getSrcCoffee()))
                 .property('coffeeScript.minify', extension.coffeeScript?.minify)
                 .property('version', WebResourceExtension.VERSION)
-            getOutputs().files(retrieveValidPaths(getDestCoffee()))
+            getOutputs().files(pathResolver.retrieveValidPaths(pathResolver.getDestCoffee()))
         }
     }
 
@@ -53,40 +55,5 @@ class TriremeCoffeeScriptTask extends DefaultTask {
                 }
             }
         }
-    }
-
-    String resolveSrcPath(def path) {
-        String src = "../../"
-        if (path) {
-            src += extension.base?.src ? "${extension.base?.src}/" : ""
-            src += path
-        }
-        src
-    }
-
-    String resolveDestPath(def path) {
-        String dest = ""
-        if (path) {
-            dest = extension.base?.dest ? "${extension.base?.dest}/" : ""
-            dest += path
-            dest = "../../${dest}"
-        }
-        dest
-    }
-
-    String getSrcCoffee() {
-        resolveSrcPath(extension.coffeeScript?.src)
-    }
-
-    String getDestCoffee() {
-        resolveDestPath(extension.coffeeScript?.dest)
-    }
-
-    List retrieveValidPaths(String... paths) {
-        List result = []
-        paths.findAll { project.file("${extension.workDir}/${it}") }.each {
-            result += "${extension.workDir}/${it}"
-        }
-        result
     }
 }

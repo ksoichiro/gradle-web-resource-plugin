@@ -8,15 +8,17 @@ class TriremeLessTask extends DefaultTask {
     static final String NAME = "triremeLess"
     static final int NUM_OF_THREADS = 8
     WebResourceExtension extension
+    PathResolver pathResolver
 
     TriremeLessTask() {
         project.afterEvaluate {
             extension = project.extensions.webResource
+            pathResolver = new PathResolver(project, extension)
             getInputs()
-                .files(retrieveValidPaths(getSrcLess()))
+                .files(pathResolver.retrieveValidPaths(pathResolver.getSrcLess()))
                 .property('less.minify', extension.less?.minify)
                 .property('version', WebResourceExtension.VERSION)
-            getOutputs().files(retrieveValidPaths(getDestLess()))
+            getOutputs().files(pathResolver.retrieveValidPaths(pathResolver.getDestLess()))
         }
     }
 
@@ -53,40 +55,5 @@ class TriremeLessTask extends DefaultTask {
                 }
             }
         }
-    }
-
-    String resolveSrcPath(def path) {
-        String src = "../../"
-        if (path) {
-            src += extension.base?.src ? "${extension.base?.src}/" : ""
-            src += path
-        }
-        src
-    }
-
-    String resolveDestPath(def path) {
-        String dest = ""
-        if (path) {
-            dest = extension.base?.dest ? "${extension.base?.dest}/" : ""
-            dest += path
-            dest = "../../${dest}"
-        }
-        dest
-    }
-
-    String getSrcLess() {
-        resolveSrcPath(extension.less?.src)
-    }
-
-    String getDestLess() {
-        resolveDestPath(extension.less?.dest)
-    }
-
-    List retrieveValidPaths(String... paths) {
-        List result = []
-        paths.findAll { project.file("${extension.workDir}/${it}") }.each {
-            result += "${extension.workDir}/${it}"
-        }
-        result
     }
 }
