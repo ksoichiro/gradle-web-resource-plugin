@@ -51,6 +51,7 @@ class TriremeLessTask extends DefaultTask {
                                 .replaceAll("\\\\", "/")
                                 .replaceAll("^/", "")
                                 .replaceAll("/\$", ""),
+                            extension.less.minify,
                         ] as String[])
                     triremeNodeRunner.exec()
                 }

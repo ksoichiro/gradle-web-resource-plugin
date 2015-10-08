@@ -51,6 +51,7 @@ class TriremeCoffeeScriptTask extends DefaultTask {
                                 .replaceAll("\\\\", "/")
                                 .replaceAll("^/", "")
                                 .replaceAll("/\$", ""),
+                            extension.coffeeScript.minify,
                         ] as String[])
                     triremeNodeRunner.exec()
                 }

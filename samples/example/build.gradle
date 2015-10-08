@@ -22,6 +22,8 @@ apply plugin: 'com.github.ksoichiro.web.resource'
 webResource {
     // You can disable less dependencies installation:
     // less.enabled false
+    less.minify true
+    coffeeScript.minify true
     bower {
         dependencies {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]

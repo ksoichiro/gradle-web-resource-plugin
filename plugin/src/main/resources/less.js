@@ -5,6 +5,7 @@ var less = require('less');
 var lessSrcPath = process.argv[2];
 var lessSrcName = process.argv[3];
 var lessDestDir = process.argv[4];
+var minify = process.argv[5] === 'true';
 
 var mkdirsSync = function(dir) {
   var dirs = dir.split('/');
@@ -28,7 +29,7 @@ function lessConvert(filepath, filename, searchPaths, outputPath) {
     {
       paths: searchPaths,
       filename: filename,
-      compress: true
+      compress: minify
     },
     function (e, output) {
       if (!fs.existsSync(path.dirname(outputPath))) {
