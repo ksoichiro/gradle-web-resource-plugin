@@ -28,7 +28,7 @@ class TriremeCoffeeScriptTask extends DefaultTask {
             return
         }
         new File(extension.workDir, 'coffee.js').text = getClass().getResourceAsStream('/coffee.js').text
-        def srcRootDir = 'src/main/coffee'
+        def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.coffeeScript.src)
         def srcRootFile = project.file(srcRootDir)
         def src = project.fileTree(dir: srcRootDir)
         src.include '**/*.coffee'
@@ -45,7 +45,8 @@ class TriremeCoffeeScriptTask extends DefaultTask {
                             // coffeeSrcName
                             file.name,
                             // coffeeDestDir
-                            'outputs/js/'
+                            pathResolver.getDestCoffee()
+                                + '/'
                                 + file.parent.replace(srcRootFile.absolutePath, "")
                                 .replaceAll("\\\\", "/")
                                 .replaceAll("^/", "")

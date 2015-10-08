@@ -39,13 +39,16 @@ class PathResolver {
         result
     }
 
-    String resolveSrcPath(def path) {
-        String src = "../../"
+    String resolveSrcPathFromProject(def path) {
+        String src = ""
         if (path) {
             src += extension.base?.src ? "${extension.base?.src}/" : ""
             src += path
         }
         src
+    }
+    String resolveSrcPath(def path) {
+        "../../${resolveSrcPathFromProject(path)}"
     }
 
     String resolveDestPath(def path) {

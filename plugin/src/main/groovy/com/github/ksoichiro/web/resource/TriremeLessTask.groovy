@@ -28,7 +28,7 @@ class TriremeLessTask extends DefaultTask {
             return
         }
         new File(extension.workDir, 'less.js').text = getClass().getResourceAsStream('/less.js').text
-        def srcRootDir = 'src/main/less'
+        def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.less.src)
         def srcRootFile = project.file(srcRootDir)
         def src = project.fileTree(dir: srcRootDir)
         src.include '**/*.less'
@@ -45,7 +45,8 @@ class TriremeLessTask extends DefaultTask {
                             // lessSrcName
                             file.name,
                             // lessDestDir
-                            'outputs/css/'
+                            pathResolver.getDestLess()
+                                + '/'
                                 + file.parent.replace(srcRootFile.absolutePath, "")
                                 .replaceAll("\\\\", "/")
                                 .replaceAll("^/", "")
