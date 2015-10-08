@@ -6,9 +6,6 @@ var UglifyJS = require("uglify-js");
 var coffeeSrcPath = process.argv[2];
 var coffeeSrcName = process.argv[3];
 var coffeeDestDir = process.argv[4];
-console.log('coffeeSrcPath: ' + coffeeSrcPath);
-console.log('coffeeSrcName: ' + coffeeSrcName);
-console.log('coffeeDestDir: ' + coffeeDestDir);
 
 var mkdirsSync = function(dir) {
   var dirs = dir.split('/');
@@ -30,7 +27,6 @@ function coffeeConvert(filepath, filename, searchPaths, outputPath) {
   var coffeeString = fs.readFileSync(filepath, 'utf8');
 
   var js = coffee.compile(coffeeString, {});
-  console.log(js);
 //  var minified = UglifyJS.minify(js, {fromString: true, spidermonkey: true});
 //  console.log(minified);
 
