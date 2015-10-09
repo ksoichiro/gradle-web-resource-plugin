@@ -29,7 +29,7 @@ function coffeeConvert(filepath, filename, searchPaths, outputPath) {
 
   var js = coffee.compile(coffeeString, {});
   if (minify) {
-    var minified = UglifyJS.minify(js, {fromString: true, spidermonkey: true});
+    var minified = UglifyJS.minify(js, {fromString: true, compress: {evaluate: false}});
     js = minified.code;
   }
 
