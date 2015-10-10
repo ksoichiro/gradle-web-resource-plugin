@@ -27,5 +27,6 @@ class WebResourcePlugin implements Plugin<Project> {
         project.task(WebResourceWatchTask.NAME, type: WebResourceWatchTask)
         project.task(TriremeLessTask.NAME, type: TriremeLessTask)
         project.task(TriremeCoffeeScriptTask.NAME, type: TriremeCoffeeScriptTask)
+        project.task(TriremeBowerTask.NAME, type: TriremeBowerTask)
     }
 }

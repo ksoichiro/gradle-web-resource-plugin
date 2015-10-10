@@ -51,9 +51,20 @@ task copyNodeModules(type: Copy) {
     into "src/main/resources/node_modules"
 }
 
+task patchNodeModules << {
+    // Resolving cache while installing dependency in bower fails when executing with Trireme,
+    // so apply a patch for it
+    File f = new File("${projectDir}/src/main/resources/node_modules/bower/lib/core/ResolveCache.js")
+    def replaced = f.text.replaceAll(
+        "if \\(err\\.code === 'ENOENT'\\) \\{",
+        "if (err.code === 'ENOENT' || err.code === 'ENOTDIR') {")
+    f.text = replaced
+}
+
 npmInstall.dependsOn('copyPackageInfo')
 copyNodeModules.dependsOn('npmInstall')
-compileGroovy.dependsOn('copyNodeModules')
+patchNodeModules.dependsOn('copyNodeModules')
+compileGroovy.dependsOn('patchNodeModules')
 
 task cleanNodeModules << {
     project.delete("src/main/resources/node_modules")
