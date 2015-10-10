@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var coffee = require('coffee-script');
-var UglifyJS = require("uglify-js");
+var UglifyJS = require('uglify-js');
 
 var coffeeSrcPath = process.argv[2];
 var coffeeSrcName = process.argv[3];
