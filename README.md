@@ -161,6 +161,8 @@ please try the following instructions.
 
 ### CoffeeScript
 
+**Currently this feature is disabled**
+
 Use `include` directive provided by [wiledal/gulp-include](https://github.com/wiledal/gulp-include).  
 This plugin will include this library as a dependency, so you can use it without any configurations.
 
@@ -224,31 +226,23 @@ As a result, you can see the compiled and concatenated CSS file `app.css`.
 /* b.css: (will not be generated) */
 ```
 
-## Why?
-
-### Why do you need this plugin?
+## Why do you need this plugin?
 
 If I would like to use JavaScript library for browsers,
 Bower or this kind of package manager is good to manage dependencies.
 Bower can be managed with npm, and npm or Bower works on Node.js,
 so I also need to install Node.js to include JavaScript dependencies into our apps.
 
-[srs/gradle-node-plugin](https://github.com/srs/gradle-node-plugin) does most of all things, but still I (or other team members who writes Java codes usually) need to learn about node, npm, bower, etc.
-These are so good softwares but all we want to do is just managing JavaScript dependencies just like other jar dependencies.
-I know the Webjars project is also trying to solve this problem, but it supports not all of the JavaScript projects and some of the jars are uploaded by someone who we don't know and their contents are not necesserily reliable. We want to use directly the trusted JavaScript projects.
+[srs/gradle-node-plugin](https://github.com/srs/gradle-node-plugin) does most of all things,
+but still I (or other team members who writes Java codes usually) need to learn about node, npm, bower, etc.
+These are so good softwares but all we want to do is just managing JavaScript dependencies
+just like other jar dependencies.
+I know the Webjars project is also trying to solve this problem,
+but it supports not all of the JavaScript projects and some of the jars are uploaded
+by someone who we don't know and their contents are not necesserily reliable.
+We want to use directly the trusted JavaScript projects.
 
 So I wrapped all of them with a Gradle plugin.
-
-## TODO
-
-### Make it faster
-
-Currently, all of the dependencies are downloaded in the build process, and located to the `build` dir. This means, you must always download files from the remote, which makes the builds very slow.
-
-Ideas to achieve this:
-
-* Partially use Webjars (classic webjars) and cache main part of the JavaScript dependencies for development (npm, bower)
-* Use mozzilla/rhino or apigee/trireme to execute JavaScripts for Node.js.
 
 ## License
 

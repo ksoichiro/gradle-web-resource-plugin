@@ -1,34 +1,38 @@
 package com.github.ksoichiro.web.resource
 
-import com.moowork.gradle.node.task.NodeTask
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import groovy.text.SimpleTemplateEngine
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-class WebResourceInstallBowerDependenciesTask extends NodeTask {
+class WebResourceInstallBowerDependenciesTask extends DefaultTask {
     static final String NAME = "webResourceInstallBowerDependencies"
     WebResourceExtension extension
+    PathResolver pathResolver
 
     WebResourceInstallBowerDependenciesTask() {
         dependsOn([WebResourceInstallDependenciesTask.NAME])
         project.afterEvaluate {
-            extension = project.webResource
+            extension = project.extensions.webResource
+            pathResolver = new PathResolver(project, extension)
             getInputs()
-                    .property('bower', extension.bower)
-                    .property('version', WebResourceExtension.VERSION)
+                .files(pathResolver.retrieveValidPaths(pathResolver.getSrcLess()))
+                .property('bower', extension.bower)
+                .property('version', WebResourceExtension.VERSION)
             getOutputs().files(new File(extension.workDir, 'bower_components'), getBowerScript())
-            setWorkingDir(extension.workDir)
         }
     }
 
-    @Override
+    @TaskAction
     void exec() {
-        extension = project.webResource
         if (!extension.bower) {
             return
         }
-        setScript(getBowerScript())
-        setWorkingDir(extension.workDir)
+
+        File bowerComponentsDir = new File(extension.workDir, "bower_components")
+        if (!bowerComponentsDir.exists()) {
+            bowerComponentsDir.mkdirs()
+        }
 
         // Ensure bower.json does not exist since it affects bower's installation.
         def rootBowerJson = new File(extension.workDir, 'bower.json')
@@ -58,8 +62,12 @@ class WebResourceInstallBowerDependenciesTask extends NodeTask {
         def dependencies = bowerConfig.isEmpty() ? '[]'
             : JsonOutput.prettyPrint(JsonOutput.toJson(bowerConfig))
         new File(extension.workDir, 'bowerPackages.json').text = dependencies
-        getBowerScript().text = getClass().getResourceAsStream('/bower.js').text
-        super.exec()
+        new File(extension.workDir, 'bower.js').text = getClass().getResourceAsStream('/bower.js').text
+
+        def triremeNodeRunner = new TriremeNodeRunner(
+            scriptName: 'bower.js',
+            workingDir: extension.workDir)
+        triremeNodeRunner.exec()
     }
 
     File getBowerScript() {

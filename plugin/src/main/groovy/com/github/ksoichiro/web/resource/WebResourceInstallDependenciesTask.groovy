@@ -1,6 +1,5 @@
 package com.github.ksoichiro.web.resource
 
-import com.moowork.gradle.node.task.SetupTask
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -10,8 +9,6 @@ class WebResourceInstallDependenciesTask extends DefaultTask {
     WebResourceExtension extension
 
     WebResourceInstallDependenciesTask() {
-        dependsOn([SetupTask.NAME])
-
         this.project.afterEvaluate {
             extension = project.webResource
             getInputs().property('version', WebResourceExtension.VERSION)

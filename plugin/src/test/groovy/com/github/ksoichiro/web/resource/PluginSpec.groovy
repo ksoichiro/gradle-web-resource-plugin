@@ -22,7 +22,6 @@ class PluginSpec extends Specification {
         project.tasks.webResourceCompileLess instanceof WebResourceCompileLessTask
         project.tasks.webResourceCompileBower instanceof WebResourceCompileBowerTask
         project.tasks.webResourceCompile instanceof WebResourceCompileTask
-        project.tasks.webResourceWatch instanceof WebResourceWatchTask
         project.extensions.webResource instanceof WebResourceExtension
     }
 
@@ -99,20 +98,6 @@ class PluginSpec extends Specification {
 
         then:
         project
-    }
-
-    def "gulp tasks"() {
-        setup:
-        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/projects/compile")).build().with { project ->
-            apply plugin: PLUGIN_ID
-            evaluate()
-            project
-        }
-
-        expect:
-        project.tasks.webResourceCompileCoffeeScript.gulpCommand == 'coffee'
-        project.tasks.webResourceCompileLess.gulpCommand == 'less'
-        project.tasks.webResourceWatch.gulpCommand == 'watch'
     }
 
     void deleteOutputs(Project project) {
