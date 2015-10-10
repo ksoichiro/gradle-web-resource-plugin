@@ -161,8 +161,6 @@ please try the following instructions.
 
 ### CoffeeScript
 
-**Currently this feature is disabled**
-
 Use `include` directive provided by [wiledal/gulp-include](https://github.com/wiledal/gulp-include).  
 This plugin will include this library as a dependency, so you can use it without any configurations.
 
