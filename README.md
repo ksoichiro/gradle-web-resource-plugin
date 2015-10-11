@@ -10,8 +10,6 @@ You don't have to install `node`, `npm`, `bower`, `gulp`, etc.
 You don't have to write `package.json`, `bower.json`, `gulpfile.js`, etc.  
 Just update your `build.gradle` and execute a task.
 
-This plugin depends on [srs/gradle-node-plugin](https://github.com/srs/gradle-node-plugin).
-
 ## Usage
 
 Apply plugin in build.gradle:
@@ -87,11 +85,6 @@ build/webResource/outputs
 ## Configuration
 
 ```gradle
-node {
-    // (Option) Set node versions
-    version = '0.11.13'
-}
-
 // All configurations are optional.
 webResource {
     base {
@@ -109,8 +102,10 @@ webResource {
         // Change CoffeeScript src/dest directories
         src = 'coffee'
         dest = 'js'
-        // Default: ['**/*', '!**/_*.coffee']
-        filter = ["app.coffee"]
+        // Default: ['**/*.coffee']
+        include = ["app.coffee"]
+        // Default: ['**/_*.coffee']
+        exclude = ['**/_*.coffee']
         // Default: true
         minify = false
     }
@@ -120,8 +115,10 @@ webResource {
         // Change LESS src/dest directories and filter setting
         src = 'less'
         dest = 'css'
-        // Default: ['**/*', '!**/_*.less']
-        filter = ["app.less"]
+        // Default: ['**/*.less']
+        include = ["app.less"]
+        // Default: ['**/_*.less']
+        exclude = ['**/_*.less']
         // Default: true
         minify = false
     }
@@ -241,6 +238,33 @@ by someone who we don't know and their contents are not necesserily reliable.
 We want to use directly the trusted JavaScript projects.
 
 So I wrapped all of them with a Gradle plugin.
+
+## Thanks
+
+This plugin deeply depends on these excellent projects.
+
+* [apigee/trireme](https://github.com/apigee/trireme)
+    * Node engine for JVM used to execute bower, LESS, JavaScript.
+* [mozilla/rhino](https://github.com/mozilla/rhino)
+    * JavaScript engine for JVM used as the backend of trireme.
+* [srs/gradle-node-plugin](https://github.com/srs/gradle-node-plugin)
+    * Node/npm wrapper for Gradle to aggregating npm dependencies.
+* [npm/npm](https://github.com/npm/npm)
+    * Node packages manager used in bulid phase to aggregate Node libraries.
+* [bower/bower](https://github.com/bower/bower)
+    * Bundled in the plugin jar to manage Browser JavaScript libraries.
+* [less/less.js](https://github.com/less/less.js)
+    * Bundled in the plugin jar to compile LESS files.
+* [coffee-script](https://github.com/jashkenas/coffeescript)
+    * Bundlded in the plugin jar to compile CoffeeScript files.
+* [wiledal/gulp-include](https://github.com/wiledal/gulp-include)
+    * Bundled partially (internal functions) in the plugin jar to use include feature for CoffeeScript.
+* [uglify-js](https://github.com/mishoo/UglifyJS2)
+    * Bundled in the plugin jar to minify JavaScript files.
+* [kriskowal/q](https://github.com/kriskowal/q)
+    * Bundled in the plugin jar to execute async tasks without native Promise class.
+* [glob](https://github.com/isaacs/node-glob)
+    * Bundled in the plugin jar to expand globs for minifying JavaScript files.
 
 ## License
 
