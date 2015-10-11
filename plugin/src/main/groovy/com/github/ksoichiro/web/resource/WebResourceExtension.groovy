@@ -25,8 +25,8 @@ class WebResourceExtension {
         this.resources = [:]
         this.base = new WebResourceProcessor("src/main", "${this.project.buildDir.name}/${PLUGIN_DIR_NAME}/outputs")
         this.bower = new BowerConfig()
-        this.coffeeScript = new FilterableProcessor("coffee", "js")
-        this.less = new FilterableProcessor("less", "css")
+        this.coffeeScript = new FilterableProcessor("coffee", "js", ['**/*.coffee'], ['**/_*.coffee'])
+        this.less = new FilterableProcessor("less", "css", ['**/*.less'], ['**/_*.less'])
         this.lib = new WebResourceProcessor(null, "lib")
     }
 

@@ -32,8 +32,8 @@ class WebResourceCompileCoffeeScriptTask extends DefaultTask {
         def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.coffeeScript.src)
         def srcRootFile = project.file(srcRootDir)
         def src = project.fileTree(dir: srcRootDir)
-        src.include '**/*.coffee'
-        src.exclude '**/_*.coffee'
+        extension.coffeeScript.include.each { src.include it }
+        extension.coffeeScript.exclude.each { src.exclude it }
         GParsPool.withPool(NUM_OF_THREADS) {
             src.asConcurrent {
                 src.each { File file ->

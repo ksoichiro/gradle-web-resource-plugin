@@ -32,8 +32,8 @@ class WebResourceCompileLessTask extends DefaultTask {
         def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.less.src)
         def srcRootFile = project.file(srcRootDir)
         def src = project.fileTree(dir: srcRootDir)
-        src.include '**/*.less'
-        src.exclude '**/_*.less'
+        extension.less.include.each { src.include it }
+        extension.less.exclude.each { src.exclude it }
         GParsPool.withPool(NUM_OF_THREADS) {
             src.asConcurrent {
                 src.each { File file ->
