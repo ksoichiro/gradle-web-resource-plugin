@@ -32,6 +32,56 @@ node {
     nodeModulesDir = project.buildDir
 }
 
+// Exclude files as much as possible, to build/clean faster
+ext.excludeModules = [
+    '.bin',
+    'npm',
+    '**/test',
+    '**/.*',
+    '**/appveyor.yml',
+    '**/CHANGE*.md',
+    '**/CONTRIBUTING.md',
+    '**/Gruntfile.js',
+    '**/bower.json',
+    '**/build.gradle',
+    '**/gradlew*',
+    '**/bin',
+    '**/example',
+    '**/examples',
+    'bower/templates',
+    'bower/lib/commands/cache/clean.js',
+    'bower/lib/commands/help.js',
+    'bower/lib/commands/home.js',
+    'bower/lib/commands/info.js',
+    'bower/lib/commands/init.js',
+    'bower/lib/commands/link.js',
+    'bower/lib/commands/list.js',
+    'bower/lib/commands/login.js',
+    'bower/lib/commands/lookup.js',
+    'bower/lib/commands/prune.js',
+    'bower/lib/commands/register.js',
+    'bower/lib/commands/search.js',
+    'bower/lib/commands/uninstall.js',
+    'bower/lib/commands/unregister.js',
+    'bower/lib/commands/update.js',
+    'bower/lib/commands/version.js',
+    'bower/node_modules/cardinal',
+    'bower/node_modules/inquirer',
+    'bower/node_modules/update-notifier',
+    'coffee-script/CNAME',
+    'coffee-script/repl.js',
+    'coffee-script/register.js',
+    'less/lib/less-rhino',
+    'less/lib/less-browser',
+    'less/dist',
+    'less/browser.js',
+    'less/test.less',
+    'uglify-js/tmp',
+    'uglify-js/node_modules/async',
+    'uglify-js/node_modules/uglify-to-browserify',
+    'uglify-js/node_modules/yargs',
+]
+
 task copyPackageInfo << {
     copy {
         from "src/main/javascript/package.json"
@@ -40,26 +90,16 @@ task copyPackageInfo << {
 }
 
 task copyNodeModules(type: Copy) {
-    // Exclude files as much as possible, to build/clean faster
     from("${project.buildDir}/node_modules") {
-        exclude '.bin'
-        exclude 'npm'
-        exclude '**/test'
-        exclude '**/.*'
-        exclude '**/bin'
-        exclude '**/example'
-        exclude '**/examples'
-        exclude 'bower/templates'
-        exclude 'bower/node_modules/cardinal'
-        exclude 'bower/node_modules/inquirer'
-        exclude 'bower/node_modules/update-notifier'
-        exclude 'less/lib/less-rhino'
-        exclude 'less/lib/less-browser'
-        exclude 'less/dist'
-        exclude 'uglify-js/tmp'
-
+        excludeModules.each { exclude it }
     }
     into "src/main/resources/node_modules"
+}
+
+task deleteNodeModules << {
+    excludeModules.each {
+        project.delete("${project.buildDir}/node_modules/${it}")
+    }
 }
 
 task patchNodeModules << {
@@ -74,7 +114,8 @@ task patchNodeModules << {
 
 npmInstall.dependsOn('copyPackageInfo')
 copyNodeModules.dependsOn('npmInstall')
-patchNodeModules.dependsOn('copyNodeModules')
+deleteNodeModules.dependsOn('copyNodeModules')
+patchNodeModules.dependsOn('deleteNodeModules')
 compileGroovy.dependsOn('patchNodeModules')
 
 task cleanNodeModules << {
