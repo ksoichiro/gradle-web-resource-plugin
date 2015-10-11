@@ -16,9 +16,13 @@ var mkdirsSync = function(dir) {
   var s = '';
   for (var i = 0; i < dirs.length; i++) {
     s += (s.length == 0 ? '' : '/') + dirs[i];
-    if (!fs.existsSync(s)) {
-      fs.mkdirSync(s);
-    }
+      try {
+        fs.mkdirSync(s);
+      } catch (err) {
+        if (err.code == 'EEXIST') {
+          // Other thread might create this directory at the same time, so ignore it
+        }
+      }
   }
 }
 
