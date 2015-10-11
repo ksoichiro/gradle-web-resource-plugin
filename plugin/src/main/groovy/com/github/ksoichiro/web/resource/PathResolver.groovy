@@ -47,6 +47,7 @@ class PathResolver {
         }
         src
     }
+
     String resolveSrcPath(def path) {
         "../../${resolveSrcPathFromProject(path)}"
     }

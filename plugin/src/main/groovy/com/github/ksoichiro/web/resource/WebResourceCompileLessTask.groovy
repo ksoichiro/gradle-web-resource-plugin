@@ -7,6 +7,7 @@ import org.gradle.api.tasks.TaskAction
 class WebResourceCompileLessTask extends DefaultTask {
     static final String NAME = "webResourceCompileLess"
     static final int NUM_OF_THREADS = 8
+    static final String SCRIPT_NAME = "less.js"
     WebResourceExtension extension
     PathResolver pathResolver
 
@@ -28,7 +29,7 @@ class WebResourceCompileLessTask extends DefaultTask {
         if (!extension.less.enabled) {
             return
         }
-        new File(extension.workDir, 'less.js').text = getClass().getResourceAsStream('/less.js').text
+        new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
         def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.less.src)
         def srcRootFile = project.file(srcRootDir)
         def src = project.fileTree(dir: srcRootDir)
@@ -38,7 +39,7 @@ class WebResourceCompileLessTask extends DefaultTask {
             src.asConcurrent {
                 src.each { File file ->
                     def triremeNodeRunner = new TriremeNodeRunner(
-                        scriptName: 'less.js',
+                        scriptName: SCRIPT_NAME,
                         workingDir: extension.workDir,
                         args: [
                             // lessSrcPath

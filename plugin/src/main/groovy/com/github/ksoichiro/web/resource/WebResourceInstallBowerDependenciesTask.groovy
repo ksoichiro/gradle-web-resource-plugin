@@ -7,6 +7,8 @@ import org.gradle.api.tasks.TaskAction
 
 class WebResourceInstallBowerDependenciesTask extends DefaultTask {
     static final String NAME = "webResourceInstallBowerDependencies"
+    static final String SCRIPT_NAME = "bower.js"
+    static final String BOWER_COMPONENTS_DIR = "bower_components"
     WebResourceExtension extension
     PathResolver pathResolver
 
@@ -19,7 +21,7 @@ class WebResourceInstallBowerDependenciesTask extends DefaultTask {
                 .files(pathResolver.retrieveValidPaths(pathResolver.getSrcLess()))
                 .property('bower', extension.bower)
                 .property('version', WebResourceExtension.VERSION)
-            getOutputs().files(new File(extension.workDir, 'bower_components'), getBowerScript())
+            getOutputs().files(new File(extension.workDir, BOWER_COMPONENTS_DIR), getBowerScript())
         }
     }
 
@@ -29,7 +31,7 @@ class WebResourceInstallBowerDependenciesTask extends DefaultTask {
             return
         }
 
-        File bowerComponentsDir = new File(extension.workDir, "bower_components")
+        File bowerComponentsDir = new File(extension.workDir, BOWER_COMPONENTS_DIR)
         if (!bowerComponentsDir.exists()) {
             bowerComponentsDir.mkdirs()
         }
@@ -42,14 +44,14 @@ class WebResourceInstallBowerDependenciesTask extends DefaultTask {
 
         List bowerConfig = []
         extension.bower.dependencies.each {
-            File bowerJson = new File(extension.workDir, "bower_components/${it.name}/bower.json")
+            File bowerJson = new File(extension.workDir, "${BOWER_COMPONENTS_DIR}/${it.name}/bower.json")
             if (bowerJson.exists()) {
                 // already installed
                 def pkg = new JsonSlurper().parseText(bowerJson.text)
                 if (pkg.version) {
                     if (pkg.version != it.version) {
                         // should be updated, so remove it before install
-                        project.delete("${extension.workDir}/bower_components/${it.name}")
+                        project.delete("${extension.workDir}/${BOWER_COMPONENTS_DIR}/${it.name}")
                     }
                 }
             }
@@ -62,15 +64,15 @@ class WebResourceInstallBowerDependenciesTask extends DefaultTask {
         def dependencies = bowerConfig.isEmpty() ? '[]'
             : JsonOutput.prettyPrint(JsonOutput.toJson(bowerConfig))
         new File(extension.workDir, 'bowerPackages.json').text = dependencies
-        new File(extension.workDir, 'bower.js').text = getClass().getResourceAsStream('/bower.js').text
+        new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
 
         def triremeNodeRunner = new TriremeNodeRunner(
-            scriptName: 'bower.js',
+            scriptName: SCRIPT_NAME,
             workingDir: extension.workDir)
         triremeNodeRunner.exec()
     }
 
     File getBowerScript() {
-        new File(extension.workDir, 'bower.js')
+        new File(extension.workDir, SCRIPT_NAME)
     }
 }
