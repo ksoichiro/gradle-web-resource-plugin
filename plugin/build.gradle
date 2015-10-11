@@ -52,7 +52,7 @@ task copyNodeModules(type: Copy) {
         exclude 'bower/templates'
         exclude 'bower/node_modules/cardinal'
         exclude 'bower/node_modules/inquirer'
-        exclude 'bower/node_modules/uplate-notifier'
+        exclude 'bower/node_modules/update-notifier'
         exclude 'less/lib/less-rhino'
         exclude 'less/lib/less-browser'
         exclude 'less/dist'
