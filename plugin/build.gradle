@@ -40,12 +40,24 @@ task copyPackageInfo << {
 }
 
 task copyNodeModules(type: Copy) {
+    // Exclude files as much as possible, to build/clean faster
     from("${project.buildDir}/node_modules") {
         exclude '.bin'
         exclude 'npm'
-        exclude '**/test/**'
+        exclude '**/test'
         exclude '**/.*'
+        exclude '**/bin'
+        exclude '**/example'
+        exclude '**/examples'
         exclude 'bower/templates'
+        exclude 'bower/node_modules/cardinal'
+        exclude 'bower/node_modules/inquirer'
+        exclude 'bower/node_modules/uplate-notifier'
+        exclude 'less/lib/less-rhino'
+        exclude 'less/lib/less-browser'
+        exclude 'less/dist'
+        exclude 'uglify-js/tmp'
+
     }
     into "src/main/resources/node_modules"
 }
