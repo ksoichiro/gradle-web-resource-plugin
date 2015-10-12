@@ -20,7 +20,11 @@ function installWithCacheIfPossible(idx) {
   Q.fcall(function() { return [e.name, e.version, cacheName]; })
   .then(checkCache)
   .then(install)
-  .then(function() {
+  .catch(function(error) {
+    console.log(error);
+    process.exit(1);
+  })
+  .done(function() {
     installWithCacheIfPossible(idx + 1);
   });
 }
