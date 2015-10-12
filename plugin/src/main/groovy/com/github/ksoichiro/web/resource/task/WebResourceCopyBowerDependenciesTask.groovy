@@ -16,6 +16,7 @@ class WebResourceCopyBowerDependenciesTask extends DefaultTask {
             extension = project.extensions.webResource
             pathResolver = new PathResolver(project, extension)
             getInputs()
+                .dir(new File(extension.workDir, WebResourceInstallBowerDependenciesTask.BOWER_COMPONENTS_DIR))
                 .property('bower', extension.bower)
                 .property('version', WebResourceExtension.VERSION)
             getOutputs().files(pathResolver.retrieveValidPaths(pathResolver.getDestLib()))
@@ -24,6 +25,9 @@ class WebResourceCopyBowerDependenciesTask extends DefaultTask {
 
     @TaskAction
     void exec() {
+        // Remove old files first
+        project.delete(project.file("${extension.base.dest}/${extension.lib.dest}").absolutePath)
+
         project.copy {
             from project.fileTree("${extension.workDir}/bower_components").matching {
                 if (!extension.bower.dependencies.isEmpty()) {
