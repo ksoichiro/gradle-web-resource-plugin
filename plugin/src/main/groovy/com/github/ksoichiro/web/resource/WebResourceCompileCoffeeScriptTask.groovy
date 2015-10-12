@@ -1,15 +1,12 @@
 package com.github.ksoichiro.web.resource
 
 import groovyx.gpars.GParsPool
-import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-class WebResourceCompileCoffeeScriptTask extends DefaultTask {
+class WebResourceCompileCoffeeScriptTask extends TriremeBaseTask {
     static final String NAME = "webResourceCompileCoffeeScript"
     static final int NUM_OF_THREADS = 8
     static final String SCRIPT_NAME = "coffee.js"
-    WebResourceExtension extension
-    PathResolver pathResolver
 
     WebResourceCompileCoffeeScriptTask() {
         dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
@@ -30,6 +27,7 @@ class WebResourceCompileCoffeeScriptTask extends DefaultTask {
             return
         }
         new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
+        writeCommonScript()
         def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.coffeeScript.src)
         def srcRootFile = project.file(srcRootDir)
         def src = project.fileTree(dir: srcRootDir)
@@ -54,6 +52,7 @@ class WebResourceCompileCoffeeScriptTask extends DefaultTask {
                                 .replaceAll("^/", "")
                                 .replaceAll("/\$", ""),
                             extension.coffeeScript.minify,
+                            mapLogLevel(extension.coffeeScript.logLevel),
                         ] as String[])
                     triremeNodeRunner.exec()
                 }

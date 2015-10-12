@@ -22,7 +22,10 @@ apply plugin: 'com.github.ksoichiro.web.resource'
 webResource {
     // You can disable less dependencies installation:
     // less.enabled false
-    less.minify true
+    less {
+        minify true
+        logLevel LogLevel.INFO
+    }
     coffeeScript.minify true
     bower {
         dependencies {

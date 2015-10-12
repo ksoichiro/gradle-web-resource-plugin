@@ -5,12 +5,10 @@ import groovy.json.JsonSlurper
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-class WebResourceInstallBowerDependenciesTask extends DefaultTask {
+class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
     static final String NAME = "webResourceInstallBowerDependencies"
     static final String SCRIPT_NAME = "bower.js"
     static final String BOWER_COMPONENTS_DIR = "bower_components"
-    WebResourceExtension extension
-    PathResolver pathResolver
 
     WebResourceInstallBowerDependenciesTask() {
         dependsOn([WebResourceInstallDependenciesTask.NAME])
@@ -65,10 +63,14 @@ class WebResourceInstallBowerDependenciesTask extends DefaultTask {
             : JsonOutput.prettyPrint(JsonOutput.toJson(bowerConfig))
         new File(extension.workDir, 'bowerPackages.json').text = dependencies
         new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
+        writeCommonScript()
 
         def triremeNodeRunner = new TriremeNodeRunner(
             scriptName: SCRIPT_NAME,
-            workingDir: extension.workDir)
+            workingDir: extension.workDir,
+            args: [
+                mapLogLevel(extension.bower.logLevel),
+            ] as String[])
         triremeNodeRunner.exec()
     }
 

@@ -1,15 +1,12 @@
 package com.github.ksoichiro.web.resource
 
 import groovyx.gpars.GParsPool
-import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-class WebResourceCompileLessTask extends DefaultTask {
+class WebResourceCompileLessTask extends TriremeBaseTask {
     static final String NAME = "webResourceCompileLess"
     static final int NUM_OF_THREADS = 8
     static final String SCRIPT_NAME = "less.js"
-    WebResourceExtension extension
-    PathResolver pathResolver
 
     WebResourceCompileLessTask() {
         dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
@@ -30,6 +27,7 @@ class WebResourceCompileLessTask extends DefaultTask {
             return
         }
         new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
+        writeCommonScript()
         def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.less.src)
         def srcRootFile = project.file(srcRootDir)
         def src = project.fileTree(dir: srcRootDir)
@@ -54,6 +52,7 @@ class WebResourceCompileLessTask extends DefaultTask {
                                 .replaceAll("^/", "")
                                 .replaceAll("/\$", ""),
                             extension.less.minify,
+                            mapLogLevel(extension.less.logLevel),
                         ] as String[])
                     triremeNodeRunner.exec()
                 }

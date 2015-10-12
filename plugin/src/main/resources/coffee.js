@@ -3,32 +3,18 @@ var path = require('path');
 var coffee = require('coffee-script');
 var UglifyJS = require('uglify-js');
 var glob = require('glob');
+var common = require('./common.js');
 
 var coffeeSrcPath = process.argv[2];
 var coffeeSrcName = process.argv[3];
 var coffeeDestDir = process.argv[4];
 var minify = process.argv[5] === 'true';
+var logLevel = parseInt(process.argv[6]);
+
 var extensions = null;
 var includedFiles = [];
 
-var mkdirsSync = function(dir) {
-  var dirs = dir.split('/');
-  var s = '';
-  for (var i = 0; i < dirs.length; i++) {
-    s += (s.length == 0 ? '' : '/') + dirs[i];
-      try {
-        fs.mkdirSync(s);
-      } catch (err) {
-        if (err.code == 'EEXIST') {
-          // Other thread might create this directory at the same time, so ignore it
-        }
-      }
-  }
-}
-
-if (!fs.existsSync(coffeeDestDir)) {
-  mkdirsSync(coffeeDestDir);
-}
+common.mkdirsIfNotExistSync(coffeeDestDir);
 coffeeConvert(coffeeSrcPath, coffeeSrcName, [path.dirname(coffeeSrcPath)], path.join(coffeeDestDir, coffeeSrcName.replace(/\.coffee/, '.js')));
 
 function coffeeConvert(filepath, filename, searchPaths, outputPath) {
@@ -42,15 +28,14 @@ function coffeeConvert(filepath, filename, searchPaths, outputPath) {
     js = minified.code;
   }
 
-  if (!fs.existsSync(path.dirname(outputPath))) {
-    mkdirsSync(path.dirname(outputPath));
-  }
+  common.mkdirsIfNotExistSync(path.dirname(outputPath));
 
   fs.writeFile(outputPath, js, function(err) {
     if (err) {
-      console.log(err);
+      common.logE(logLevel, err);
+      process.exit(1);
     }
-    console.log('CoffeeScript: processed ' + filepath);
+    common.logI(logLevel, 'CoffeeScript: processed ' + filepath);
   });
 }
 

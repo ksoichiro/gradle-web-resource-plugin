@@ -28,6 +28,11 @@ class WebResourceExtension {
         this.coffeeScript = new FilterableProcessor("coffee", "js", ['**/*.coffee'], ['**/_*.coffee'])
         this.less = new FilterableProcessor("less", "css", ['**/*.less'], ['**/_*.less'])
         this.lib = new WebResourceProcessor(null, "lib")
+
+        def logLevel = project.gradle.startParameter.logLevel
+        this.bower.logLevel = logLevel
+        this.coffeeScript.logLevel = logLevel
+        this.less.logLevel = logLevel
     }
 
     def propertyMissing(String name) {

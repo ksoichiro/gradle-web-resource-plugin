@@ -1,32 +1,15 @@
 var fs = require('fs');
 var path = require('path');
 var less = require('less');
+var common = require('./common.js');
 
 var lessSrcPath = process.argv[2];
 var lessSrcName = process.argv[3];
 var lessDestDir = process.argv[4];
 var minify = process.argv[5] === 'true';
+var logLevel = parseInt(process.argv[6]);
 
-var mkdirsSync = function(dir) {
-  var dirs = dir.split('/');
-  var s = '';
-  for (var i = 0; i < dirs.length; i++) {
-    s += (s.length == 0 ? '' : '/') + dirs[i];
-    if (!fs.existsSync(s)) {
-      try {
-        fs.mkdirSync(s);
-      } catch (err) {
-        if (err.code == 'EEXIST') {
-          // Other thread might create this directory at the same time, so ignore it
-        }
-      }
-    }
-  }
-}
-
-if (!fs.existsSync(lessDestDir)) {
-  mkdirsSync(lessDestDir);
-}
+common.mkdirsIfNotExistSync(lessDestDir);
 lessConvert(lessSrcPath, lessSrcName, [path.dirname(lessSrcPath)], path.join(lessDestDir, lessSrcName.replace(/\.less/, '.css')));
 
 function lessConvert(filepath, filename, searchPaths, outputPath) {
@@ -38,14 +21,13 @@ function lessConvert(filepath, filename, searchPaths, outputPath) {
       compress: minify
     },
     function (e, output) {
-      if (!fs.existsSync(path.dirname(outputPath))) {
-        mkdirsSync(path.dirname(outputPath));
-      }
+      common.mkdirsIfNotExistSync(path.dirname(outputPath));
       fs.writeFile(outputPath, output.css, function(err) {
         if (err) {
-          console.log(err);
+          common.logE(logLevel, err);
+          process.exit(1);
         }
-        console.log('LESS: processed ' + filepath);
+        common.logI(logLevel, 'LESS: processed ' + filepath);
       });
     });
 }

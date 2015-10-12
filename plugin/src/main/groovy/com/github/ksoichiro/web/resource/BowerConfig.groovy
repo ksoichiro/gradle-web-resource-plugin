@@ -1,11 +1,13 @@
 package com.github.ksoichiro.web.resource
 
 import groovy.transform.EqualsAndHashCode
+import org.gradle.api.logging.LogLevel
 
 // @EqualsAndHashCode is required to execute valid up-to-date check.
 @EqualsAndHashCode
 class BowerConfig implements Serializable {
     static final long serialVersionUID = -1L
+    LogLevel logLevel
     List<BowerDependency> dependencies
 
     BowerConfig() {
@@ -19,5 +21,9 @@ class BowerConfig implements Serializable {
 
     void install(Map configuration) {
         dependencies.add(new BowerDependency(configuration))
+    }
+
+    def methodMissing(String name, args) {
+        this."$name" = args[0]
     }
 }
