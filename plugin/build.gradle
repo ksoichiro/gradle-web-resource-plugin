@@ -34,21 +34,28 @@ node {
 
 // Exclude files as much as possible, to build/clean faster
 ext.excludeModules = [
-    '.bin',
     'npm',
-    '**/test',
+    '.bin',
     '**/.*',
     '**/appveyor.yml',
     '**/CHANGE*.md',
     '**/CONTRIBUTING.md',
     '**/Gruntfile.js',
     '**/bower.json',
+    '**/Makefile',
     '**/build.gradle',
     '**/gradlew*',
-    '**/bin',
-    '**/example',
-    '**/examples',
+    '**/test/**',
+    '**/bin/**',
+    '**/example/**',
+    '**/examples/**',
+    '**/demo/**',
+    '**/doc/**',
+    '**/sprintf-js/dist/**',
+    '**/handlebars/coverage/**',
+    'bower/bin',
     'bower/templates',
+    'bower/HOOKS.md',
     'bower/lib/commands/cache/clean.js',
     'bower/lib/commands/help.js',
     'bower/lib/commands/home.js',
@@ -97,8 +104,17 @@ task copyNodeModules(type: Copy) {
 }
 
 task deleteNodeModules << {
-    excludeModules.each {
-        project.delete("${project.buildDir}/node_modules/${it}")
+    def baseDir = "${projectDir}/src/main/resources/node_modules"
+    excludeModules.each { e ->
+        if (0 <= e.indexOf('*')) {
+            def tree = fileTree(dir: baseDir)
+            tree.include(e)
+            tree.each { File f ->
+                project.delete(f.absolutePath)
+            }
+        } else {
+            project.delete("${baseDir}/${e}")
+        }
     }
 }
 
