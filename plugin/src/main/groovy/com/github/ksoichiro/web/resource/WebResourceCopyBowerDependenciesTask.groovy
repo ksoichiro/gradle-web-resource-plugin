@@ -3,12 +3,12 @@ package com.github.ksoichiro.web.resource
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-class WebResourceCompileBowerTask extends DefaultTask {
-    static String NAME = "webResourceCompileBower"
+class WebResourceCopyBowerDependenciesTask extends DefaultTask {
+    static String NAME = "webResourceCopyBowerDependencies"
     WebResourceExtension extension
     PathResolver pathResolver
 
-    WebResourceCompileBowerTask() {
+    WebResourceCopyBowerDependenciesTask() {
         dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
         project.afterEvaluate {
             extension = project.extensions.webResource

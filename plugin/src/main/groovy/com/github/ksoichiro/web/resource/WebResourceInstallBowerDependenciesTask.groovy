@@ -2,7 +2,6 @@ package com.github.ksoichiro.web.resource
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
@@ -11,7 +10,7 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
     static final String BOWER_COMPONENTS_DIR = "bower_components"
 
     WebResourceInstallBowerDependenciesTask() {
-        dependsOn([WebResourceInstallDependenciesTask.NAME])
+        dependsOn([WebResourceSetupNodeDependenciesTask.NAME])
         project.afterEvaluate {
             extension = project.extensions.webResource
             pathResolver = new PathResolver(project, extension)

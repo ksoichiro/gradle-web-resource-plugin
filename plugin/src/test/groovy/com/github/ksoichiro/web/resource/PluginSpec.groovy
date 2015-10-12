@@ -17,10 +17,10 @@ class PluginSpec extends Specification {
 
         then:
         project.tasks.webResourceInstallBowerDependencies instanceof WebResourceInstallBowerDependenciesTask
-        project.tasks.webResourceInstallDependencies instanceof WebResourceInstallDependenciesTask
+        project.tasks.webResourceSetupNodeDependencies instanceof WebResourceSetupNodeDependenciesTask
         project.tasks.webResourceCompileCoffeeScript instanceof WebResourceCompileCoffeeScriptTask
         project.tasks.webResourceCompileLess instanceof WebResourceCompileLessTask
-        project.tasks.webResourceCompileBower instanceof WebResourceCompileBowerTask
+        project.tasks.webResourceCopyBowerDependencies instanceof WebResourceCopyBowerDependenciesTask
         project.tasks.webResourceCompile instanceof WebResourceCompileTask
         project.extensions.webResource instanceof WebResourceExtension
     }

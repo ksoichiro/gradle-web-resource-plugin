@@ -3,12 +3,12 @@ package com.github.ksoichiro.web.resource
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-class WebResourceInstallDependenciesTask extends DefaultTask {
-    static final String NAME = 'webResourceInstallDependencies'
+class WebResourceSetupNodeDependenciesTask extends DefaultTask {
+    static final String NAME = 'webResourceSetupNodeDependencies'
     static final String PRE_INSTALLED_NODE_MODULES_DIR = "node_modules"
     WebResourceExtension extension
 
-    WebResourceInstallDependenciesTask() {
+    WebResourceSetupNodeDependenciesTask() {
         this.project.afterEvaluate {
             extension = project.webResource
             getInputs().property('version', WebResourceExtension.VERSION)

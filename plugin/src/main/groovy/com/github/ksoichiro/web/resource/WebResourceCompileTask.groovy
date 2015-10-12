@@ -6,6 +6,6 @@ class WebResourceCompileTask extends DefaultTask {
     static String NAME = "webResourceCompile"
 
     WebResourceCompileTask() {
-        dependsOn([WebResourceCompileCoffeeScriptTask.NAME, WebResourceCompileLessTask.NAME, WebResourceCompileBowerTask.NAME])
+        dependsOn([WebResourceCompileCoffeeScriptTask.NAME, WebResourceCompileLessTask.NAME, WebResourceCopyBowerDependenciesTask.NAME])
     }
 }
