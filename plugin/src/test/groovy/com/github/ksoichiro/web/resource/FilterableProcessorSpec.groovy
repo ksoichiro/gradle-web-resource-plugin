@@ -1,5 +1,6 @@
 package com.github.ksoichiro.web.resource
 
+import com.github.ksoichiro.web.resource.extension.FilterableProcessor
 import spock.lang.Specification
 
 class FilterableProcessorSpec extends Specification {

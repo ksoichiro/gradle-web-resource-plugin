@@ -1,5 +1,7 @@
-package com.github.ksoichiro.web.resource
+package com.github.ksoichiro.web.resource.task
 
+import com.github.ksoichiro.web.resource.util.PathResolver
+import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.logging.LogLevel
 

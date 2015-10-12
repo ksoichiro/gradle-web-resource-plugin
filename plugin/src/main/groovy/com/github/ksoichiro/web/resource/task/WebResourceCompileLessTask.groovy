@@ -1,5 +1,8 @@
-package com.github.ksoichiro.web.resource
+package com.github.ksoichiro.web.resource.task
 
+import com.github.ksoichiro.web.resource.node.TriremeNodeRunner
+import com.github.ksoichiro.web.resource.util.PathResolver
+import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import groovyx.gpars.GParsPool
 import org.gradle.api.tasks.TaskAction
 

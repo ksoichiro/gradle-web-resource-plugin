@@ -1,5 +1,6 @@
-package com.github.ksoichiro.web.resource
+package com.github.ksoichiro.web.resource.util
 
+import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import org.gradle.api.Project
 
 class PathResolver {

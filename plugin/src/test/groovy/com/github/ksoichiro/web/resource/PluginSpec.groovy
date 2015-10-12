@@ -1,5 +1,12 @@
 package com.github.ksoichiro.web.resource
 
+import com.github.ksoichiro.web.resource.extension.WebResourceExtension
+import com.github.ksoichiro.web.resource.task.WebResourceCompileCoffeeScriptTask
+import com.github.ksoichiro.web.resource.task.WebResourceCompileLessTask
+import com.github.ksoichiro.web.resource.task.WebResourceCompileTask
+import com.github.ksoichiro.web.resource.task.WebResourceCopyBowerDependenciesTask
+import com.github.ksoichiro.web.resource.task.WebResourceInstallBowerDependenciesTask
+import com.github.ksoichiro.web.resource.task.WebResourceSetupNodeDependenciesTask
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.testfixtures.ProjectBuilder

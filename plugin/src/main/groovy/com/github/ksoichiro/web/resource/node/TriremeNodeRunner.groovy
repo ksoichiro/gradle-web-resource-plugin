@@ -1,4 +1,4 @@
-package com.github.ksoichiro.web.resource
+package com.github.ksoichiro.web.resource.node
 
 import io.apigee.trireme.core.NodeEnvironment
 import io.apigee.trireme.core.NodeScript

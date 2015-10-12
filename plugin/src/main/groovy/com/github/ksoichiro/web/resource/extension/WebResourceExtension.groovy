@@ -1,4 +1,4 @@
-package com.github.ksoichiro.web.resource
+package com.github.ksoichiro.web.resource.extension
 
 import groovy.transform.ToString
 import org.gradle.api.GradleException

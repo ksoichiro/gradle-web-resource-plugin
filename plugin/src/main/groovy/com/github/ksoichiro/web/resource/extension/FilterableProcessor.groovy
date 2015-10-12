@@ -1,4 +1,4 @@
-package com.github.ksoichiro.web.resource
+package com.github.ksoichiro.web.resource.extension
 
 class FilterableProcessor extends WebResourceProcessor {
     boolean enabled
