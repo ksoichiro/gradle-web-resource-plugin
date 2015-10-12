@@ -96,43 +96,45 @@ task copyPackageInfo << {
     }
 }
 
-task copyNodeModules(type: Copy) {
-    from("${project.buildDir}/node_modules") {
-        excludeModules.each { exclude it }
-    }
-    into "src/main/resources/node_modules"
-}
-
-task deleteNodeModules << {
-    def baseDir = "${projectDir}/src/main/resources/node_modules"
-    excludeModules.each { e ->
-        if (0 <= e.indexOf('*')) {
-            def tree = fileTree(dir: baseDir)
-            tree.include(e)
-            tree.each { File f ->
-                project.delete(f.absolutePath)
+task copyNodeModules {
+    inputs.dir file("${project.buildDir}/node_modules")
+    outputs.dir file("${projectDir}/src/main/resources/node_modules")
+    doLast {
+        // Copy installed node modules to resources
+        copy {
+            from("${project.buildDir}/node_modules") {
+                excludeModules.each { exclude it }
             }
-        } else {
-            project.delete("${baseDir}/${e}")
+            into "src/main/resources/node_modules"
         }
-    }
-}
 
-task patchNodeModules << {
-    // Resolving cache while installing dependency in bower fails when executing with Trireme,
-    // so apply a patch for it
-    File f = new File("${projectDir}/src/main/resources/node_modules/bower/lib/core/ResolveCache.js")
-    def replaced = f.text.replaceAll(
-        "if \\(err\\.code === 'ENOENT'\\) \\{",
-        "if (err.code === 'ENOENT' || err.code === 'ENOTDIR') {")
-    f.text = replaced
+        // Delete unused files
+        def baseDir = "${projectDir}/src/main/resources/node_modules"
+        excludeModules.each { e ->
+            if (0 <= e.indexOf('*')) {
+                def tree = fileTree(dir: baseDir)
+                tree.include(e)
+                tree.each { File f ->
+                    project.delete(f.absolutePath)
+                }
+            } else {
+                project.delete("${baseDir}/${e}")
+            }
+        }
+        // Apply patches:
+        // Resolving cache while installing dependency in bower fails when executing with Trireme,
+        // so apply a patch for it
+        File f = new File("${projectDir}/src/main/resources/node_modules/bower/lib/core/ResolveCache.js")
+        def replaced = f.text.replaceAll(
+            "if \\(err\\.code === 'ENOENT'\\) \\{",
+            "if (err.code === 'ENOENT' || err.code === 'ENOTDIR') {")
+        f.text = replaced
+    }
 }
 
 npmInstall.dependsOn('copyPackageInfo')
 copyNodeModules.dependsOn('npmInstall')
-deleteNodeModules.dependsOn('copyNodeModules')
-patchNodeModules.dependsOn('deleteNodeModules')
-compileGroovy.dependsOn('patchNodeModules')
+compileGroovy.dependsOn('copyNodeModules')
 
 task cleanNodeModules << {
     project.delete("src/main/resources/node_modules")
