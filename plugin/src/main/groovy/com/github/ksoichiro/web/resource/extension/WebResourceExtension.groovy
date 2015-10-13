@@ -35,6 +35,11 @@ class WebResourceExtension {
         this.less.logLevel = logLevel
     }
 
+    def bowerConfig(Closure configureClosure) {
+        configureClosure.delegate = bower
+        configureClosure()
+    }
+
     def propertyMissing(String name) {
         if (resources.containsKey(name)) {
             resources."$name"

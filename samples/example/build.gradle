@@ -20,21 +20,29 @@ apply plugin: 'java'
 apply plugin: 'com.github.ksoichiro.web.resource'
 
 webResource {
-    // You can disable less dependencies installation:
-    // less.enabled false
-    less {
-        minify true
-        logLevel LogLevel.INFO
-    }
-    coffeeScript.minify true
+    //less {
+    //    minify true
+    //    logLevel LogLevel.INFO
+    //}
+
+    // You can also set like this:
+    //coffeeScript.minify true
+
+    // You can also use `bowerConfig` instead of `bower`
     bower {
         dependencies {
+            // If the dependency has some dependencies, write them to upper.
+            // Otherwise, the versions cannot be resolved and it might cause build errors.
+            // For example, bootstrap has dependency for jquery, so jquery must be written BEFORE bootstrap.
+            // If you write jquery AFTER bootstrap, installation of bootstrap will also install jquery,
+            // but after that, jquery installation by 'install name:"jquery"...' will fail.
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
             install name: "chartjs", version: "1.0.2", cacheName: "Chart.js", filter: ["*.min.*"]
             install name: "bootstrap", version: "3.3.4", filter: ["dist/css/*.min.css", "dist/js/*.min.js", "dist/fonts/*"]
             install name: "respond-minmax", version: "1.4.2", cacheName: "respond", filter: ["dest/*.min.js"]
             install name: "html5shiv", version: "3.7.2", filter: ["dist/*.min.js"]
-            install name: "slimscroll", version: "1.3.6", cacheName: "slimScroll", filter: ["*.js"]
+            //install name: "jquery.slimscroll", version: "1.3.6", cacheName: "slimScroll", filter: ["*.js"]
+            install name: "jquery.slimscroll", version: "1.3.6", filter: ["*.js"]
         }
     }
 }
