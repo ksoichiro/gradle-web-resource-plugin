@@ -67,7 +67,7 @@ function install(data) {
   if (installedVersion !== '') {
     // already installed
     if (version !== installedVersion) {
-      common.logE(logLevel, 'update required for %s: please remove bower_components/%s and execute again.', name, name);
+      common.logE(logLevel, util.format('update required for %s: please remove bower_components/%s and execute again.', name, name));
       process.exit(1);
     } else if (version == installedVersion) {
       // already installed the version
@@ -112,31 +112,31 @@ function install(data) {
       common.logI(logLevel, 'installed ' + name + '#' + version + (offline ? ' (offline)' : ''));
       if (cached && validate) {// offline === false) {
         // Installed with cache, but validation occurred
-        common.logW(logLevel, '  Note: cache key does not match to the package name.');
-        common.logW(logLevel, '  It means, the package "%s" is cached ', name);
-        common.logW(logLevel, '  but still needed a network connection to validate the package ');
-        common.logW(logLevel, '  because the cache could not be found by the name "%s".', name);
-        common.logW(logLevel, '  To execute installation without any network connections, add cacheName: "%s"', validCacheName);
-        common.logW(logLevel, '  to "install" definition in your build.gradle. Example:');
-        common.logW(logLevel, '      bower {');
-        common.logW(logLevel, '          dependencies {');
-        common.logW(logLevel, '              install name: "%s", version: "%s", cacheName: "%s"', name, version, validCacheName);
-        common.logW(logLevel, '          }');
-        common.logW(logLevel, '      }');
+        common.logW(logLevel, util.format('  Note: cache key does not match to the package name.'));
+        common.logW(logLevel, util.format('  It means, the package "%s" is cached ', name));
+        common.logW(logLevel, util.format('  but still needed a network connection to validate the package '));
+        common.logW(logLevel, util.format('  because the cache could not be found by the name "%s".', name));
+        common.logW(logLevel, util.format('  To execute installation without any network connections, add cacheName: "%s"', validCacheName));
+        common.logW(logLevel, util.format('  to "install" definition in your build.gradle. Example:'));
+        common.logW(logLevel, util.format('      bower {'));
+        common.logW(logLevel, util.format('          dependencies {'));
+        common.logW(logLevel, util.format('              install name: "%s", version: "%s", cacheName: "%s"', name, version, validCacheName));
+        common.logW(logLevel, util.format('          }'));
+        common.logW(logLevel, util.format('      }'));
       } else if (installed[name] !== undefined && cacheName != installed[name].pkgMeta.name) {
         // Installed without cache but the name doesn't match to the cache key.
         validCacheName = installed[name].pkgMeta.name;
-        common.logW(logLevel, '  Note: cache key does not match to the package name.');
-        common.logW(logLevel, '  It means, the package "%s" was cached ', name);
-        common.logW(logLevel, '  but you cannot use this cache in the next installation ');
-        common.logW(logLevel, '  because the cache will not be found by the name "%s".', name);
-        common.logW(logLevel, '  To use this cache in the next installation, add cacheName: "%s"', validCacheName);
-        common.logW(logLevel, '  to "install" definition in your build.gradle. Example:');
-        common.logW(logLevel, '      bower {');
-        common.logW(logLevel, '          dependencies {');
-        common.logW(logLevel, '              install name: "%s", version: "%s", cacheName: "%s"', name, version, validCacheName);
-        common.logW(logLevel, '          }');
-        common.logW(logLevel, '      }');
+        common.logW(logLevel, util.format('  Note: cache key does not match to the package name.'));
+        common.logW(logLevel, util.format('  It means, the package "%s" was cached ', name));
+        common.logW(logLevel, util.format('  but you cannot use this cache in the next installation '));
+        common.logW(logLevel, util.format('  because the cache will not be found by the name "%s".', name));
+        common.logW(logLevel, util.format('  To use this cache in the next installation, add cacheName: "%s"', validCacheName));
+        common.logW(logLevel, util.format('  to "install" definition in your build.gradle. Example:'));
+        common.logW(logLevel, util.format('      bower {'));
+        common.logW(logLevel, util.format('          dependencies {'));
+        common.logW(logLevel, util.format('              install name: "%s", version: "%s", cacheName: "%s"', name, version, validCacheName));
+        common.logW(logLevel, util.format('          }'));
+        common.logW(logLevel, util.format('      }'));
       }
       deferred.resolve();
   });
