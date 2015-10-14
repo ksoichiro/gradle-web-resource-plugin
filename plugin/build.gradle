@@ -260,10 +260,10 @@ afterEvaluate { project ->
     }
 
     // Enable this closure when executing uploadArchives
-//    signing {
-//        required { isReleaseBuild && gradle.taskGraph.hasTask("uploadArchives") }
-//        sign configurations.archives
-//    }
+    signing {
+        required { isReleaseBuild && gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.archives
+    }
 
     task sourcesJar(type: Jar, dependsOn: classes) {
         classifier = 'sources'
