@@ -28,7 +28,6 @@ webResource {
     // You can also set like this:
     //coffeeScript.minify true
 
-    // You can also use `bowerConfig` instead of `bower`
     bower {
         dependencies {
             // If the dependency has some dependencies, write them to upper.

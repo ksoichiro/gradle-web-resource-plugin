@@ -249,20 +249,6 @@ So I wrapped all of them with a Gradle plugin.
 and its format is changed in v1.0.0 to more Gradle like 
 configuration format.
 
-#### Could not read entry error
-
-As mentioned above, the configuration format for bower has been changed, and you can still use the same configuration name `bower`, but it might cause an error like this:
-
-```
-Could not read entry ':webResourceInstallBowerDependencies' from cache taskArtifacts.bin (/xxxxxx/.gradle/2.7/taskArtifacts/taskArtifacts.bin).
-```
-
-If you see this error, please remove `.gradle` directory
-in your project directory and build again.
-
-If you want to avoid this error, use `bowerConfig` instead of `bower`.  
-`bowerConfig` is an alias of `bower`.
-
 ## Thanks
 
 This plugin deeply depends on these excellent projects.

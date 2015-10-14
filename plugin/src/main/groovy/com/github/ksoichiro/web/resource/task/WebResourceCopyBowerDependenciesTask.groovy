@@ -17,7 +17,7 @@ class WebResourceCopyBowerDependenciesTask extends DefaultTask {
             pathResolver = new PathResolver(project, extension)
             getInputs()
                 .dir(new File(extension.workDir, WebResourceInstallBowerDependenciesTask.BOWER_COMPONENTS_DIR))
-                .property('bower', extension.bower)
+                .property('bower', extension.bower.toString())
                 .property('version', WebResourceExtension.VERSION)
             getOutputs().files(pathResolver.retrieveValidPaths(pathResolver.getDestLib()))
         }
