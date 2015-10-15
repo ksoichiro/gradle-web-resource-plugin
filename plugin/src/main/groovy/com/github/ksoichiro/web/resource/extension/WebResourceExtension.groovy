@@ -5,6 +5,9 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.util.ConfigureUtil
 
+/**
+ * Plugin extension that has configuration classes.
+ */
 @ToString
 class WebResourceExtension {
     static final String NAME = 'webResource'

@@ -2,6 +2,9 @@ package com.github.ksoichiro.web.resource.extension
 
 import groovy.transform.EqualsAndHashCode
 
+/**
+ * Definition of a bower dependency.
+ */
 // @EqualsAndHashCode is required to execute valid up-to-date check.
 @EqualsAndHashCode
 class BowerDependency implements Serializable {

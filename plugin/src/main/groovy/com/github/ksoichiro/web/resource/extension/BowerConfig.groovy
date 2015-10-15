@@ -3,6 +3,9 @@ package com.github.ksoichiro.web.resource.extension
 import groovy.transform.EqualsAndHashCode
 import org.gradle.api.logging.LogLevel
 
+/**
+ * Configuration for using bower.
+ */
 // @EqualsAndHashCode is required to execute valid up-to-date check.
 @EqualsAndHashCode
 class BowerConfig implements Serializable {
@@ -14,11 +17,21 @@ class BowerConfig implements Serializable {
         this.dependencies = []
     }
 
+    /**
+     * Configure bower dependencies by closure.
+     *
+     * @param configureClosure closure to be passed to this config object
+     */
     void dependencies(Closure configureClosure) {
         configureClosure.delegate = this
         configureClosure()
     }
 
+    /**
+     * Add a bower dependency by {@code configuration} map.
+     *
+     * @param configuration configuration map containing dependency information
+     */
     void install(Map configuration) {
         dependencies.add(new BowerDependency(configuration))
     }
