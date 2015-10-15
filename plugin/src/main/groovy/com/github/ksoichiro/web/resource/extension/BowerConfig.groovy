@@ -1,6 +1,7 @@
 package com.github.ksoichiro.web.resource.extension
 
 import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
 import org.gradle.api.logging.LogLevel
 
 /**
@@ -8,6 +9,7 @@ import org.gradle.api.logging.LogLevel
  */
 // @EqualsAndHashCode is required to execute valid up-to-date check.
 @EqualsAndHashCode
+@ToString
 class BowerConfig implements Serializable {
     static final long serialVersionUID = -1L
     LogLevel logLevel
