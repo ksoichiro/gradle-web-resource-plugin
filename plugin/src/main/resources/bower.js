@@ -144,10 +144,21 @@ function install(data) {
 }
 
 function getInstalledVersion(name) {
-  var bowerJson = 'bower_components/' + name + '/bower.json';
+  // Some bower.json files don't have "version" attribute.
+  // Try .bower.json first, then check bower.json.
+  var bowerJson = 'bower_components/' + name + '/.bower.json';
   if (fs.existsSync(bowerJson)) {
     var pkg = JSON.parse(fs.readFileSync(bowerJson, 'utf8'));
-    return pkg.version;
+    if (pkg.version) {
+      return pkg.version;
+    }
+  }
+  bowerJson = 'bower_components/' + name + '/bower.json';
+  if (fs.existsSync(bowerJson)) {
+    var pkg = JSON.parse(fs.readFileSync(bowerJson, 'utf8'));
+    if (pkg.version) {
+      return pkg.version;
+    }
   }
   return '';
 }
