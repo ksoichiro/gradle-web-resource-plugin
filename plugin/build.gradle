@@ -87,6 +87,7 @@ ext.excludeModules = [
     'bower/node_modules/handlebars/node_modules/uglify-js',
     'bower/**/node_modules/inflight',
     'bower/**/node_modules/inherits',
+    'bower/**/node_modules/argparse',
     // coffee-script
     'coffee-script/CNAME',
     'coffee-script/repl.js',
