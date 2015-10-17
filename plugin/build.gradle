@@ -29,7 +29,7 @@ apply plugin: 'build-time-tracker'
 
 node {
     version = '0.12.7'
-    npmVersion = '2.11.2'
+    npmVersion = '3.3.9'
     download = true
     workDir = file("${project.buildDir}/nodejs")
     nodeModulesDir = project.buildDir
@@ -56,6 +56,7 @@ ext.excludeModules = [
     '**/doc/**',
     '**/sprintf-js/dist/**',
     '**/handlebars/coverage/**',
+    // bower
     'bower/bin',
     'bower/templates',
     'bower/HOOKS.md',
@@ -75,21 +76,67 @@ ext.excludeModules = [
     'bower/lib/commands/unregister.js',
     'bower/lib/commands/update.js',
     'bower/lib/commands/version.js',
-    'bower/node_modules/cardinal',
-    'bower/node_modules/inquirer',
-    'bower/node_modules/update-notifier',
+    'cardinal',
+        'ansicolors',
+        'redeyed',
+    'inquirer',
+        'cli-color',
+            'd',
+            'es5-ext',
+                'es6-iterator',
+                'es6-symbol',
+            'memoizee',
+                'es6-weak-map',
+                'event-emitter',
+                'lru-queue',
+                'next-tick',
+            'timers-ext',
+        'figures',
+        'mute-stream',
+        'readline',
+        'rx',
+    'insight',
+        'lodash.debounce',
+            'lodash._getnative',
+         'os-name',
+            'osx-release',
+            'win-release',
+    'update-notifier',
+        'is-npm',
+        'latest-npm',
+            'package-json',
+                'got',
+                    'duplexify',
+                    'infinity-agent',
+                    'lowercase-keys',
+                    'nested-error-stacks',
+                    'prepend-http',
+                    'read-all-stream',
+                        'pinkie-promise',
+                            'pinkie',
+                    'timed-out',
+                'registry-url',
+                    'rc',
+                        'ini',
+                        'strip-json-comments',
+        'semver-diff',
+        'string-length',
+    // coffee-script
     'coffee-script/CNAME',
     'coffee-script/repl.js',
     'coffee-script/register.js',
+    // less
     'less/lib/less-rhino',
     'less/lib/less-browser',
     'less/dist',
     'less/browser.js',
     'less/test.less',
-    'uglify-js/tmp',
-    'uglify-js/node_modules/async',
-    'uglify-js/node_modules/uglify-to-browserify',
-    'uglify-js/node_modules/yargs',
+    // uglify-js
+    'uglify-to-browserify',
+    'yargs',
+        'camelcase',
+        'decamelize',
+        'window-size',
 ]
 
 buildtimetracker {
