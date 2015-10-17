@@ -1,3 +1,5 @@
+import groovy.json.*
+
 buildscript {
     repositories {
         maven {
@@ -151,6 +153,15 @@ task copyNodeModules {
                 project.delete("${baseDir}/${e}")
             }
         }
+
+        // Modify local paths in package.json
+        fileTree(dir: baseDir).include('**/package.json').each { File f ->
+            def json = new JsonSlurper().parseText(f.text)
+            json._args = []
+            json._where = ''
+            f.text = JsonOutput.prettyPrint(JsonOutput.toJson(json))
+        }
+
         // Apply patches:
         // Resolving cache while installing dependency in bower fails when executing with Trireme,
         // so apply a patch for it
