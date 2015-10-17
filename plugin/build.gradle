@@ -3,10 +3,12 @@ buildscript {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+        mavenCentral()
     }
     dependencies {
         classpath "com.gradle.publish:plugin-publish-plugin:0.9.1"
         classpath 'com.moowork.gradle:gradle-node-plugin:0.10'
+        classpath 'net.rdrei.android.buildtimetracker:gradle-plugin:0.5.0'
     }
 }
 
@@ -23,6 +25,7 @@ apply plugin: 'groovy'
 apply plugin: 'signing'
 apply plugin: 'com.moowork.node'
 apply plugin: 'idea'
+apply plugin: 'build-time-tracker'
 
 node {
     version = '0.12.7'
@@ -88,6 +91,16 @@ ext.excludeModules = [
     'uglify-js/node_modules/uglify-to-browserify',
     'uglify-js/node_modules/yargs',
 ]
+
+buildtimetracker {
+    reporters {
+        summary {
+            ordered true
+            threshold 50
+            barstyle "unicode"
+        }
+    }
+}
 
 task copyPackageInfo << {
     copy {
