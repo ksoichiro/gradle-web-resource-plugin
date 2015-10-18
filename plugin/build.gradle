@@ -58,8 +58,12 @@ ext.excludeModules = [
     '**/demo/**',
     '**/doc/**',
     '**/benchmark/**',
+    '**/man/**',
     '**/sprintf-js/dist/**',
     '**/handlebars/coverage/**',
+    '**/example.js',
+    '**/test.js',
+    'asn1/tst',
     // bower
     'bower/bin',
     'bower/templates',
@@ -104,6 +108,7 @@ ext.excludeModules = [
     // less
     'less/lib/less-rhino',
     'less/lib/less-browser',
+    'less/lib/source-map',
     'less/dist',
     'less/browser.js',
     'less/test.less',
