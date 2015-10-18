@@ -7,7 +7,7 @@ var common = require('./common.js');
 var logLevel = parseInt(process.argv[2]);
 
 // [ {name: 'foo', version: '1.0.0', cacheName: 'Foo.js' }, ... ];
-var packages = JSON.parse(fs.readFileSync('bowerPackages.json', 'utf8'));
+var packages = JSON.parse(process.argv[3]);
 
 installWithCacheIfPossible(0);
 

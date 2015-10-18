@@ -63,7 +63,6 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
         }
         def dependencies = bowerConfig.isEmpty() ? '[]'
             : JsonOutput.prettyPrint(JsonOutput.toJson(bowerConfig))
-        new File(extension.workDir, 'bowerPackages.json').text = dependencies
         new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
         writeCommonScript()
 
@@ -72,6 +71,7 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
             workingDir: extension.workDir,
             args: [
                 mapLogLevel(extension.bower.logLevel),
+                dependencies,
             ] as String[])
         triremeNodeRunner.exec()
     }
