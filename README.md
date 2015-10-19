@@ -82,6 +82,11 @@ build/webResource/outputs
 :
 ```
 
+## Dependency
+
+Git is required: this plugin bundles bower, and it depends on git to handle dependencies.
+To use bower features, please install git first.
+
 ## Configuration
 
 ```gradle
