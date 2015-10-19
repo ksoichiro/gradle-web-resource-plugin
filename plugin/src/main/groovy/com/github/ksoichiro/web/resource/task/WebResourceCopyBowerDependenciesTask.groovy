@@ -32,11 +32,12 @@ class WebResourceCopyBowerDependenciesTask extends DefaultTask {
             from project.fileTree("${extension.workDir}/bower_components").matching {
                 if (!extension.bower.dependencies.isEmpty()) {
                     extension.bower.dependencies.each { dependency ->
+                        String cacheName = dependency.cacheName ?: dependency.name
                         String[] expr = dependency.filter
                         if (expr) {
-                            expr.each { e -> it.include("${dependency.name}/${e}") }
+                            expr.each { e -> it.include("${cacheName}/${e}") }
                         } else {
-                            it.include("${dependency.name}/**/*")
+                            it.include("${cacheName}/**/*")
                         }
                     }
                 } else {
