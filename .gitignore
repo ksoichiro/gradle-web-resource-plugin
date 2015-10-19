@@ -4,3 +4,4 @@ build/
 *.iml
 plugin/src/main/resources/node_modules/
 samples/repo/
+.vagrant/
