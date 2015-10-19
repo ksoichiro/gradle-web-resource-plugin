@@ -28,23 +28,26 @@ class WebResourceCopyBowerDependenciesTask extends DefaultTask {
         // Remove old files first
         project.delete(project.file("${extension.base.dest}/${extension.lib.dest}").absolutePath)
 
-        project.copy {
-            from project.fileTree("${extension.workDir}/bower_components").matching {
-                if (!extension.bower.dependencies.isEmpty()) {
+        if (!extension.bower.dependencies.isEmpty()) {
+            project.copy {
+                from project.fileTree("${extension.workDir}/bower_components").matching {
                     extension.bower.dependencies.each { dependency ->
-                        String cacheName = dependency.cacheName ?: dependency.name
                         String[] expr = dependency.filter
                         if (expr) {
-                            expr.each { e -> it.include("${cacheName}/${e}") }
+                            expr.each { e -> it.include("${dependency.getCacheName()}/${e}") }
                         } else {
-                            it.include("${cacheName}/**/*")
+                            it.include("${dependency.getCacheName()}/**/*")
                         }
                     }
-                } else {
-                    it.include("**/*")
+                }
+                into "${extension.base.dest}/${extension.lib.dest}"
+            }
+            extension.bower.dependencies.each { dependency ->
+                def dependencyDir = project.file("${extension.base.dest}/${extension.lib.dest}/${dependency.getCacheName()}")
+                if (dependencyDir.exists()) {
+                    dependencyDir.renameTo(project.file("${extension.base.dest}/${extension.lib.dest}/${dependency.name}"))
                 }
             }
-            into "${extension.base.dest}/${extension.lib.dest}"
         }
     }
 }
