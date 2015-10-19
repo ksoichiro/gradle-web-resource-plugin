@@ -15,8 +15,13 @@ class BowerDependency implements Serializable {
     String version
     List<String> filter
     String cacheName
+    String outputName
 
     String getCacheName() {
         cacheName ?: name
+    }
+
+    String getOutputName() {
+        outputName ?: name
     }
 }
