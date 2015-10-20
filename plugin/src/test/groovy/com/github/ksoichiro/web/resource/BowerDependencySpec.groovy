@@ -16,4 +16,17 @@ class BowerDependencySpec extends Specification {
         'foo' | 'bar' || 'bar'
         'foo' | null  || 'foo'
     }
+
+    def "resolve outputName"() {
+        when:
+        def bd = new BowerDependency(name: x, outputName: y)
+
+        then:
+        outputName == bd.getOutputName()
+
+        where:
+        x     | y     || outputName
+        'foo' | 'bar' || 'bar'
+        'foo' | null  || 'foo'
+    }
 }
