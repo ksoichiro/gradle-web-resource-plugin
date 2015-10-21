@@ -36,6 +36,17 @@ class WebResourceCompileLessTask extends TriremeBaseTask {
         def src = project.fileTree(dir: srcRootDir)
         extension.less.include.each { src.include it }
         extension.less.exclude.each { src.exclude it }
+        if (extension.less.filters?.size()) {
+            extension.less.filters.each {
+                if (it.include) {
+                    def additionalTree = project.fileTree(dir: srcRootDir)
+                    additionalTree.include it.include
+                    src = src.plus(additionalTree)
+                } else if (it.exclude) {
+                    src.exclude it.exclude
+                }
+            }
+        }
         GParsPool.withPool(NUM_OF_THREADS) {
             src.asConcurrent {
                 src.each { File file ->

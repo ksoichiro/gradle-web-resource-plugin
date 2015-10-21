@@ -24,14 +24,24 @@ plugins {
 buildscript {
     repositories {
         jcenter()
-
-        // for '-SNAPSHOT' version
-        //maven {
-        //    url uri('https://oss.sonatype.org/content/repositories/snapshots/')
-        //}
     }
     dependencies {
         classpath 'com.github.ksoichiro:gradle-web-resource-plugin:1.0.5'
+    }
+}
+
+apply plugin: 'com.github.ksoichiro.web.resource'
+
+// If you use SNAPSHOT version
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url uri('https://oss.sonatype.org/content/repositories/snapshots/')
+        }
+    }
+    dependencies {
+        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:1.1.0-SNAPSHOT'
     }
 }
 
@@ -126,6 +136,25 @@ webResource {
         exclude = ['**/_*.less']
         // Default: true
         minify = false
+
+        // Advanced filters (available from 1.1.0-SNAPSHOT)
+        // If you need complex filtering, try 'filters' configuration.
+        filters {
+            // You can use include/exclude methods here.
+            // 'exclude' excludes files from the current file tree.
+            // 'include' includes files to the current file tree.
+            // For example, with the next 2 filters, we can add
+            // 'bootstrap.less' to the target file set
+            // while ignoring all the other .less files
+            // in bootstrap directory.
+            // (This cannot be achieved with less.include/less.exclude configs.)
+            exclude '**/bootstrap/less/**/*.less'
+            include '**/bootstrap/less/bootstrap.less'
+
+            // You can add more exclude/include if you want.
+            //exclude '**/foo/**/*.less'
+            //include '**/foo/**/bar*.less'
+        }
     }
     lib {
         // Change directories for libraries downloaded with bower
