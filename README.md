@@ -299,11 +299,11 @@ This plugin deeply depends on these excellent projects.
     * Bundled in the plugin jar to manage Browser JavaScript libraries.
 * [less/less.js](https://github.com/less/less.js)
     * Bundled in the plugin jar to compile LESS files.
-* [coffee-script](https://github.com/jashkenas/coffeescript)
+* [jashkenas/coffee-script](https://github.com/jashkenas/coffeescript)
     * Bundlded in the plugin jar to compile CoffeeScript files.
 * [wiledal/gulp-include](https://github.com/wiledal/gulp-include)
     * Bundled partially (internal functions) in the plugin jar to use include feature for CoffeeScript.
-* [uglify-js](https://github.com/mishoo/UglifyJS2)
+* [mishoo/UglifyJS2](https://github.com/mishoo/UglifyJS2)
     * Bundled in the plugin jar to minify JavaScript files.
 * [kriskowal/q](https://github.com/kriskowal/q)
     * Bundled in the plugin jar to execute async tasks without native Promise class.
