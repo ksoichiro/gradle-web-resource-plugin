@@ -17,10 +17,22 @@ class BowerDependency implements Serializable {
     String cacheName
     String outputName
 
+    /**
+     * Return the cache name.
+     * It will be {@code cacheName} if it's set, otherwise name will be returned.
+     *
+     * @return the name to be used as cache key
+     */
     String getCacheName() {
         cacheName ?: name
     }
 
+    /**
+     * Return the output name.
+     * It will be {@code outputName} if it's set, otherwise name will be returned.
+     *
+     * @return the name to be used as output directory
+     */
     String getOutputName() {
         outputName ?: name
     }

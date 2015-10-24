@@ -5,6 +5,11 @@ import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.logging.LogLevel
 
+/**
+ * Base task to run JavaScript on Trireme.
+ *
+ * @author Soichiro Kashima
+ */
 class TriremeBaseTask extends DefaultTask {
     static final String COMMON_SCRIPT_NAME = "common.js"
 

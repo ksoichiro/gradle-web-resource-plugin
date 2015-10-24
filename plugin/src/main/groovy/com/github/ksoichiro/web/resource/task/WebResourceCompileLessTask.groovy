@@ -6,6 +6,12 @@ import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import groovyx.gpars.GParsPool
 import org.gradle.api.tasks.TaskAction
 
+/**
+ * Gradle task to compile LESS files.<br>
+ * This task uses Trireme and Rhino to run Node modules.
+ *
+ * @author Soichiro Kashima
+ */
 class WebResourceCompileLessTask extends TriremeBaseTask {
     static final String NAME = "webResourceCompileLess"
     static final int NUM_OF_THREADS = 8
