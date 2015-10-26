@@ -29,6 +29,8 @@ apply plugin: 'com.moowork.node'
 apply plugin: 'idea'
 apply plugin: 'build-time-tracker'
 
+archivesBaseName = POM_ARTIFACT_ID
+
 node {
     version = '0.12.7'
     npmVersion = '3.3.9'
