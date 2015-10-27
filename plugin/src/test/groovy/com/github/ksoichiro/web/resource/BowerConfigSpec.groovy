@@ -16,4 +16,18 @@ class BowerConfigSpec extends Specification {
         notThrown(Exception)
         bc.logLevel == LogLevel.INFO
     }
+
+    def "delegating to closure"() {
+        setup:
+        def bc = new BowerConfig()
+
+        when:
+        bc.dependencies {
+            install(name: "foo")
+        }
+
+        then:
+        1 == bc.dependencies.size()
+        bc.dependencies[0].name == "foo"
+    }
 }
