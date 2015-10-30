@@ -1,5 +1,6 @@
 package com.github.ksoichiro.web.resource.task
 
+import com.github.ksoichiro.web.resource.extension.BowerDependency
 import com.github.ksoichiro.web.resource.util.PathResolver
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import org.gradle.api.DefaultTask
@@ -25,29 +26,43 @@ class WebResourceCopyBowerDependenciesTask extends DefaultTask {
 
     @TaskAction
     void exec() {
-        // Remove old files first
-        project.delete(project.file("${extension.base.dest}/${extension.lib.dest}").absolutePath)
+        removeOldFiles()
+        if (hasBowerDependencies()) {
+            copyDependencies()
+            extension.bower.dependencies.each { dependency ->
+                renameDependencyDirIfRequired(dependency)
+            }
+        }
+    }
 
-        if (!extension.bower.dependencies.isEmpty()) {
-            project.copy {
-                from project.fileTree("${extension.workDir}/bower_components").matching {
-                    extension.bower.dependencies.each { dependency ->
-                        String[] expr = dependency.filter
-                        if (expr) {
-                            expr.each { e -> it.include("${dependency.getCacheName()}/${e}") }
-                        } else {
-                            it.include("${dependency.getCacheName()}/**/*")
-                        }
+    void removeOldFiles() {
+        project.delete(project.file("${extension.base.dest}/${extension.lib.dest}").absolutePath)
+    }
+
+    boolean hasBowerDependencies() {
+        !extension.bower.dependencies.isEmpty()
+    }
+
+    void copyDependencies() {
+        project.copy {
+            from project.fileTree("${extension.workDir}/bower_components").matching {
+                extension.bower.dependencies.each { dependency ->
+                    String[] expr = dependency.filter
+                    if (expr) {
+                        expr.each { e -> it.include("${dependency.getCacheName()}/${e}") }
+                    } else {
+                        it.include("${dependency.getCacheName()}/**/*")
                     }
                 }
-                into "${extension.base.dest}/${extension.lib.dest}"
             }
-            extension.bower.dependencies.each { dependency ->
-                def dependencyDir = project.file("${extension.base.dest}/${extension.lib.dest}/${dependency.getCacheName()}")
-                if (dependencyDir.exists()) {
-                    dependencyDir.renameTo(project.file("${extension.base.dest}/${extension.lib.dest}/${dependency.getOutputName()}"))
-                }
-            }
+            into "${extension.base.dest}/${extension.lib.dest}"
+        }
+    }
+
+    void renameDependencyDirIfRequired(BowerDependency dependency) {
+        def dependencyDir = project.file("${extension.base.dest}/${extension.lib.dest}/${dependency.getCacheName()}")
+        if (dependencyDir.exists()) {
+            dependencyDir.renameTo(project.file("${extension.base.dest}/${extension.lib.dest}/${dependency.getOutputName()}"))
         }
     }
 }
