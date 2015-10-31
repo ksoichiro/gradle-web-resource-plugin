@@ -4,6 +4,7 @@ import com.github.ksoichiro.web.resource.node.TriremeNodeRunner
 import com.github.ksoichiro.web.resource.util.PathResolver
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import groovyx.gpars.GParsPool
+import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -35,10 +36,25 @@ class WebResourceCompileLessTask extends TriremeBaseTask {
         if (!extension.less.enabled) {
             return
         }
-        new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
+        writeLessScript()
         writeCommonScript()
         def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.less.src)
         def srcRootFile = project.file(srcRootDir)
+        def src = filterSource(srcRootDir)
+        GParsPool.withPool(NUM_OF_THREADS) {
+            src.asConcurrent {
+                src.each { File file ->
+                    compile(file, srcRootFile.absolutePath)
+                }
+            }
+        }
+    }
+
+    void writeLessScript() {
+        new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
+    }
+
+    FileTree filterSource(def srcRootDir) {
         def src = project.fileTree(dir: srcRootDir)
         extension.less.include.each { src.include it }
         extension.less.exclude.each { src.exclude it }
@@ -53,30 +69,27 @@ class WebResourceCompileLessTask extends TriremeBaseTask {
                 }
             }
         }
-        GParsPool.withPool(NUM_OF_THREADS) {
-            src.asConcurrent {
-                src.each { File file ->
-                    def triremeNodeRunner = new TriremeNodeRunner(
-                        scriptName: SCRIPT_NAME,
-                        workingDir: extension.workDir,
-                        args: [
-                            // lessSrcPath
-                            file.absolutePath,
-                            // lessSrcName
-                            file.name,
-                            // lessDestDir
-                            pathResolver.getDestLess()
-                                + '/'
-                                + file.parent.replace(srcRootFile.absolutePath, "")
-                                .replaceAll("\\\\", "/")
-                                .replaceAll("^/", "")
-                                .replaceAll("/\$", ""),
-                            extension.less.minify,
-                            mapLogLevel(extension.less.logLevel),
-                        ] as String[])
-                    triremeNodeRunner.exec()
-                }
-            }
-        }
+    }
+
+    void compile(File file, String srcRootPath) {
+        def triremeNodeRunner = new TriremeNodeRunner(
+            scriptName: SCRIPT_NAME,
+            workingDir: extension.workDir,
+            args: [
+                // lessSrcPath
+                file.absolutePath,
+                // lessSrcName
+                file.name,
+                // lessDestDir
+                pathResolver.getDestLess()
+                    + '/'
+                    + file.parent.replace(srcRootPath, "")
+                    .replaceAll("\\\\", "/")
+                    .replaceAll("^/", "")
+                    .replaceAll("/\$", ""),
+                extension.less.minify,
+                mapLogLevel(extension.less.logLevel),
+            ] as String[])
+        triremeNodeRunner.exec()
     }
 }

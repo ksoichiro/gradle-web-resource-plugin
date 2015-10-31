@@ -4,6 +4,7 @@ import com.github.ksoichiro.web.resource.node.TriremeNodeRunner
 import com.github.ksoichiro.web.resource.util.PathResolver
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import groovyx.gpars.GParsPool
+import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -35,37 +36,50 @@ class WebResourceCompileCoffeeScriptTask extends TriremeBaseTask {
         if (!extension.coffeeScript.enabled) {
             return
         }
-        new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
+        writeCoffeeScript()
         writeCommonScript()
         def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.coffeeScript.src)
         def srcRootFile = project.file(srcRootDir)
-        def src = project.fileTree(dir: srcRootDir)
-        extension.coffeeScript.include.each { src.include it }
-        extension.coffeeScript.exclude.each { src.exclude it }
+        def src = filterSource(srcRootFile)
         GParsPool.withPool(NUM_OF_THREADS) {
             src.asConcurrent {
                 src.each { File file ->
-                    def triremeNodeRunner = new TriremeNodeRunner(
-                        scriptName: SCRIPT_NAME,
-                        workingDir: extension.workDir,
-                        args: [
-                            // coffeeSrcPath
-                            file.absolutePath,
-                            // coffeeSrcName
-                            file.name,
-                            // coffeeDestDir
-                            pathResolver.getDestCoffee()
-                                + '/'
-                                + file.parent.replace(srcRootFile.absolutePath, "")
-                                .replaceAll("\\\\", "/")
-                                .replaceAll("^/", "")
-                                .replaceAll("/\$", ""),
-                            extension.coffeeScript.minify,
-                            mapLogLevel(extension.coffeeScript.logLevel),
-                        ] as String[])
-                    triremeNodeRunner.exec()
+                    compile(file, srcRootFile.absolutePath)
                 }
             }
         }
+    }
+
+    void writeCoffeeScript() {
+        new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
+    }
+
+    FileTree filterSource(def srcRootDir) {
+        def src = project.fileTree(dir: srcRootDir)
+        extension.coffeeScript.include.each { src.include it }
+        extension.coffeeScript.exclude.each { src.exclude it }
+        src
+    }
+
+    void compile(File file, String srcRootPath) {
+        def triremeNodeRunner = new TriremeNodeRunner(
+            scriptName: SCRIPT_NAME,
+            workingDir: extension.workDir,
+            args: [
+                // coffeeSrcPath
+                file.absolutePath,
+                // coffeeSrcName
+                file.name,
+                // coffeeDestDir
+                pathResolver.getDestCoffee()
+                    + '/'
+                    + file.parent.replace(srcRootPath, "")
+                    .replaceAll("\\\\", "/")
+                    .replaceAll("^/", "")
+                    .replaceAll("/\$", ""),
+                extension.coffeeScript.minify,
+                mapLogLevel(extension.coffeeScript.logLevel),
+            ] as String[])
+        triremeNodeRunner.exec()
     }
 }

@@ -19,10 +19,18 @@ class WebResourceSetupNodeDependenciesTask extends DefaultTask {
 
     @TaskAction
     void exec() {
+        prepareWorkDir()
+        installDependenciesFromJar()
+    }
+
+    void prepareWorkDir() {
         def workDir = extension.workDir
         if (!workDir.exists()) {
             workDir.mkdirs()
         }
+    }
+
+    void installDependenciesFromJar() {
         URL url = getClass().getResource("/${PRE_INSTALLED_NODE_MODULES_DIR}")
         String jarPath = url.toString().replaceAll("jar:file:", "").replaceAll("!.*\$", "")
         String installPath = "${extension.workDir}"
