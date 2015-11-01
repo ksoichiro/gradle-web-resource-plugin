@@ -22,14 +22,29 @@ plugins {
     id 'com.github.kt3k.coveralls' version '2.3.1'
 }
 
-apply plugin: "com.gradle.plugin-publish"
 apply plugin: 'groovy'
-apply plugin: 'signing'
 apply plugin: 'com.moowork.node'
 apply plugin: 'idea'
 apply plugin: 'build-time-tracker'
 
+group = GROUP
+version = VERSION_NAME
 archivesBaseName = POM_ARTIFACT_ID
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile 'io.apigee.trireme:trireme-jar:0.8.8'
+    compile 'org.codehaus.gpars:gpars:1.2.1'
+    testCompile ('org.spockframework:spock-core:1.0-groovy-2.4') {
+        exclude module: 'groovy-all'
+    }
+}
 
 node {
     version = '0.12.7'
@@ -39,84 +54,18 @@ node {
     nodeModulesDir = project.buildDir
 }
 
-// Exclude files as much as possible, to build/clean faster
-ext.excludeModules = [
-    'npm',
-    '.bin',
-    '**/.*',
-    '**/*.gz',
-    '**/appveyor.yml',
-    '**/CHANGE*.md',
-    '**/CONTRIBUTING.md',
-    '**/Gruntfile.js',
-    '**/bower.json',
-    '**/Makefile',
-    '**/build.gradle',
-    '**/gradlew*',
-    '**/test/**',
-    '**/bin/**',
-    '**/example/**',
-    '**/examples/**',
-    '**/demo/**',
-    '**/doc/**',
-    '**/benchmark/**',
-    '**/man/**',
-    '**/sprintf-js/dist/**',
-    '**/handlebars/coverage/**',
-    '**/example.js',
-    '**/test.js',
-    'asn1/tst',
-    // bower
-    'bower/bin',
-    'bower/templates',
-    'bower/HOOKS.md',
-    'bower/lib/commands/cache/clean.js',
-    'bower/lib/commands/help.js',
-    'bower/lib/commands/home.js',
-    'bower/lib/commands/info.js',
-    'bower/lib/commands/init.js',
-    'bower/lib/commands/link.js',
-    'bower/lib/commands/list.js',
-    'bower/lib/commands/login.js',
-    'bower/lib/commands/lookup.js',
-    'bower/lib/commands/prune.js',
-    'bower/lib/commands/register.js',
-    'bower/lib/commands/search.js',
-    'bower/lib/commands/uninstall.js',
-    'bower/lib/commands/unregister.js',
-    'bower/lib/commands/update.js',
-    'bower/lib/commands/version.js',
-    'bower/node_modules/cardinal',
-    'bower/node_modules/inquirer',
-    'bower/node_modules/update-notifier',
-    'bower/node_modules/glob',
-    'bower/node_modules/graceful-fs',
-    'bower/node_modules/insight',
-    'bower/node_modules/request',
-    'bower/node_modules/q',
-    'bower/node_modules/handlebars/node_modules/uglify-js',
-    'bower/node_modules/handlebars/**/node_modules/wordwrap',
-    'bower/node_modules/github/node_modules/mime',
-    'bower/**/node_modules/inflight',
-    'bower/**/node_modules/inherits',
-    'bower/**/node_modules/argparse',
-    'bower/**/node_modules/osenv',
-    'bower/**/node_modules/ansi-regex',
-    'bower/**/node_modules/core-util-is',
-    // coffee-script
-    'coffee-script/CNAME',
-    'coffee-script/repl.js',
-    'coffee-script/register.js',
-    // less
-    'less/lib/less-rhino',
-    'less/lib/less-browser',
-    'less/lib/source-map',
-    'less/dist',
-    'less/browser.js',
-    'less/test.less',
-    // uglify-js
-    'uglify-js/node_modules/async',
-]
+idea {
+    module {
+        excludeDirs += [
+            file('src/main/resources/node_modules'),
+        ]
+    }
+}
+
+cobertura {
+    coverageFormats = ['html', 'xml']
+    coverageSourceDirs = sourceSets.main.groovy.srcDirs
+}
 
 buildtimetracker {
     reporters {
@@ -127,6 +76,8 @@ buildtimetracker {
         }
     }
 }
+
+apply from: "${rootDir}/gradle/exclude.gradle"
 
 task copyPackageInfo << {
     copy {
@@ -180,200 +131,13 @@ task copyNodeModules {
     }
 }
 
-npmInstall.dependsOn('copyPackageInfo')
-copyNodeModules.dependsOn('npmInstall')
-compileGroovy.dependsOn('copyNodeModules')
-
 task cleanNodeModules << {
     project.delete("src/main/resources/node_modules")
 }
 
+npmInstall.dependsOn('copyPackageInfo')
+copyNodeModules.dependsOn('npmInstall')
+compileGroovy.dependsOn('copyNodeModules')
 clean.dependsOn('cleanNodeModules')
 
-group = GROUP
-version = VERSION_NAME
-
-// To release:
-// ./gradlew clean assemble uploadArchives -Prelease
-def isReleaseBuild
-if (hasProperty("release")) {
-    isReleaseBuild = true
-}
-
-def sonatypeRepositoryUrl
-
-if (isReleaseBuild) {
-    if ("$version".endsWith('-SNAPSHOT')) {
-        println "SNAPSHOT BUILD $version"
-        sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-    } else {
-        println "RELEASE BUILD $version"
-        sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-    }
-} else {
-    println "DEBUG BUILD $version"
-    sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-}
-
-// Note: These properties must be defined in ~/.gradle/gradle.properties
-// and signing.keyId, signing.password, signing.secretKeyRingFile, too.
-def username = hasProperty("nexusUsername") ? project.getProperty("nexusUsername") : ""
-def password = hasProperty("nexusPassword") ? project.getProperty("nexusPassword") : ""
-
-def bintrayUsername = hasProperty("bintrayUsername") ? project.getProperty("bintrayUsername") : ""
-def bintrayApiKey = hasProperty("bintrayApiKey") ? project.getProperty("bintrayApiKey") : ""
-
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile 'io.apigee.trireme:trireme-jar:0.8.8'
-    compile 'org.codehaus.gpars:gpars:1.2.1'
-    testCompile ('org.spockframework:spock-core:1.0-groovy-2.4') {
-        exclude module: 'groovy-all'
-    }
-}
-
-repositories {
-    jcenter()
-    mavenCentral()
-}
-
-idea {
-    module {
-        excludeDirs += [
-            file('src/main/resources/node_modules'),
-        ]
-    }
-}
-
-install {
-    repositories.mavenInstaller {
-        pom.artifactId = POM_ARTIFACT_ID
-    }
-}
-
-cobertura {
-    coverageFormats = ['html', 'xml']
-    coverageSourceDirs = sourceSets.main.groovy.srcDirs
-}
-
-afterEvaluate { project ->
-    uploadArchives {
-        if (isReleaseBuild) {
-            repositories {
-                mavenDeployer {
-                    beforeDeployment { deployment -> signing.signPom(deployment) }
-
-                    repository(url: sonatypeRepositoryUrl) {
-                        authentication(userName: username, password: password)
-                    }
-
-                    pom.project {
-                        name POM_NAME
-                        groupId GROUP
-                        description POM_DESCRIPTION
-                        url POM_URL
-                        inceptionYear POM_INCEPTION_YEAR
-
-                        scm {
-                            url POM_SCM_URL
-                            connection POM_SCM_CONNECTION
-                            developerConnection POM_SCM_DEV_CONNECTION
-                        }
-
-                        licenses {
-                            license {
-                                name POM_LICENSE_NAME
-                                url POM_LICENSE_URL
-                                distribution POM_LICENSE_DIST
-                            }
-                        }
-
-                        developers {
-                            developer {
-                                id POM_DEVELOPER_ID
-                                name POM_DEVELOPER_NAME
-                                url POM_DEVELOPER_URL
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            // for development
-            repositories {
-                mavenDeployer {
-                    repository(url: uri('../samples/repo'))
-                }
-            }
-        }
-    }
-
-    // Enable this closure when executing uploadArchives
-    signing {
-        required { isReleaseBuild && gradle.taskGraph.hasTask("uploadArchives") }
-        sign configurations.archives
-    }
-
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    task javadocJar(type: Jar) {
-        classifier = 'javadoc'
-        from groovydoc
-    }
-
-    artifacts {
-        archives sourcesJar
-        archives javadocJar
-    }
-
-    publishing {
-        publications {
-            plugin(MavenPublication) {
-                from components.java
-                artifact sourcesJar
-                artifact javadocJar
-            }
-        }
-    }
-}
-
-bintray {
-    user = bintrayUsername
-    key = bintrayApiKey
-
-    publications = ['plugin']
-
-    pkg {
-        repo = 'maven'
-        name = POM_NAME
-        desc = POM_DESCRIPTION
-        websiteUrl = POM_URL
-        issueTrackerUrl = BINTRAY_ISSUE_TRACKER_URL
-        vcsUrl = BINTRAY_VCS_URL
-        licenses = ['Apache-2.0']
-        labels = ['gradle', 'plugin', 'CoffeeScript', 'LESS']
-        publicDownloadNumbers = true
-        version {
-            attributes = ['gradle-plugin': 'com.github.ksoichiro.web.resource:com.github.ksoichiro:gradle-web-resource-plugin']
-        }
-    }
-}
-
-pluginBundle {
-    website = POM_URL
-    vcsUrl = BINTRAY_VCS_URL
-
-    description = POM_DESCRIPTION
-
-    plugins {
-        webResourcePlugin {
-            id = GRADLE_PLUGIN_ID
-            displayName = POM_NAME
-            tags = ['CoffeeScript', 'LESS']
-        }
-    }
-}
+apply from: "${rootDir}/gradle/release.gradle"
