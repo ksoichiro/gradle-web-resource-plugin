@@ -69,6 +69,7 @@ class WebResourceCompileLessTask extends TriremeBaseTask {
                 }
             }
         }
+        src
     }
 
     void compile(File file, String srcRootPath) {
