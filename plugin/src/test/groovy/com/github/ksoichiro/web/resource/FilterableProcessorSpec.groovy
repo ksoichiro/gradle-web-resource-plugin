@@ -16,4 +16,20 @@ class FilterableProcessorSpec extends Specification {
         fp.enabled
         fp.minify
     }
+
+    def "delegating to closure"() {
+        setup:
+        def fp = new FilterableProcessor("src", "dest", ["**/*.less"], ["**/_*.less"])
+
+        when:
+        fp.filters {
+            include("**/app.less")
+            exclude("**/_app.less")
+        }
+
+        then:
+        2 == fp.filters.size()
+        fp.filters[0].include == "**/app.less"
+        fp.filters[1].exclude == "**/_app.less"
+    }
 }
