@@ -37,7 +37,13 @@ repositories {
 }
 
 dependencies {
-    compile gradleApi()
+    // Thanks to a workaround in https://issues.gradle.org/browse/GRADLE-1715,
+    // using additional build script to exclude Rhino that is bundled with Gradle distribution,
+    // we can avoid the error that occurs when executing Trireme on tests:
+    // java.lang.NoSuchMethodError: org.mozilla.javascript.ScriptRuntime.setObjectProp
+    // Gradle distribution has an older Rhino (1.7R3) and causing conflict.
+    // In 1.7R3, ScriptRuntime does not have setObjectProp() method, which causes the above error.
+    compile new GradleDist(project, '2.8').asFileTree
     compile localGroovy()
     compile 'io.apigee.trireme:trireme-jar:0.8.8'
     compile 'org.codehaus.gpars:gpars:1.2.1'

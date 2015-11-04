@@ -13,7 +13,6 @@ class TriremeNodeRunnerSpec extends Specification {
             scriptName: "test.js",
             workingDir: project.rootDir,
             args: [])
-        runner.retrieveStatus = false
 
         when:
         runner.exec()
