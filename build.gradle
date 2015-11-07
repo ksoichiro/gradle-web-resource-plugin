@@ -13,8 +13,10 @@ apply plugin: 'idea'
 idea {
     module {
         excludeDirs += [
+            file('.vagrant'),
             file('samples/example/.gradle'),
             file('samples/example/build'),
+            file('samples/repo'),
         ]
     }
 }
