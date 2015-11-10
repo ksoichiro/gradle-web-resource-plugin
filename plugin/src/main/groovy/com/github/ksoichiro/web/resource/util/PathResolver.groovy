@@ -12,12 +12,12 @@ class PathResolver {
         this.extension = extension
     }
 
-    String getSrcCoffee() {
-        resolveSrcPath(extension.coffeeScript?.src)
+    List retrieveValidSrcCoffeePaths() {
+        retrieveValidPaths(resolveSrcPath(extension.coffeeScript?.src))
     }
 
-    String getSrcLess() {
-        resolveSrcPath(extension.less?.src)
+    List retrieveValidSrcLessPaths() {
+        retrieveValidPaths(resolveSrcPath(extension.less?.src))
     }
 
     String getDestCoffee() {
@@ -28,8 +28,8 @@ class PathResolver {
         resolveDestPath(extension.less?.dest)
     }
 
-    String getDestLib() {
-        resolveDestPath(extension.lib?.dest)
+    List retrieveValidDestLibPaths() {
+        retrieveValidPaths(resolveDestPath(extension.lib?.dest))
     }
 
     List retrieveValidPaths(String... paths) {
