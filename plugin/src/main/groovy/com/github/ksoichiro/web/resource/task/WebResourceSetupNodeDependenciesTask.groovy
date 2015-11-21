@@ -2,6 +2,7 @@ package com.github.ksoichiro.web.resource.task
 
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.TaskAction
 
 class WebResourceSetupNodeDependenciesTask extends DefaultTask {
@@ -38,8 +39,10 @@ class WebResourceSetupNodeDependenciesTask extends DefaultTask {
         if (!installDir.exists()) {
             installDir.mkdirs()
         }
+        FileTree tree = jarPath.contains("file:") ? project.fileTree(jarPath.split("file:")[1])
+            : project.zipTree(new File(jarPath))
         project.copy {
-            from project.zipTree(new File(jarPath)).matching { it.include("${PRE_INSTALLED_NODE_MODULES_DIR}/**") }
+            from tree.matching { it.include("${PRE_INSTALLED_NODE_MODULES_DIR}/**") }
             into installDir
         }
     }
