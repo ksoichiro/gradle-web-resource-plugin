@@ -39,7 +39,7 @@ class WebResourceSetupNodeDependenciesTask extends DefaultTask {
         if (!installDir.exists()) {
             installDir.mkdirs()
         }
-        FileTree tree = jarPath.contains("file:") ? project.fileTree(jarPath.split("file:")[1])
+        FileTree tree = jarPath.contains("file:") ? project.fileTree(jarPath.split("file:")[1].replaceAll(PRE_INSTALLED_NODE_MODULES_DIR, ""))
             : project.zipTree(new File(jarPath))
         project.copy {
             from tree.matching { it.include("${PRE_INSTALLED_NODE_MODULES_DIR}/**") }
