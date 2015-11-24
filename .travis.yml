@@ -5,8 +5,8 @@ jdk:
   - oraclejdk8
 
 script:
-  - ./gradlew clean build check uploadArchives
-  - cd samples/example && ./gradlew clean webResourceCompile && cd ../../
+  - ./gradlew clean build check uploadArchives --full-stacktrace
+  - cd samples/example && ./gradlew clean webResourceCompile --full-stacktrace && cd ../../
 
 after_success:
-  - ./gradlew cobertura coveralls
+  - ./gradlew cobertura coveralls --full-stacktrace
