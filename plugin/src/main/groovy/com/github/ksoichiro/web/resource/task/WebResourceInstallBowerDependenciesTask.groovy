@@ -27,7 +27,7 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
 
     @TaskAction
     void exec() {
-        if (!extension.bower) {
+        if (extension.bower?.dependencies?.isEmpty()) {
             return
         }
 

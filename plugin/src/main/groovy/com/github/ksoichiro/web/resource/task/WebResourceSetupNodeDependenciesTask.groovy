@@ -34,11 +34,7 @@ class WebResourceSetupNodeDependenciesTask extends DefaultTask {
     void installDependenciesFromJar() {
         URL url = getClass().getResource("/${PRE_INSTALLED_NODE_MODULES_DIR}")
         String jarPath = url.toString().replaceAll("jar:file:", "").replaceAll("!.*\$", "")
-        String installPath = "${extension.workDir}"
-        File installDir = new File(installPath)
-        if (!installDir.exists()) {
-            installDir.mkdirs()
-        }
+        File installDir = extension.workDir
         FileTree tree = jarPath.contains("file:") ? project.fileTree(jarPath.split("file:")[1].replaceAll(PRE_INSTALLED_NODE_MODULES_DIR, ""))
             : project.zipTree(new File(jarPath))
         project.copy {
