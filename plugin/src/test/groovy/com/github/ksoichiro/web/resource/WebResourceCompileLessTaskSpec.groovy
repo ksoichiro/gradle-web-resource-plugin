@@ -5,9 +5,8 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
 
-class WebResourceCompileLessTaskSpec extends Specification {
+class WebResourceCompileLessTaskSpec extends BaseSpec {
     @Rule
     TemporaryFolder temporaryFolder
 
@@ -24,7 +23,7 @@ class WebResourceCompileLessTaskSpec extends Specification {
             |  }
             |}
             |""".stripMargin().stripIndent()
-        project.apply plugin: "com.github.ksoichiro.web.resource"
+        project.apply plugin: PLUGIN_ID
         project.evaluate()
         project.tasks.webResourceSetupNodeDependencies.execute()
         project.tasks.webResourceInstallBowerDependencies.execute()
@@ -50,7 +49,7 @@ class WebResourceCompileLessTaskSpec extends Specification {
             |  }
             |}
             |""".stripMargin().stripIndent()
-        project.apply plugin: "com.github.ksoichiro.web.resource"
+        project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.less.enabled = false
         project.evaluate()
@@ -78,7 +77,7 @@ class WebResourceCompileLessTaskSpec extends Specification {
                 |}
                 |""".stripMargin().stripIndent()
         }
-        project.apply plugin: "com.github.ksoichiro.web.resource"
+        project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.less.filters {
             exclude '**/*.less'

@@ -1,20 +1,12 @@
 package com.github.ksoichiro.web.resource
 
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
-import com.github.ksoichiro.web.resource.task.WebResourceCompileCoffeeScriptTask
-import com.github.ksoichiro.web.resource.task.WebResourceCompileLessTask
-import com.github.ksoichiro.web.resource.task.WebResourceCompileTask
-import com.github.ksoichiro.web.resource.task.WebResourceCopyBowerDependenciesTask
-import com.github.ksoichiro.web.resource.task.WebResourceInstallBowerDependenciesTask
-import com.github.ksoichiro.web.resource.task.WebResourceSetupNodeDependenciesTask
+import com.github.ksoichiro.web.resource.task.*
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.testfixtures.ProjectBuilder
-import spock.lang.Specification
 
-class PluginSpec extends Specification {
-    static final String PLUGIN_ID = 'com.github.ksoichiro.web.resource'
-
+class PluginSpec extends BaseSpec {
     def "apply"() {
         setup:
         Project project = ProjectBuilder.builder().build()

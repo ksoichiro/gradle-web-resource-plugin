@@ -5,9 +5,8 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
 
-class WebResourceCompileCoffeeScriptTaskSpec extends Specification {
+class WebResourceCompileCoffeeScriptTaskSpec extends BaseSpec {
     @Rule
     TemporaryFolder temporaryFolder
 
@@ -20,7 +19,7 @@ class WebResourceCompileCoffeeScriptTaskSpec extends Specification {
         new File(srcDir, "app.coffee").text = """\
             |console log 'Hello, world!'
             |""".stripMargin().stripIndent()
-        project.apply plugin: "com.github.ksoichiro.web.resource"
+        project.apply plugin: PLUGIN_ID
         project.evaluate()
         project.tasks.webResourceSetupNodeDependencies.execute()
         project.tasks.webResourceInstallBowerDependencies.execute()
@@ -42,7 +41,7 @@ class WebResourceCompileCoffeeScriptTaskSpec extends Specification {
         new File(srcDir, "app.coffee").text = """\
             |console log 'Hello, world!'
             |""".stripMargin().stripIndent()
-        project.apply plugin: "com.github.ksoichiro.web.resource"
+        project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.coffeeScript.enabled = false
         project.evaluate()

@@ -4,9 +4,8 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
 
-class WebResourceCompileTaskSpec extends Specification {
+class WebResourceCompileTaskSpec extends BaseSpec {
     @Rule
     TemporaryFolder temporaryFolder
 
@@ -15,7 +14,7 @@ class WebResourceCompileTaskSpec extends Specification {
         Project project = ProjectBuilder.builder().withProjectDir(temporaryFolder.root).build()
 
         when:
-        project.apply plugin: "com.github.ksoichiro.web.resource"
+        project.apply plugin: PLUGIN_ID
         project.evaluate()
         project.tasks.webResourceCompile.execute()
 

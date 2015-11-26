@@ -5,16 +5,15 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
 
-class WebResourceInstallBowerDependenciesTaskSpec extends Specification {
+class WebResourceInstallBowerDependenciesTaskSpec extends BaseSpec {
     @Rule
     TemporaryFolder temporaryFolder
 
     def exec() {
         setup:
         Project project = ProjectBuilder.builder().withProjectDir(temporaryFolder.root).build()
-        project.apply plugin: "com.github.ksoichiro.web.resource"
+        project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
@@ -32,7 +31,7 @@ class WebResourceInstallBowerDependenciesTaskSpec extends Specification {
     def disabled() {
         setup:
         Project project = ProjectBuilder.builder().withProjectDir(temporaryFolder.root).build()
-        project.apply plugin: "com.github.ksoichiro.web.resource"
+        project.apply plugin: PLUGIN_ID
         project.evaluate()
         project.tasks.webResourceSetupNodeDependencies.execute()
 
@@ -47,7 +46,7 @@ class WebResourceInstallBowerDependenciesTaskSpec extends Specification {
     def removeExistentBowerJsonBeforeInstall() {
         setup:
         Project project = ProjectBuilder.builder().withProjectDir(temporaryFolder.root).build()
-        project.apply plugin: "com.github.ksoichiro.web.resource"
+        project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
@@ -76,7 +75,7 @@ class WebResourceInstallBowerDependenciesTaskSpec extends Specification {
         setup:
         File root = temporaryFolder.root
         Project project = ProjectBuilder.builder().withProjectDir(root).build()
-        project.apply plugin: "com.github.ksoichiro.web.resource"
+        project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["src/**/*"]
@@ -87,7 +86,7 @@ class WebResourceInstallBowerDependenciesTaskSpec extends Specification {
 
         when:
         Project project2 = ProjectBuilder.builder().withProjectDir(root).build()
-        project2.apply plugin: "com.github.ksoichiro.web.resource"
+        project2.apply plugin: PLUGIN_ID
         def extension2 = project2.extensions.webResource as WebResourceExtension
         extension2.bower.dependencies {
             install name: "jquery", version: "2.1.4", filter: ["src/**"]

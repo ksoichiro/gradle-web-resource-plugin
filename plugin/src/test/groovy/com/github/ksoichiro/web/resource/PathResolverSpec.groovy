@@ -4,10 +4,8 @@ import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import com.github.ksoichiro.web.resource.util.PathResolver
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import spock.lang.Specification
 
-class PathResolverSpec extends Specification {
-    static final String PLUGIN_ID = 'com.github.ksoichiro.web.resource'
+class PathResolverSpec extends BaseSpec {
     WebResourceExtension extension
     PathResolver pathResolver
 

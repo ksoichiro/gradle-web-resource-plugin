@@ -1,9 +1,8 @@
 package com.github.ksoichiro.web.resource
 
 import com.github.ksoichiro.web.resource.extension.FilterableProcessor
-import spock.lang.Specification
 
-class FilterableProcessorSpec extends Specification {
+class FilterableProcessorSpec extends BaseSpec {
     def "init"() {
         when:
         def fp = new FilterableProcessor("src", "dest", ["**/*.less"], ["**/_*.less"])

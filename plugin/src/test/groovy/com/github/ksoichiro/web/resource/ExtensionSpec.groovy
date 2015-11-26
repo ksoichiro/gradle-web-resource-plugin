@@ -5,9 +5,8 @@ import com.github.ksoichiro.web.resource.extension.WebResourceProcessor
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import spock.lang.Specification
 
-class ExtensionSpec extends Specification {
+class ExtensionSpec extends BaseSpec {
     def "propertyMissing"() {
         setup:
         Project project = ProjectBuilder.builder().build()

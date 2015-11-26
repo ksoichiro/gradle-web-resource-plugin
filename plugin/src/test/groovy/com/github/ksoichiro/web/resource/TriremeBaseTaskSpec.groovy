@@ -2,9 +2,8 @@ package com.github.ksoichiro.web.resource
 
 import com.github.ksoichiro.web.resource.task.TriremeBaseTask
 import org.gradle.api.logging.LogLevel
-import spock.lang.Specification
 
-class TriremeBaseTaskSpec extends Specification {
+class TriremeBaseTaskSpec extends BaseSpec {
     def logLevel() {
         expect:
         s == TriremeBaseTask.mapLogLevel(l)

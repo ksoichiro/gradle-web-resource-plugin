@@ -5,9 +5,8 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
 
-class WebResourceCopyBowerDependenciesTaskSpec extends Specification {
+class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
     @Rule
     TemporaryFolder temporaryFolder
 
@@ -15,7 +14,7 @@ class WebResourceCopyBowerDependenciesTaskSpec extends Specification {
         setup:
         File root = temporaryFolder.root
         Project project = ProjectBuilder.builder().withProjectDir(root).build()
-        project.apply plugin: "com.github.ksoichiro.web.resource"
+        project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
@@ -36,7 +35,7 @@ class WebResourceCopyBowerDependenciesTaskSpec extends Specification {
         setup:
         File root = temporaryFolder.root
         Project project = ProjectBuilder.builder().withProjectDir(root).build()
-        project.apply plugin: "com.github.ksoichiro.web.resource"
+        project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2"
