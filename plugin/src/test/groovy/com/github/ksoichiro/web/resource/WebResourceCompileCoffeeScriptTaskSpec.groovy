@@ -17,7 +17,7 @@ class WebResourceCompileCoffeeScriptTaskSpec extends BaseSpec {
         File srcDir = new File(root, "src/main/coffee")
         srcDir.mkdirs()
         new File(srcDir, "app.coffee").text = """\
-            |console log 'Hello, world!'
+            |console.log 'Hello, world!'
             |""".stripMargin().stripIndent()
         project.apply plugin: PLUGIN_ID
         project.evaluate()
@@ -26,10 +26,12 @@ class WebResourceCompileCoffeeScriptTaskSpec extends BaseSpec {
 
         when:
         project.tasks.webResourceCompileCoffeeScript.execute()
+        def compiled = new File("${root}/build/webResource/outputs/js/app.js")
 
         then:
         notThrown(Exception)
-        new File("${root}/build/webResource/outputs/js/app.js").exists()
+        compiled.exists()
+        compiled.text == "!function(){console.log(\"Hello, world!\")}.call(this);"
     }
 
     def disabled() {
@@ -39,7 +41,7 @@ class WebResourceCompileCoffeeScriptTaskSpec extends BaseSpec {
         File srcDir = new File(root, "src/main/coffee")
         srcDir.mkdirs()
         new File(srcDir, "app.coffee").text = """\
-            |console log 'Hello, world!'
+            |console.log 'Hello, world!'
             |""".stripMargin().stripIndent()
         project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension

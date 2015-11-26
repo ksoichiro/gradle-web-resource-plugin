@@ -30,10 +30,12 @@ class WebResourceCompileLessTaskSpec extends BaseSpec {
 
         when:
         project.tasks.webResourceCompileLess.execute()
+        def compiled = new File("${root}/build/webResource/outputs/css/app.css")
 
         then:
         notThrown(Exception)
-        new File("${root}/build/webResource/outputs/css/app.css").exists()
+        compiled.exists()
+        compiled.text == ".foo .bar{color:#f00}"
     }
 
     def disabled() {
