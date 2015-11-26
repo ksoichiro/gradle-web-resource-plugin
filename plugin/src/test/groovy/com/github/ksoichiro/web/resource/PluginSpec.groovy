@@ -3,10 +3,14 @@ package com.github.ksoichiro.web.resource
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import com.github.ksoichiro.web.resource.task.*
 import org.gradle.api.Project
-import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 
 class PluginSpec extends BaseSpec {
+    @Rule
+    TemporaryFolder temporaryFolder
+
     def "apply"() {
         setup:
         Project project = ProjectBuilder.builder().build()
@@ -26,7 +30,7 @@ class PluginSpec extends BaseSpec {
 
     def "evaluate1"() {
         when:
-        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/projects/compile")).build().with { project ->
+        Project project = ProjectBuilder.builder().withProjectDir(temporaryFolder.root).build().with { project ->
             apply plugin: PLUGIN_ID
             webResource {
                 bower {
@@ -46,7 +50,7 @@ class PluginSpec extends BaseSpec {
 
     def "evaluate2"() {
         when:
-        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/projects/compile")).build().with { project ->
+        Project project = ProjectBuilder.builder().withProjectDir(temporaryFolder.root).build().with { project ->
             apply plugin: PLUGIN_ID
             webResource {
                 less {
@@ -79,7 +83,7 @@ class PluginSpec extends BaseSpec {
 
     def "evaluate3"() {
         when:
-        Project project = ProjectBuilder.builder().withProjectDir(new File("src/test/projects/compile")).build().with { project ->
+        Project project = ProjectBuilder.builder().withProjectDir(temporaryFolder.root).build().with { project ->
             apply plugin: PLUGIN_ID
             webResource {
                 less {
@@ -97,19 +101,5 @@ class PluginSpec extends BaseSpec {
 
         then:
         project
-    }
-
-    void deleteOutputs(Project project) {
-        ['.gradle', 'build'].each {
-            if (project.file(it).exists()) {
-                project.delete(it)
-            }
-        }
-    }
-
-    void setupRepositories(Project project) {
-        project.repositories { RepositoryHandler it ->
-            it.mavenCentral()
-        }
     }
 }
