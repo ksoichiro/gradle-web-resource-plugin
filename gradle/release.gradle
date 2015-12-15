@@ -170,4 +170,8 @@ pluginBundle {
             tags = ['CoffeeScript', 'LESS', 'Bower']
         }
     }
+
+    mavenCoordinates {
+        artifactId = POM_ARTIFACT_ID
+    }
 }
