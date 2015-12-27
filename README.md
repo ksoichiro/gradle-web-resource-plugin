@@ -76,13 +76,13 @@ src
 
 Execute build task:
 
-```sh
+```console
 $ ./gradlew webResourceCompile
 ```
 
 You can see the built resources:
 
-```sh
+```
 build/webResource/outputs
 ├── css
 │   └── app.css
@@ -177,7 +177,7 @@ See [samples/example](samples/example) directory.
 
 To build this project:
 
-```sh
+```console
 $ git clone https://github.com/ksoichiro/gradle-web-resource-plugin.git
 $ cd gradlew-web-resource-plugin
 $ ./gradlew uploadArchives
