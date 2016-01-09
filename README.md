@@ -265,11 +265,11 @@ so I also need to install Node.js to include JavaScript dependencies into our ap
 
 [srs/gradle-node-plugin](https://github.com/srs/gradle-node-plugin) does most of all things,
 but still I (or other team members who writes Java codes usually) need to learn about node, npm, bower, etc.
-These are so good softwares but all we want to do is just managing JavaScript dependencies
+These are so good software but all we want to do is just managing JavaScript dependencies
 just like other jar dependencies.
 I know the Webjars project is also trying to solve this problem,
 but it supports not all of the JavaScript projects and some of the jars are uploaded
-by someone who we don't know and their contents are not necesserily reliable.
+by someone who we don't know and their contents are not necessarily reliable.
 We want to use directly the trusted JavaScript projects.
 
 So I wrapped all of them with a Gradle plugin.
@@ -295,7 +295,7 @@ This plugin deeply depends on these excellent projects.
 * [srs/gradle-node-plugin](https://github.com/srs/gradle-node-plugin)
     * Node/npm wrapper for Gradle to aggregating npm dependencies.
 * [npm/npm](https://github.com/npm/npm)
-    * Node packages manager used in bulid phase to aggregate Node libraries.
+    * Node packages manager used in build phase to aggregate Node libraries.
 * [bower/bower](https://github.com/bower/bower)
     * Bundled in the plugin jar to manage Browser JavaScript libraries.
 * [less/less.js](https://github.com/less/less.js)
