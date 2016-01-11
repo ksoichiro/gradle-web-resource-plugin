@@ -1,4 +1,5 @@
 {
+    "private": true,
     "devDependencies": {
         "bower": "1.6.3",
         "request": "2.53.0",
