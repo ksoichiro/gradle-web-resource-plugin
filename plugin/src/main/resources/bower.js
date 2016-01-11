@@ -89,9 +89,9 @@ function install(data) {
       validCacheName = log.data.pkgMeta.name;
       validate = true;
     } else if (log.id === 'resolve') {
-      common.logI(logLevel, util.format("resolving %s#%s", name, version));
+      common.logI(logLevel, util.format("resolving %s", log.data.resolver.name));
     } else if (log.id === 'download') {
-      common.logI(logLevel, util.format("downloading %s#%s", name, version));
+      common.logI(logLevel, util.format("downloading %s", log.data.resolver.name));
     } else if (log.id === 'progress') {
       if (writingProgress) {
         common.logWriteI(logLevel, "\x1B[0G");
