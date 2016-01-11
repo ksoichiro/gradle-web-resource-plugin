@@ -3,6 +3,7 @@ package com.github.ksoichiro.web.resource.node
 import io.apigee.trireme.core.NodeEnvironment
 import io.apigee.trireme.core.NodeScript
 import io.apigee.trireme.core.ScriptStatus
+import org.gradle.api.GradleException
 
 /**
  * Wrapper class to run Node.js with Trireme/Rhino.
@@ -23,5 +24,12 @@ class TriremeNodeRunner {
         script.setNodeVersion(NODE_VERSION)
         status = script.execute().get()
         env.close()
+        if (!successfullyFinished()) {
+            throw new GradleException("Error occurred while processing JavaScript. exitCode: ${status?.exitCode}, cause: ${status?.cause?.message}", status?.cause)
+        }
+    }
+
+    public boolean successfullyFinished() {
+        status != null && status.isOk()
     }
 }
