@@ -79,4 +79,34 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
         new File("${root}/build/webResource/outputs/lib/jquery").exists()
         externalDependency.exists()
     }
+
+    def excludeFromClean() {
+        setup:
+        File root = temporaryFolder.root
+        // Will be kept
+        File externalDependency1 = new File("${root}/build/webResource/outputs/lib/foo")
+        externalDependency1.mkdirs()
+        // Will be removed on update
+        File externalDependency2 = new File("${root}/build/webResource/outputs/lib/bar")
+        externalDependency2.mkdirs()
+        Project project = ProjectBuilder.builder().withProjectDir(root).build()
+        project.apply plugin: PLUGIN_ID
+        def extension = project.extensions.webResource as WebResourceExtension
+        extension.lib.excludeFromClean = ["foo"]
+        extension.bower.dependencies {
+            install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
+        }
+        project.evaluate()
+        project.tasks.webResourceSetupNodeDependencies.execute()
+        project.tasks.webResourceInstallBowerDependencies.execute()
+
+        when:
+        project.tasks.webResourceCopyBowerDependencies.execute()
+
+        then:
+        notThrown(Exception)
+        new File("${root}/build/webResource/outputs/lib/jquery").exists()
+        externalDependency1.exists()
+        !externalDependency2.exists()
+    }
 }

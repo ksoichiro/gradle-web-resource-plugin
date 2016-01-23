@@ -37,7 +37,18 @@ class WebResourceCopyBowerDependenciesTask extends DefaultTask {
 
     void removeOldFiles() {
         if (extension.lib.cleanOnUpdate) {
-            project.delete(project.file("${extension.base.dest}/${extension.lib.dest}").absolutePath)
+            File targetDir = project.file("${extension.base.dest}/${extension.lib.dest}")
+            if (extension.lib.excludeFromClean && !extension.lib.excludeFromClean.isEmpty()) {
+                // Delete all files except files that are listed in excludeFromClean
+                targetDir.eachFile {
+                    if (!extension.lib.excludeFromClean.contains(it.name)) {
+                        project.delete(it.absolutePath)
+                    }
+                }
+            } else {
+                // Delete all
+                project.delete(targetDir.absolutePath)
+            }
         }
     }
 
