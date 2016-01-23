@@ -20,7 +20,7 @@ class WebResourceExtension {
     BowerConfig bower
     FilterableProcessor coffeeScript
     FilterableProcessor less
-    WebResourceProcessor lib
+    LibraryProcessor lib
 
     WebResourceExtension(Project project) {
         this.project = project
@@ -30,7 +30,7 @@ class WebResourceExtension {
         this.bower = new BowerConfig()
         this.coffeeScript = new FilterableProcessor("coffee", "js", ['**/*.coffee'], ['**/_*.coffee'])
         this.less = new FilterableProcessor("less", "css", ['**/*.less'], ['**/_*.less'])
-        this.lib = new WebResourceProcessor(null, "lib")
+        this.lib = new LibraryProcessor("lib")
 
         def logLevel = project.gradle.startParameter.logLevel
         this.bower.logLevel = logLevel

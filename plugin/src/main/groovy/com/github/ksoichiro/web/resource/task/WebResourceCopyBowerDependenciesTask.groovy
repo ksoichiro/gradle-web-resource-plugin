@@ -36,7 +36,9 @@ class WebResourceCopyBowerDependenciesTask extends DefaultTask {
     }
 
     void removeOldFiles() {
-        project.delete(project.file("${extension.base.dest}/${extension.lib.dest}").absolutePath)
+        if (extension.lib.cleanOnUpdate) {
+            project.delete(project.file("${extension.base.dest}/${extension.lib.dest}").absolutePath)
+        }
     }
 
     boolean hasBowerDependencies() {
