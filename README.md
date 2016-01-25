@@ -18,7 +18,7 @@ Apply plugin in build.gradle:
 ```gradle
 // Gradle 2.1+
 plugins {
-    id "com.github.ksoichiro.web.resource" version "1.1.1"
+    id "com.github.ksoichiro.web.resource" version "1.1.2"
 }
 
 // Gradle 2.0 and former
@@ -27,7 +27,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:1.1.1'
+        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:1.1.2'
     }
 }
 
@@ -42,7 +42,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:1.1.2-SNAPSHOT'
+        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:1.1.3-SNAPSHOT'
     }
 }
 
