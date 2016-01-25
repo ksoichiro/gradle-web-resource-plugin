@@ -9,7 +9,7 @@ env:
   - GRADLE_OPTS="-Xmx1024m -Xms256m -XX:MaxPermSize=256m -XX:PermSize=256m"
 
 script:
-  - ./gradlew clean build check uploadArchives --full-stacktrace
+  - ./gradlew clean build uploadArchives --full-stacktrace
   - cd samples/example && ./gradlew clean webResourceCompile --full-stacktrace && cd ../../
 
 after_success:
