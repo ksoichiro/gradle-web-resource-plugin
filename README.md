@@ -284,6 +284,11 @@ So I wrapped all of them with a Gradle plugin.
 and its format is changed in v1.0.0 to more Gradle like 
 configuration format.
 
+## Contribution
+
+Contributions are welcome!  
+Please check the [contribution guideline](CONTRIBUTING.md) before submitting issues or sending pull requests.
+
 ## Thanks
 
 This plugin deeply depends on these excellent projects.
