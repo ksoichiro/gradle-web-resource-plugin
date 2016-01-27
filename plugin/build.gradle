@@ -69,6 +69,10 @@ idea {
     }
 }
 
+test{
+    maxParallelForks = 1
+}
+
 cobertura {
     coverageFormats = ['html', 'xml']
     coverageSourceDirs = sourceSets.main.groovy.srcDirs
