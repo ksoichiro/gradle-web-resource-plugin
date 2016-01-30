@@ -1,0 +1,85 @@
+@import "_global.less";
+
+#bootstrap {
+    .theme(
+        @theme-main-color: #2196F3; // Blue 500
+        @theme-border-color: #2196F3; // #1E88E5; // Blue 600
+        @theme-brand-color: #E3F2FD; // Blue 50
+        @theme-focus-color: #1976D2; // Blue 800
+        @theme-pagination-color: #337ab7;
+        @theme-dummy: 0
+    ) {
+        &, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+            font-family: @global-font-family;
+        }
+        & {
+            font-size: 14px;
+        }
+        h1 {
+            font-size: 26px;
+        }
+        h2 {
+            font-size: 22px;
+        }
+        h3 {
+            font-size: 20px;
+        }
+
+        .navbar-inverse {
+            background-color: @theme-main-color;
+            border-color: @theme-border-color;
+            .navbar-brand,
+            .navbar-nav>li>a {
+                color: @theme-brand-color;
+            }
+            .navbar-nav>.open>a,
+            .navbar-nav>.open>a:focus,
+            .navbar-nav>.open>a:hover {
+                background-color: @theme-focus-color;
+            }
+            .navbar-toggle {
+                background-color: @theme-main-color;
+            }
+            .navbar-toggle {
+                border-color: @theme-focus-color;
+                &:hover,
+                &:focus {
+                    background-color: @theme-border-color;
+                }
+            }
+            .navbar-collapse {
+                border-color: @theme-border-color;
+            }
+        }
+        .pagination>li>a,
+        .pagination>li>span {
+            color: @theme-pagination-color;
+        }
+        .pagination>.active>a,
+        .pagination>.active>a:focus,
+        .pagination>.active>a:hover,
+        .pagination>.active>span,
+        .pagination>.active>span:focus,
+        .pagination>.active>span:hover {
+            color: #fff;
+            background-color: @theme-pagination-color;
+            border-color: @theme-pagination-color;
+        }
+        @media (min-width: 768px) {
+            .navbar-right {
+                margin-right: 10px;
+            }
+        }
+        @media (max-width: 768px) {
+            .navbar-inverse {
+                .navbar-nav>.open .dropdown-menu>li>a {
+                    color: @theme-brand-color;
+                }
+            }
+        }
+        .table-normal {
+            .table;
+            .table-striped;
+        }
+    }
+}
