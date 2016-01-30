@@ -1,0 +1,98 @@
+@import "_global.less";
+
+#layout {
+    .global() {
+        @nav-height: 50px;
+
+        .content {
+            position: relative;
+            top: @nav-height;
+        }
+
+        #body-login {
+            @bg-from: #1976D2;
+            @bg-to: #64B5F6;
+            @base_color: #fff;
+            @base_width: 400px;
+
+            background: -moz-linear-gradient(left, @bg-from, @bg-to);
+            background: -webkit-gradient(linear, left top, right top, from(@bg-from), to(@bg-to));
+
+            p, a {
+                color: @base_color;
+            }
+
+            #panel-login {
+                background-color: #ffffff;
+                margin-top: 100px;
+                margin-bottom: 100px;
+                width: 100%;
+
+                h3, a {
+                    color: #1565C0;
+                }
+                .panel-heading h3 {
+                    text-align: center;
+                }
+                .panel-heading {
+                    h3 {
+                        margin-top: 30px;
+                    }
+                    a {
+                        text-decoration: none;
+                    }
+                }
+
+                .panel-main {
+                    width: @base_width;
+                    margin: auto;
+                    .login-header {
+                        height: 62px;
+                    }
+                    .login-footer {
+                        height: 80px;
+                    }
+                    .forgot-password {
+                        margin-top: 20px;
+                    }
+                    #password {
+                        margin-bottom: 10px;
+                    }
+                }
+            }
+
+            @footer-margin: 30px;
+            .footer {
+                width: 100%;
+                .row {
+                    max-width: 960px;
+                    margin: auto;
+                }
+                padding: 0 @footer-margin;
+                padding-top: @footer-margin;
+                padding-bottom: @footer-margin;
+                border-top: 1px solid rgba(255, 255, 255, 0.5);
+                * {
+                    color: #fff;
+                }
+            }
+
+            @media (min-height: 710px) {
+                .footer {
+                    position: fixed;
+                    left: 0px;
+                    bottom: 0px;
+                }
+            }
+        }
+
+        .form-control.top {
+            .border-bottom-radius(0);
+        }
+        .form-control.bottom {
+            .border-top-radius(0);
+        }
+    }
+    .theme() {
+    }
+}

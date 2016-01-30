@@ -3,3 +3,62 @@
 body {
     background: #ffffff;
 }
+
+@import (reference) "_global.less";
+@import (reference) "_bootstrap-custom.less";
+@import (reference) "_sidebar.less";
+@import (reference) "_layout.less";
+
+#layout.global;
+
+.theme-normal {
+    #bootstrap.theme;
+    #sidebar.theme;
+    #layout.theme;
+}
+
+.theme-dark {
+    #bootstrap.theme(
+        @theme-main-color: #424242; // Grey 700
+        @theme-border-color: #424242; // Grey 700
+        @theme-brand-color: #FAFAFA; // Grey 50
+        @theme-focus-color: #212121; // Grey 800
+        @theme-pagination-color: #E57373; // Red 300
+    );
+
+    #sidebar.theme(
+        @nav-border-color: #E57373; // Red 300
+        @nav-highlight-color: #EF9A9A; // Red 200
+        @nav-side-bar-top-color: #424242; // Grey 700
+    );
+
+    #layout.theme;
+}
+
+.theme-parse {
+    #bootstrap.theme(
+        @theme-main-color: #485761;
+        @theme-border-color: #485761;
+        @theme-brand-color: #FFFFFF;
+        @theme-focus-color: #34434d;
+        @theme-pagination-color: #5298fc;
+    );
+
+    #sidebar.theme(
+        @nav-border-color: #5298fc;
+        @nav-highlight-color: #5298fc;
+        @nav-color: #ffffff;
+        @nav-sub-menu-hover-color: #c5dbec;
+        @nav-border-left-width: 0px;
+        @nav-bg-color: #6d808e;
+        @nav-bg-hover-color: #34434d;
+        @nav-bg-active-color: #5298fc;
+        @nav-bg-active-hover-color: #5298fc;
+        @nav-bg-sub-menu-color: #34434d;
+        @nav-bg-sub-menu-hover-color: #34434d;
+        @nav-li-border-width: 0px;
+        @nav-side-bar-top-color: #485761;
+    );
+
+    #layout.theme;
+}
