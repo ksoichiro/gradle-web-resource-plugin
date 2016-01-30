@@ -7,6 +7,7 @@ exports.mkdirsSync = mkdirsSync;
 exports.mkdirsIfNotExistSync = mkdirsIfNotExistSync;
 
 var fs = require('fs');
+var mkdirp = require('mkdirp');
 
 // 0: error, 1: warning, 2: info, 3: debug
 function logE(level, message) {
@@ -40,20 +41,7 @@ function logWriteI(level, message) {
 }
 
 function mkdirsSync(dir) {
-  var dirs = dir.split('/');
-  var s = '';
-  for (var i = 0; i < dirs.length; i++) {
-    s += (s.length == 0 ? '' : '/') + dirs[i];
-    if (!fs.existsSync(s)) {
-      try {
-        fs.mkdirSync(s);
-      } catch (err) {
-        if (err.code == 'EEXIST') {
-          // Other thread might create this directory at the same time, so ignore it
-        }
-      }
-    }
-  }
+  mkdirp.sync(dir);
 }
 
 function mkdirsIfNotExistSync(dir) {

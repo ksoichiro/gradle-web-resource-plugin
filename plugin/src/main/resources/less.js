@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var less = require('less');
+var async = require('async');
 var common = require('./common.js');
 
 var lessSrcPath = process.argv[2];
@@ -14,20 +15,35 @@ lessConvert(lessSrcPath, lessSrcName, [path.dirname(lessSrcPath)], path.join(les
 
 function lessConvert(filepath, filename, searchPaths, outputPath) {
   var lessString = fs.readFileSync(filepath, 'utf8');
-  less.render(lessString,
-    {
-      paths: searchPaths,
-      filename: filename,
-      compress: minify
-    },
-    function (e, output) {
-      common.mkdirsIfNotExistSync(path.dirname(outputPath));
-      fs.writeFile(outputPath, output.css, function(err) {
-        if (err) {
-          common.logE(logLevel, err);
-          process.exit(1);
-        }
-        common.logI(logLevel, 'LESS: processed ' + filepath);
-      });
-    });
+  async.series([
+    function(callback) {
+      less.render(lessString,
+        {
+          paths: searchPaths,
+          filename: filename,
+          compress: minify
+        },
+        function (e, output) {
+          if (e) {
+            common.logE(logLevel, 'LESS: compilation failed: ' + e);
+            callback(e, "render");
+            return;
+          }
+          common.mkdirsIfNotExistSync(path.dirname(outputPath));
+          fs.writeFile(outputPath, output.css, function(err) {
+            if (err) {
+              common.logE(logLevel, 'LESS: saving file failed: ' + err);
+              callback(err, "render");
+            } else {
+              common.logI(logLevel, 'LESS: processed ' + filepath);
+              callback(null, "render");
+            }
+          });
+        });
+    }
+  ], function(err, results) {
+    if (err) {
+      process.exit(1);
+    }
+  });
 }
