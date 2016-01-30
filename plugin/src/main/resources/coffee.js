@@ -20,19 +20,23 @@ coffeeConvert(coffeeSrcPath, coffeeSrcName, [path.dirname(coffeeSrcPath)], path.
 function coffeeConvert(filepath, filename, searchPaths, outputPath) {
   var coffeeString = fs.readFileSync(filepath, 'utf8');
 
-  coffeeString = processInclude(coffeeString, filepath)
-
-  var js = coffee.compile(coffeeString, {});
-  if (minify) {
-    var minified = UglifyJS.minify(js, {fromString: true, compress: {evaluate: false}});
-    js = minified.code;
+  try {
+    coffeeString = processInclude(coffeeString, filepath)
+    var js = coffee.compile(coffeeString, {});
+    if (minify) {
+      var minified = UglifyJS.minify(js, {fromString: true, compress: {evaluate: false}});
+      js = minified.code;
+    }
+  } catch (e) {
+    common.logE(logLevel, 'CoffeeScript: compilation failed: ' + e);
+    process.exit(1);
   }
 
   common.mkdirsIfNotExistSync(path.dirname(outputPath));
 
   fs.writeFile(outputPath, js, function(err) {
     if (err) {
-      common.logE(logLevel, err);
+      common.logE(logLevel, 'CoffeeScript: saving file failed: ' + err);
       process.exit(1);
     }
     common.logI(logLevel, 'CoffeeScript: processed ' + filepath);

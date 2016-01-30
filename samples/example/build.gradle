@@ -27,6 +27,10 @@ webResource {
         logLevel LogLevel.INFO
     }
 
+    coffeeScript {
+        logLevel LogLevel.INFO
+    }
+
     // You can also set like this:
     //coffeeScript.minify true
 
