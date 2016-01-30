@@ -10,6 +10,13 @@ var lessDestDir = process.argv[4];
 var minify = process.argv[5] === 'true';
 var logLevel = parseInt(process.argv[6]);
 
+// Calling exit from async function does not work,
+// so hook exiting event and exit again.
+var exitCode = 0;
+process.on('exit', function() {
+  process.reallyExit(exitCode);
+});
+
 common.mkdirsIfNotExistSync(lessDestDir);
 lessConvert(lessSrcPath, lessSrcName, [path.dirname(lessSrcPath)], path.join(lessDestDir, lessSrcName.replace(/\.less/, '.css')));
 
@@ -35,7 +42,6 @@ function lessConvert(filepath, filename, searchPaths, outputPath) {
               common.logE(logLevel, 'LESS: saving file failed: ' + err);
               callback(err, "render");
             } else {
-              common.logI(logLevel, 'LESS: processed ' + filepath);
               callback(null, "render");
             }
           });
@@ -43,7 +49,9 @@ function lessConvert(filepath, filename, searchPaths, outputPath) {
     }
   ], function(err, results) {
     if (err) {
-      process.exit(1);
+      exitCode = 1;
+    } else {
+      common.logI(logLevel, 'LESS: processed ' + filepath);
     }
   });
 }
