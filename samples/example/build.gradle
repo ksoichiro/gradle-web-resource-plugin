@@ -23,10 +23,9 @@ apply plugin: 'com.github.ksoichiro.web.resource'
 apply plugin: 'build-time-tracker'
 
 webResource {
-    //less {
-    //    minify true
-    //    logLevel LogLevel.INFO
-    //}
+    less {
+        logLevel LogLevel.INFO
+    }
 
     // You can also set like this:
     //coffeeScript.minify true
