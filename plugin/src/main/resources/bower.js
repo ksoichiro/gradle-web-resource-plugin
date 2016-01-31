@@ -9,6 +9,13 @@ var logLevel = parseInt(process.argv[2]);
 // [ {name: 'foo', version: '1.0.0', cacheName: 'Foo.js' }, ... ];
 var packages = JSON.parse(process.argv[3]);
 
+// Calling exit from async function does not work,
+// so hook exiting event and exit again.
+var exitCode = 0;
+process.on('exit', function() {
+  process.reallyExit(exitCode);
+});
+
 installWithCacheIfPossible(0);
 
 function installWithCacheIfPossible(idx) {
@@ -24,11 +31,15 @@ function installWithCacheIfPossible(idx) {
   .then(checkCache)
   .then(install)
   .catch(function(error) {
-    common.logE(logLevel, error);
-    process.exit(1);
+    if (error) {
+      common.logE(logLevel, 'Bower: ' + error);
+    }
+    exitCode = 1;
   })
   .done(function() {
-    installWithCacheIfPossible(idx + 1);
+    if (exitCode === 0) {
+      installWithCacheIfPossible(idx + 1);
+    }
   });
 }
 
@@ -39,9 +50,8 @@ function checkCache(data) {
   var deferred = Q.defer();
   bower.commands.cache.list([cacheName], {}, {})
   .on('error', function(err) {
-    common.logE(logLevel, 'Checking cache failed');
-    common.logE(logLevel, err);
-    process.exit(1);
+    common.logE(logLevel, 'Bower: checking cache failed: ' + err);
+    deferred.reject();
   })
   .on('end', function (r) {
     var offline = false;
@@ -67,12 +77,11 @@ function install(data) {
   if (installedVersion !== '') {
     // already installed
     if (version !== installedVersion) {
-      common.logE(logLevel, util.format('update required for %s: please remove bower_components/%s and execute again.', name, name));
-      process.exit(1);
-    } else if (version == installedVersion) {
-      // already installed the version
+      common.logE(logLevel, util.format('Bower: update required for %s: please remove bower_components/%s and execute again.', name, name));
+      deferred.reject();
+    } else {
+      deferred.resolve();
     }
-    deferred.resolve();
     return deferred.promise;
   }
 
@@ -105,8 +114,8 @@ function install(data) {
     }
   })
   .on('error', function (err) {
-      common.logE(logLevel, err);
-      process.exit(1);
+    common.logE(logLevel, 'Bower: install failed: ' + err);
+    deferred.reject();
   })
   .on('end', function (installed) {
       common.logI(logLevel, 'installed ' + name + '#' + version + (offline ? ' (offline)' : ''));
