@@ -1,7 +1,7 @@
 {
     "private": true,
     "devDependencies": {
-        "bower": "1.6.3",
+        "bower": "1.7.6",
         "request": "2.53.0",
         "coffee-script": "1.10.0",
         "uglify-js": "2.3.6",

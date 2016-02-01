@@ -134,11 +134,38 @@ task copyNodeModules {
         // Apply patches:
         // Resolving cache while installing dependency in bower fails when executing with Trireme,
         // so apply a patch for it
-        File f = new File("${projectDir}/src/main/resources/node_modules/bower/lib/core/ResolveCache.js")
+        File f = new File("${projectDir}/src/main/resources/node_modules/bower/lib/lib/core/ResolveCache.js")
         def replaced = f.text.replaceAll(
             "if \\(err\\.code === 'ENOENT'\\) \\{",
             "if (err.code === 'ENOENT' || err.code === 'ENOTDIR') {")
         f.text = replaced
+
+        // bower 1.7.6 includes git avialability check with `which` module,
+        // but `which` doesn't work with node 0.12 on trireme.
+        // So if we use bower 1.7.6 and node 0.12 included in trireme 0.8.8 together,
+        // we must skip this check to execute bower.
+        // I confirmed this behavior with a simple, small index.js:
+        //   var which = require('which');
+        //   try {
+        //     which.sync('git');
+        //     console.log('git is installed');
+        //   } catch(ex) {
+        //     console.log(ex);
+        //   }
+        // This produces different result in node 0.10 and 0.12:
+        //   $ trireme --node-version=0.12 index.js
+        //   { [Error: not found: git]
+        //     message: 'not found: git',
+        //     fileName: '/Users/dev/.nvm/v5.3.0/lib/node_modules/which/which.js',
+        //     lineNumber: 120 }
+        //   $ trireme --node-version=0.10 index.js
+        //   git is installed
+        //
+        //f = new File("${projectDir}/src/main/resources/node_modules/bower/lib/lib/core/resolvers/GitResolver.js")
+        //replaced = f.text.replaceAll(
+        //    "hasGit = false;",
+        //    "hasGit = true;")
+        //f.text = replaced
     }
 }
 

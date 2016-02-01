@@ -9,7 +9,7 @@ import org.gradle.api.GradleException
  * Wrapper class to run Node.js with Trireme/Rhino.
  */
 class TriremeNodeRunner {
-    public static final String NODE_VERSION = "0.12"
+    public static final String NODE_VERSION = "0.10"
     File workingDir
     String scriptName
     String scriptPath
