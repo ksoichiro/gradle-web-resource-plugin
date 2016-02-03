@@ -13,4 +13,4 @@ script:
   - cd samples/example && ./gradlew clean webResourceCompile --full-stacktrace && cd ../../
 
 after_success:
-  - ./gradlew cobertura coveralls --full-stacktrace
+  - ./gradlew coveralls --full-stacktrace
