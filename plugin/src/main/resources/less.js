@@ -4,11 +4,9 @@ var less = require('less');
 var Q = require('q');
 var common = require('./common.js');
 
-var lessSrcPath = process.argv[2];
-var lessSrcName = process.argv[3];
-var lessDestDir = process.argv[4];
-var minify = process.argv[5] === 'true';
-var logLevel = parseInt(process.argv[6]);
+var lessSrcSet = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
+var minify = process.argv[3] === 'true';
+var logLevel = parseInt(process.argv[4]);
 
 // Calling exit from async function does not work,
 // so hook exiting event and exit again.
@@ -17,8 +15,10 @@ process.on('exit', function() {
   process.reallyExit(exitCode);
 });
 
-common.mkdirsIfNotExistSync(lessDestDir);
-lessConvert(lessSrcPath, lessSrcName, [path.dirname(lessSrcPath)], path.join(lessDestDir, lessSrcName.replace(/\.less/, '.css')));
+lessSrcSet.forEach(function(item) {
+  common.logI(logLevel, 'LESS: start: ' + item.name);
+  lessConvert(item.path, item.name, [path.dirname(item.path)], path.join(item.destDir, item.name.replace(/\.less/, '.css')));
+});
 
 function lessConvert(filepath, filename, searchPaths, outputPath) {
   (function() {
