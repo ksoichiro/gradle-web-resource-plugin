@@ -82,6 +82,7 @@ class WebResourceCompileLessTask extends TriremeBaseTask {
             args: [
                 tmpFile.absolutePath,
                 extension.less.minify,
+                extension.less.parallelize,
                 mapLogLevel(extension.less.logLevel),
             ] as String[])
         triremeNodeRunner.exec()

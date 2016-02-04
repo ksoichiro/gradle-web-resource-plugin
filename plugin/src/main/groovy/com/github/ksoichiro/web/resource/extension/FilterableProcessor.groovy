@@ -6,6 +6,7 @@ class FilterableProcessor extends WebResourceProcessor {
     List<String> exclude
     List<Filter> filters
     boolean minify
+    boolean parallelize
 
     FilterableProcessor(String src, String dest, List<String> include, List<String> exclude) {
         this(src, dest, include, exclude, [])
@@ -15,6 +16,7 @@ class FilterableProcessor extends WebResourceProcessor {
         super(src, dest)
         enabled = true
         minify = true
+        parallelize = true
         this.include = include
         this.exclude = exclude
         this.filters = filters

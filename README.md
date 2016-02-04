@@ -137,6 +137,8 @@ webResource {
         exclude = ['**/_*.less']
         // Default: true
         minify = false
+        // Default: true
+        parallelize = true
 
         // Advanced filters (available from 1.1.0-SNAPSHOT)
         // If you need complex filtering, try 'filters' configuration.

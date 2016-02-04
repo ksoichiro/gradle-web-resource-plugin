@@ -6,7 +6,8 @@ var common = require('./common.js');
 
 var lessSrcSet = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
 var minify = process.argv[3] === 'true';
-var logLevel = parseInt(process.argv[4]);
+var parallelize = process.argv[4] === 'true';
+var logLevel = parseInt(process.argv[5]);
 
 // Calling exit from async function does not work,
 // so hook exiting event and exit again.
@@ -15,12 +16,38 @@ process.on('exit', function() {
   process.reallyExit(exitCode);
 });
 
-lessSrcSet.forEach(function(item) {
-  common.logI(logLevel, 'LESS: start: ' + item.name);
-  lessConvert(item.path, item.name, [path.dirname(item.path)], path.join(item.destDir, item.name.replace(/\.less/, '.css')));
-});
+if (parallelize) {
+  lessSrcSet.forEach(function(item) {
+    lessConvertItem(item, null);
+  });
+} else {
+  lessConvertAt(0);
+}
 
-function lessConvert(filepath, filename, searchPaths, outputPath) {
+function lessConvertAt(idx) {
+  if (lessSrcSet.length <= idx) {
+    return;
+  }
+  var item = lessSrcSet[idx];
+  lessConvertItem(item, function() {
+    if (exitCode === 0) {
+      lessConvertAt(idx + 1);
+    }
+  });
+}
+
+function lessConvertItem(item, cb) {
+  common.logI(logLevel, 'LESS: start: ' + item.name);
+  lessConvert(item.path, item.name, [path.dirname(item.path)], path.join(item.destDir, item.name.replace(/\.less/, '.css')),
+    function() {
+      common.logI(logLevel, 'LESS: finish: ' + item.name);
+      if (cb) {
+        cb();
+      }
+    });
+}
+
+function lessConvert(filepath, filename, searchPaths, outputPath, cb) {
   (function() {
     var deferred = Q.defer();
     var lessString = fs.readFileSync(filepath, 'utf8');
@@ -57,5 +84,9 @@ function lessConvert(filepath, filename, searchPaths, outputPath) {
   .catch(function(error) {
     exitCode = 1;
   })
-  .done();
+  .done(function() {
+    if (cb) {
+      cb();
+    }
+  });
 }
