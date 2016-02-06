@@ -38,7 +38,12 @@ function installWithCacheIfPossible(idx) {
   })
   .done(function() {
     if (exitCode === 0) {
-      installWithCacheIfPossible(idx + 1);
+      if (!fs.existsSync('bower_components/' + cacheName)) {
+        common.logE(logLevel, 'Bower: install failed: module does not exist: ' + cacheName);
+        exitCode = 1;
+      } else {
+        installWithCacheIfPossible(idx + 1);
+      }
     }
   });
 }
