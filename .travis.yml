@@ -6,10 +6,10 @@ jdk:
 
 env:
   global:
-  - GRADLE_OPTS="-Xmx1536m -Xms256m -XX:MaxPermSize=256m -XX:PermSize=256m"
+  - GRADLE_OPTS="-Xmx1024m"
 
 script:
-  - ./gradlew clean build uploadArchives --full-stacktrace
+  - ./gradlew check uploadArchives --full-stacktrace
   - cd samples/example && ./gradlew clean webResourceCompile --full-stacktrace && cd ../../
 
 after_success:

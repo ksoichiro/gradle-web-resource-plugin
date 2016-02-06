@@ -71,8 +71,11 @@ idea {
 
 test {
     maxParallelForks = 1
+    if (System.env.CI) {
+        maxHeapSize = "512m"
+    }
     testLogging {
-        events "failed", "passed", "skipped", "started"
+        events "failed", "passed", "skipped", "started", "standard_out", "standard_error"
     }
 }
 
