@@ -69,8 +69,11 @@ idea {
     }
 }
 
-test{
+test {
     maxParallelForks = 1
+    testLogging {
+        events "failed", "passed", "skipped", "started"
+    }
 }
 
 cobertura {
