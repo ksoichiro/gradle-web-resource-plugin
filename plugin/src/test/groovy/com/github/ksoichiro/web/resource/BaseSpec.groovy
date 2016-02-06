@@ -22,10 +22,12 @@ class BaseSpec extends Specification {
     }
 
     def printRuntimeInfo(def tag) {
-        def ap = Runtime.runtime.availableProcessors()
-        def fm = (int) (Runtime.runtime.freeMemory()/1024/1024)
-        def mm = (int) (Runtime.runtime.maxMemory()/1024/1024)
-        def tm = (int) (Runtime.runtime.totalMemory()/1024/1024)
-        println "${tag}: availableProcessors: ${ap}, freeMemory: ${fm}MB, maxMemory: ${mm}MB, totalMemory: ${tm}MB"
+        if (System.getenv().CI) {
+            def ap = Runtime.runtime.availableProcessors()
+            def fm = (int) (Runtime.runtime.freeMemory()/1024/1024)
+            def mm = (int) (Runtime.runtime.maxMemory()/1024/1024)
+            def tm = (int) (Runtime.runtime.totalMemory()/1024/1024)
+            println "${tag}: availableProcessors: ${ap}, freeMemory: ${fm}MB, maxMemory: ${mm}MB, totalMemory: ${tm}MB"
+        }
     }
 }
