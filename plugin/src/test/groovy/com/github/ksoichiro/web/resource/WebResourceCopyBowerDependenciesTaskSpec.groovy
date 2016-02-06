@@ -3,26 +3,36 @@ package com.github.ksoichiro.web.resource
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
+import spock.lang.Shared
 
 class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
-    @Rule
-    TemporaryFolder temporaryFolder
+    @ClassRule
+    @Shared
+    TemporaryFolder temporaryFolder = new TemporaryFolder()
+
+    def setupSpec() {
+        Project project = ProjectBuilder.builder().withProjectDir(temporaryFolder.root).build()
+        project.apply plugin: PLUGIN_ID
+        project.evaluate()
+        project.tasks.webResourceSetupNodeDependencies.execute()
+    }
 
     def exec() {
         setup:
         File root = temporaryFolder.root
+        Project project = ProjectBuilder.builder().withProjectDir(root).build()
+        setupProject(root, project)
         File externalDependency = new File("${root}/build/webResource/outputs/lib/foo")
         externalDependency.mkdirs()
-        Project project = ProjectBuilder.builder().withProjectDir(root).build()
         project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
         }
         project.evaluate()
-        project.tasks.webResourceSetupNodeDependencies.execute()
         project.tasks.webResourceInstallBowerDependencies.execute()
 
         when:
@@ -38,13 +48,13 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
         setup:
         File root = temporaryFolder.root
         Project project = ProjectBuilder.builder().withProjectDir(root).build()
+        setupProject(root, project)
         project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2"
         }
         project.evaluate()
-        project.tasks.webResourceSetupNodeDependencies.execute()
         project.tasks.webResourceInstallBowerDependencies.execute()
 
         when:
@@ -58,9 +68,10 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
     def doNotCleanOnUpdate() {
         setup:
         File root = temporaryFolder.root
+        Project project = ProjectBuilder.builder().withProjectDir(root).build()
+        setupProject(root, project)
         File externalDependency = new File("${root}/build/webResource/outputs/lib/foo")
         externalDependency.mkdirs()
-        Project project = ProjectBuilder.builder().withProjectDir(root).build()
         project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.lib.cleanOnUpdate = false
@@ -68,7 +79,6 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
         }
         project.evaluate()
-        project.tasks.webResourceSetupNodeDependencies.execute()
         project.tasks.webResourceInstallBowerDependencies.execute()
 
         when:
@@ -83,13 +93,14 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
     def excludeFromClean() {
         setup:
         File root = temporaryFolder.root
+        Project project = ProjectBuilder.builder().withProjectDir(root).build()
+        setupProject(root, project)
         // Will be kept
         File externalDependency1 = new File("${root}/build/webResource/outputs/lib/foo")
         externalDependency1.mkdirs()
         // Will be removed on update
         File externalDependency2 = new File("${root}/build/webResource/outputs/lib/bar")
         externalDependency2.mkdirs()
-        Project project = ProjectBuilder.builder().withProjectDir(root).build()
         project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.lib.excludeFromClean = ["foo"]
@@ -97,7 +108,6 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
         }
         project.evaluate()
-        project.tasks.webResourceSetupNodeDependencies.execute()
         project.tasks.webResourceInstallBowerDependencies.execute()
 
         when:
@@ -108,5 +118,13 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
         new File("${root}/build/webResource/outputs/lib/jquery").exists()
         externalDependency1.exists()
         !externalDependency2.exists()
+    }
+
+    void setupProject(File root, Project project) {
+        File outputDir = new File(root, "build/webResource/outputs")
+        project.delete(outputDir)
+
+        outputDir = new File(root, "build/webResource/bower_components")
+        project.delete(outputDir)
     }
 }
