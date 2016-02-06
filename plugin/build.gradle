@@ -72,7 +72,7 @@ idea {
 test {
     maxParallelForks = 1
     testLogging {
-        events "failed", "passed", "skipped", "started"
+        events "failed", "passed", "skipped", "started", "standard_out", "standard_error"
     }
 }
 
