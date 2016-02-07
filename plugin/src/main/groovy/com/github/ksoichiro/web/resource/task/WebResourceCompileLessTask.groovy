@@ -72,7 +72,7 @@ class WebResourceCompileLessTask extends TriremeBaseTask {
             maps += [
                 path: file.absolutePath,
                 name: file.name,
-                destDir: new File("${extension.workDir}/${pathResolver.getDestLess()}/${file.parent.replace(srcRootPath, "")}").absolutePath,
+                destDir: new File("${extension.workDir}/${pathResolver.getDestLess()}/${file.parent.replace(srcRootPath, "")}").canonicalPath,
             ]
         }
         tmpFile.text = JsonOutput.toJson(maps)
