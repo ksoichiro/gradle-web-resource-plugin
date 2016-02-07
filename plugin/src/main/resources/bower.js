@@ -14,6 +14,9 @@ var TAG = 'Bower';
 // so hook exiting event and exit again.
 var exitCode = 0;
 process.on('exit', function() {
+  if (exitCode === 0) {
+    validateInstalledPackages();
+  }
   process.reallyExit(exitCode);
 });
 
@@ -21,6 +24,7 @@ installWithCacheIfPossible(0);
 
 function installWithCacheIfPossible(idx) {
   if (packages.length <= idx) {
+    common.logI(logLevel, TAG, 'Finished all ' + idx + ' packages.');
     return;
   }
   var e = packages[idx];
@@ -34,6 +38,8 @@ function installWithCacheIfPossible(idx) {
   .catch(function(error) {
     if (error) {
       common.logE(logLevel, TAG, error.toString());
+    } else {
+      common.logE(logLevel, TAG, 'Error is reported for ' + cacheName);
     }
     exitCode = 1;
   })
@@ -149,6 +155,22 @@ function install(data) {
     deferred.resolve();
   });
   return deferred.promise;
+}
+
+function validateInstalledPackages() {
+  packages.forEach(function(e) {
+    var cacheName = e.name;
+    if (e.hasOwnProperty('cacheName')) {
+      cacheName = e.cacheName;
+    }
+    if (!fs.existsSync('bower_components/' + cacheName)) {
+      exitCode = 1;
+      common.logW(logLevel, TAG, 'Not installed: ' + cacheName);
+    }
+  });
+  if (exitCode !== 0) {
+    common.logE(logLevel, TAG, 'Some packages are not installed.');
+  }
 }
 
 function getInstalledVersion(name) {
