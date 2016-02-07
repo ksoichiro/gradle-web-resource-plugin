@@ -4,10 +4,9 @@ var bower = require('bower');
 var Q = require('q');
 var common = require('./common.js');
 
-var logLevel = parseInt(process.argv[2]);
-
 // [ {name: 'foo', version: '1.0.0', cacheName: 'Foo.js' }, ... ];
-var packages = JSON.parse(process.argv[3]);
+var packages = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
+var logLevel = parseInt(process.argv[3]);
 
 var TAG = 'Bower';
 
