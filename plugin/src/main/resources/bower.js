@@ -103,15 +103,15 @@ function install(data) {
       validCacheName = log.data.pkgMeta.name;
       validate = true;
     } else if (log.id === 'resolve') {
-      common.logI(logLevel, util.format("resolving %s", log.data.resolver.name));
+      common.logI(logLevel, util.format("Bower: resolving %s", log.data.resolver.name));
     } else if (log.id === 'download') {
-      common.logI(logLevel, util.format("downloading %s", log.data.resolver.name));
+      common.logI(logLevel, util.format("Bower: downloading %s", log.data.resolver.name));
     } else if (log.id === 'progress') {
       if (writingProgress) {
         common.logWriteI(logLevel, "\x1B[0G");
       }
       writingProgress = true;
-      common.logWriteI(logLevel, util.format("downloading %s#%s: %s", name, version, log.message));
+      common.logWriteI(logLevel, util.format("Bower: downloading %s#%s: %s", name, version, log.message));
     } else if (log.id === 'extract') {
       if (writingProgress) {
         common.logI(logLevel, '');
@@ -123,7 +123,7 @@ function install(data) {
     deferred.reject();
   })
   .on('end', function (installed) {
-    common.logI(logLevel, 'installed ' + name + '#' + version + (offline ? ' (offline)' : ''));
+    common.logI(logLevel, 'Bower: installed ' + name + '#' + version + (offline ? ' (offline)' : ''));
     if (cached && validate) {// offline === false) {
       // Installed with cache, but validation occurred
       common.logW(logLevel, util.format('  Note: cache key does not match to the package name.'));
