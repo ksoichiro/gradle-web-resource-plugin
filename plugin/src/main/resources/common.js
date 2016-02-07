@@ -8,29 +8,30 @@ exports.mkdirsIfNotExistSync = mkdirsIfNotExistSync;
 
 var fs = require('fs');
 var mkdirp = require('mkdirp');
+var gconsole = require('gradle-console');
 
 // 0: error, 1: warning, 2: info, 3: debug
 function logE(level, message) {
   if (0 <= level) {
-    console.log(message);
+    gconsole.log(message);
   }
 }
 
 function logW(level, message) {
   if (1 <= level) {
-    console.log(message);
+    gconsole.log(message);
   }
 }
 
 function logI(level, message) {
   if (2 <= level) {
-    console.log(message);
+    gconsole.log(message);
   }
 }
 
 function logD(level, message) {
   if (3 <= level) {
-    console.log(message);
+    gconsole.log(message);
   }
 }
 
