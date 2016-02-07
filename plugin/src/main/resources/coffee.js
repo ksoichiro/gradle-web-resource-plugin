@@ -1,46 +1,97 @@
 var fs = require('fs');
 var path = require('path');
+var Q = require('q');
 var coffee = require('coffee-script');
+var common = require('./common.js');
 var UglifyJS = require('uglify-js');
 var glob = require('glob');
-var common = require('./common.js');
 
-var coffeeSrcPath = process.argv[2];
-var coffeeSrcName = process.argv[3];
-var coffeeDestDir = process.argv[4];
-var minify = process.argv[5] === 'true';
-var logLevel = parseInt(process.argv[6]);
+var coffeeSrcSet = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
+var minify = process.argv[3] === 'true';
+var parallelize = process.argv[4] === 'true';
+var logLevel = parseInt(process.argv[5]);
 
 var extensions = null;
 var includedFiles = [];
 var TAG = 'CoffeeScript';
 
-common.mkdirsIfNotExistSync(coffeeDestDir);
-coffeeConvert(coffeeSrcPath, coffeeSrcName, [path.dirname(coffeeSrcPath)], path.join(coffeeDestDir, coffeeSrcName.replace(/\.coffee/, '.js')));
+// Calling exit from async function does not work,
+// so hook exiting event and exit again.
+var exitCode = 0;
+process.on('exit', function() {
+  process.reallyExit(exitCode);
+});
 
-function coffeeConvert(filepath, filename, searchPaths, outputPath) {
-  var coffeeString = fs.readFileSync(filepath, 'utf8');
+if (parallelize) {
+  coffeeSrcSet.forEach(function(item) {
+    coffeeConvertItem(item, null);
+  });
+} else {
+  coffeeConvertAt(0);
+}
 
-  try {
-    coffeeString = processInclude(coffeeString, filepath)
-    var js = coffee.compile(coffeeString, {});
-    if (minify) {
-      var minified = UglifyJS.minify(js, {fromString: true, compress: {evaluate: false}});
-      js = minified.code;
-    }
-  } catch (e) {
-    common.logE(logLevel, TAG, 'Compilation failed: ' + e);
-    process.exit(1);
+function coffeeConvertAt(idx) {
+  if (coffeeSrcSet.length <= idx) {
+    return;
   }
-
-  common.mkdirsIfNotExistSync(path.dirname(outputPath));
-
-  fs.writeFile(outputPath, js, function(err) {
-    if (err) {
-      common.logE(logLevel, TAG, 'Saving file failed: ' + err);
-      process.exit(1);
+  var item = coffeeSrcSet[idx];
+  coffeeConvertItem(item, function() {
+    if (exitCode === 0) {
+      coffeeConvertAt(idx + 1);
     }
-    common.logI(logLevel, TAG, 'Compiled: ' + filepath);
+  });
+}
+
+function coffeeConvertItem(item, cb) {
+  common.logI(logLevel, TAG, 'Started: ' + item.name);
+  coffeeConvert(item.path, item.name, [path.dirname(item.path)], path.join(item.destDir, item.name.replace(/\.coffee/, '.js')),
+    function() {
+      common.logI(logLevel, TAG, 'Finished: ' + item.name);
+      if (cb) {
+        cb();
+      }
+    });
+}
+
+function coffeeConvert(filepath, filename, searchPaths, outputPath, cb) {
+  (function() {
+    var deferred = Q.defer();
+    var coffeeString = fs.readFileSync(filepath, 'utf8');
+    try {
+      coffeeString = processInclude(coffeeString, filepath)
+      var js = coffee.compile(coffeeString, {});
+      if (minify) {
+        var minified = UglifyJS.minify(js, {fromString: true, compress: {evaluate: false}});
+        js = minified.code;
+      }
+      deferred.resolve(js);
+    } catch (e) {
+      common.logE(logLevel, TAG, 'Compilation failed: ' + e);
+      deferred.reject(e);
+    }
+    return deferred.promise;
+  })()
+  .then(function(js) {
+    var deferred = Q.defer();
+    common.mkdirsIfNotExistSync(path.dirname(outputPath));
+    fs.writeFile(outputPath, js, function(err) {
+      if (err) {
+        common.logE(logLevel, TAG, 'Saving file failed: ' + err);
+        deferred.reject(err);
+      } else {
+        common.logI(logLevel, TAG, 'Compiled: ' + filepath);
+        deferred.resolve();
+      }
+    });
+    return deferred.promise;
+  })
+  .catch(function(error) {
+    exitCode = 1;
+  })
+  .done(function() {
+    if (cb) {
+      cb();
+    }
   });
 }
 

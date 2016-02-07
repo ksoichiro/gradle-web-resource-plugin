@@ -124,6 +124,8 @@ webResource {
         exclude = ['**/_*.coffee']
         // Default: true
         minify = false
+        // Default: true
+        parallelize = true
     }
     less {
         // Set false if you don't use LESS related features
