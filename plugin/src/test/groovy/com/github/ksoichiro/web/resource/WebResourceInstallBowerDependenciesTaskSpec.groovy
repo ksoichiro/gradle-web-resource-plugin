@@ -2,6 +2,7 @@ package com.github.ksoichiro.web.resource
 
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import org.gradle.api.Project
+import org.gradle.api.logging.LogLevel
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.ClassRule
 import org.junit.Rule
@@ -27,6 +28,7 @@ class WebResourceInstallBowerDependenciesTaskSpec extends BaseSpec {
         setupProject(root, project)
         project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
+        extension.bower.logLevel = LogLevel.INFO
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
         }
@@ -62,6 +64,7 @@ class WebResourceInstallBowerDependenciesTaskSpec extends BaseSpec {
         setupProject(root, project)
         project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
+        extension.bower.logLevel = LogLevel.INFO
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
         }
@@ -91,6 +94,7 @@ class WebResourceInstallBowerDependenciesTaskSpec extends BaseSpec {
         setupProject(root, project)
         project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
+        extension.bower.logLevel = LogLevel.INFO
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["src/**/*"]
         }

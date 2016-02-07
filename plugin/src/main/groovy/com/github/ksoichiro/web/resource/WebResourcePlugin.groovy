@@ -7,6 +7,7 @@ import com.github.ksoichiro.web.resource.task.WebResourceCompileTask
 import com.github.ksoichiro.web.resource.task.WebResourceCopyBowerDependenciesTask
 import com.github.ksoichiro.web.resource.task.WebResourceInstallBowerDependenciesTask
 import com.github.ksoichiro.web.resource.task.WebResourceSetupNodeDependenciesTask
+import org.fusesource.jansi.Ansi
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -20,5 +21,11 @@ class WebResourcePlugin implements Plugin<Project> {
         project.task(WebResourceCompileLessTask.NAME, type: WebResourceCompileLessTask)
         project.task(WebResourceCopyBowerDependenciesTask.NAME, type: WebResourceCopyBowerDependenciesTask)
         project.task(WebResourceCompileTask.NAME, type: WebResourceCompileTask)
+
+        // fgBright is not available in the last release, so add it dynamically
+        Ansi.metaClass.fgBright { Ansi.Color color ->
+            delegate.attributeOptions.add(Integer.valueOf(color.fgBright()))
+            delegate
+        }
     }
 }

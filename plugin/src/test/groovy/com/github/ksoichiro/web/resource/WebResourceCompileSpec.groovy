@@ -2,6 +2,7 @@ package com.github.ksoichiro.web.resource
 
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import org.gradle.api.Project
+import org.gradle.api.logging.LogLevel
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.ClassRule
 import org.junit.rules.TemporaryFolder
@@ -33,6 +34,8 @@ class WebResourceCompileSpec extends BaseSpec {
             |console.log 'Hello, world!'
             |""".stripMargin().stripIndent()
         project.apply plugin: PLUGIN_ID
+        def extension = project.extensions.webResource as WebResourceExtension
+        extension.coffeeScript.logLevel = LogLevel.INFO
         project.evaluate()
 
         when:
@@ -81,6 +84,8 @@ class WebResourceCompileSpec extends BaseSpec {
             |}
             |""".stripMargin().stripIndent()
         project.apply plugin: PLUGIN_ID
+        def extension = project.extensions.webResource as WebResourceExtension
+        extension.less.logLevel = LogLevel.INFO
         project.evaluate()
 
         when:
@@ -134,6 +139,7 @@ class WebResourceCompileSpec extends BaseSpec {
         }
         project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
+        extension.less.logLevel = LogLevel.INFO
         extension.less.filters {
             exclude '**/*.less'
             include '**/b.less'

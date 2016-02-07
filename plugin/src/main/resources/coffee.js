@@ -13,6 +13,7 @@ var logLevel = parseInt(process.argv[6]);
 
 var extensions = null;
 var includedFiles = [];
+var TAG = 'CoffeeScript';
 
 common.mkdirsIfNotExistSync(coffeeDestDir);
 coffeeConvert(coffeeSrcPath, coffeeSrcName, [path.dirname(coffeeSrcPath)], path.join(coffeeDestDir, coffeeSrcName.replace(/\.coffee/, '.js')));
@@ -28,7 +29,7 @@ function coffeeConvert(filepath, filename, searchPaths, outputPath) {
       js = minified.code;
     }
   } catch (e) {
-    common.logE(logLevel, 'CoffeeScript: compilation failed: ' + e);
+    common.logE(logLevel, TAG, 'Compilation failed: ' + e);
     process.exit(1);
   }
 
@@ -36,10 +37,10 @@ function coffeeConvert(filepath, filename, searchPaths, outputPath) {
 
   fs.writeFile(outputPath, js, function(err) {
     if (err) {
-      common.logE(logLevel, 'CoffeeScript: saving file failed: ' + err);
+      common.logE(logLevel, TAG, 'Saving file failed: ' + err);
       process.exit(1);
     }
-    common.logI(logLevel, 'CoffeeScript: processed ' + filepath);
+    common.logI(logLevel, TAG, 'Compiled: ' + filepath);
   });
 }
 
