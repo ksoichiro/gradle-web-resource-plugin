@@ -18,7 +18,7 @@ Apply plugin in build.gradle:
 ```gradle
 // Gradle 2.1+
 plugins {
-    id "com.github.ksoichiro.web.resource" version "1.2.0"
+    id 'com.github.ksoichiro.web.resource' version '1.2.0'
 }
 
 // Gradle 2.0 and former
@@ -38,7 +38,7 @@ buildscript {
     repositories {
         jcenter()
         maven {
-            url uri('https://oss.sonatype.org/content/repositories/snapshots/')
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
         }
     }
     dependencies {
@@ -56,8 +56,8 @@ webResource {
     // (Option) Write dependencies if you want to use library from bower
     bower {
         dependencies {
-            install name: "jquery", version: "1.11.2"
-            install name: "bootstrap", version: "3.3.4"
+            install name: 'jquery', version: '1.11.2'
+            install name: 'bootstrap', version: '3.3.4'
         }
     }
 }
@@ -119,7 +119,7 @@ webResource {
         src = 'coffee'
         dest = 'js'
         // Default: ['**/*.coffee']
-        include = ["app.coffee"]
+        include = ['app.coffee']
         // Default: ['**/_*.coffee']
         exclude = ['**/_*.coffee']
         // Default: true
@@ -132,7 +132,7 @@ webResource {
         src = 'less'
         dest = 'css'
         // Default: ['**/*.less']
-        include = ["app.less"]
+        include = ['app.less']
         // Default: ['**/_*.less']
         exclude = ['**/_*.less']
         // Default: true
@@ -166,8 +166,8 @@ webResource {
     bower {
         dependencies {
             // 'filter' filters files like main-bower-files
-            install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
-            install name: "bootstrap", version: "3.3.4", filter: ["dist/css/*.min.css", "dist/js/*.min.js", "dist/fonts/*"]
+            install name: 'jquery', version: '1.11.2', filter: ['dist/*.min.*']
+            install name: 'bootstrap', version: '3.3.4', filter: ['dist/css/*.min.css', 'dist/js/*.min.js', 'dist/fonts/*']
         }
     }
 }

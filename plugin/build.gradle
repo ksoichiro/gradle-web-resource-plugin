@@ -3,12 +3,12 @@ import groovy.json.*
 buildscript {
     repositories {
         maven {
-            url "https://plugins.gradle.org/m2/"
+            url 'https://plugins.gradle.org/m2/'
         }
         mavenCentral()
     }
     dependencies {
-        classpath "com.gradle.publish:plugin-publish-plugin:0.9.1"
+        classpath 'com.gradle.publish:plugin-publish-plugin:0.9.1'
         classpath 'com.moowork.gradle:gradle-node-plugin:0.10'
         classpath 'net.rdrei.android.buildtimetracker:gradle-plugin:0.5.0'
     }
@@ -17,7 +17,7 @@ buildscript {
 plugins {
     id 'maven'
     id 'maven-publish'
-    id "com.jfrog.bintray" version "1.2"
+    id 'com.jfrog.bintray' version '1.2'
     id 'net.saliman.cobertura' version '2.2.8'
     id 'com.github.kt3k.coveralls' version '2.3.1'
     id 'com.github.ksoichiro.console.reporter' version '0.3.1'
@@ -72,10 +72,10 @@ idea {
 test {
     maxParallelForks = 1
     if (System.env.CI) {
-        maxHeapSize = "512m"
+        maxHeapSize = '512m'
     }
     testLogging {
-        events "failed", "passed", "skipped", "started", "standard_out", "standard_error"
+        events 'failed', 'passed', 'skipped', 'started', 'standard_out', 'standard_error'
     }
 }
 
@@ -89,7 +89,7 @@ buildtimetracker {
         summary {
             ordered true
             threshold 50
-            barstyle "unicode"
+            barstyle 'unicode'
         }
     }
 }
@@ -98,7 +98,7 @@ apply from: "${rootDir}/gradle/exclude.gradle"
 
 task copyPackageInfo << {
     copy {
-        from "src/main/javascript/package.json"
+        from 'src/main/javascript/package.json'
         into project.buildDir
     }
 }
@@ -112,7 +112,7 @@ task copyNodeModules {
             from("${project.buildDir}/node_modules") {
                 excludeModules.each { exclude it }
             }
-            into "src/main/resources/node_modules"
+            into 'src/main/resources/node_modules'
         }
 
         // Delete unused files
@@ -176,7 +176,7 @@ task copyNodeModules {
 }
 
 task cleanNodeModules << {
-    project.delete("src/main/resources/node_modules")
+    project.delete('src/main/resources/node_modules')
 }
 
 npmInstall.dependsOn('copyPackageInfo')
