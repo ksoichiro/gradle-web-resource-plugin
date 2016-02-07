@@ -13,8 +13,11 @@ var TAG = 'Bower';
 // Calling exit from async function does not work,
 // so hook exiting event and exit again.
 var exitCode = 0;
-process.on('exit', function() {
+process.on('exit', function(code) {
   if (exitCode === 0) {
+    if (code !== 0) {
+      common.logW(logLevel, TAG, 'Process is exited by some module with code ' + code + '.');
+    }
     validateInstalledPackages();
   }
   process.reallyExit(exitCode);
