@@ -10,6 +10,7 @@ var logLevel = parseInt(process.argv[3]);
 
 var TAG = 'Bower';
 
+var finished = 0;
 // Calling exit from async function does not work,
 // so hook exiting event and exit again.
 var exitCode = 0;
@@ -25,9 +26,14 @@ process.on('exit', function(code) {
 
 installWithCacheIfPossible(0);
 
+common.pin(function() {
+  return finished !== 0;
+});
+
 function installWithCacheIfPossible(idx) {
   if (packages.length <= idx) {
     common.logI(logLevel, TAG, 'Finished all ' + idx + ' packages.');
+    finished = 1;
     return;
   }
   var e = packages[idx];

@@ -4,6 +4,7 @@ exports.logI = logI;
 exports.logD = logD;
 exports.mkdirsSync = mkdirsSync;
 exports.mkdirsIfNotExistSync = mkdirsIfNotExistSync;
+exports.pin = pin;
 
 var fs = require('fs');
 var mkdirp = require('mkdirp');
@@ -42,4 +43,12 @@ function mkdirsIfNotExistSync(dir) {
   if (!fs.existsSync(dir)) {
     mkdirsSync(dir);
   }
+}
+
+function pin(exitCondition) {
+  setTimeout(function() {
+    if (!exitCondition()) {
+      pin(exitCondition);
+    }
+  }, 500);
 }
