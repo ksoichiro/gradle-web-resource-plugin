@@ -11,31 +11,15 @@ var logLevel = parseInt(process.argv[5]);
 
 var TAG = 'LESS';
 
-// Calling exit from async function does not work,
-// so hook exiting event and exit again.
 var exitCode = 0;
-process.on('exit', function() {
-  process.reallyExit(exitCode);
-});
+common.handleExit(logLevel, TAG, function() { return exitCode; }, null);
 
 if (parallelize) {
   lessSrcSet.forEach(function(item) {
     lessConvertItem(item, null);
   });
 } else {
-  lessConvertAt(0);
-}
-
-function lessConvertAt(idx) {
-  if (lessSrcSet.length <= idx) {
-    return;
-  }
-  var item = lessSrcSet[idx];
-  lessConvertItem(item, function() {
-    if (exitCode === 0) {
-      lessConvertAt(idx + 1);
-    }
-  });
+  common.installSequentially(lessSrcSet, lessConvertItem, function() { return exitCode === 0; });
 }
 
 function lessConvertItem(item, cb) {

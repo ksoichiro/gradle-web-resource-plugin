@@ -2,7 +2,6 @@ var fs = require('fs');
 var util = require('util');
 var bower = require('bower');
 var Q = require('q');
-var EventEmitter = require('events').EventEmitter;
 var common = require('./common.js');
 
 // [ {name: 'foo', version: '1.0.0', cacheName: 'Foo.js' }, ... ];
@@ -11,47 +10,17 @@ var logLevel = parseInt(process.argv[3]);
 
 var TAG = 'Bower';
 
-// Calling exit from async function does not work,
-// so hook exiting event and exit again.
 var exitCode = 0;
-process.on('exit', function(code) {
-  if (exitCode === 0) {
-    if (code !== 0) {
-      common.logW(logLevel, TAG, 'Process is exited by some module with code ' + code + '.');
-    }
-    validateInstalledPackages();
+common.handleExit(logLevel, TAG, function() { return exitCode; }, validateInstalledPackages);
+
+common.installSequentially(packages, bowerInstallPackage, function() { return exitCode === 0; });
+
+function bowerInstallPackage(item, cb) {
+  var cacheName = item.name;
+  if (item.hasOwnProperty('cacheName')) {
+    cacheName = item.cacheName;
   }
-  process.reallyExit(exitCode);
-});
-
-var installer = new EventEmitter;
-setImmediate(function() {
-  installer.emit('install', 0);
-});
-
-var finished = 0;
-installer.on('finish', function() {
-  finished = 1;
-});
-
-common.pin(function() {
-  return finished !== 0;
-});
-
-installer.on('install', function(idx) {
-  if (packages.length <= idx) {
-    common.logI(logLevel, TAG, 'Finished all ' + idx + ' packages.');
-    setImmediate(function() {
-      installer.emit('finish');
-    });
-    return;
-  }
-  var e = packages[idx];
-  var cacheName = e.name;
-  if (e.hasOwnProperty('cacheName')) {
-    cacheName = e.cacheName;
-  }
-  Q.fcall(function() { return [e.name, e.version, cacheName]; })
+  Q.fcall(function() { return [item.name, item.version, cacheName]; })
   .then(checkCache)
   .then(install)
   .catch(function(error) {
@@ -63,18 +32,15 @@ installer.on('install', function(idx) {
     exitCode = 1;
   })
   .done(function() {
-    if (exitCode === 0) {
-      if (!fs.existsSync('bower_components/' + cacheName)) {
-        common.logE(logLevel, TAG, 'Install failed: module does not exist: ' + cacheName);
-        exitCode = 1;
-      } else {
-        setImmediate(function() {
-          installer.emit('install', idx + 1);
-        });
-      }
+    if (exitCode === 0 && !fs.existsSync('bower_components/' + cacheName)) {
+      common.logE(logLevel, TAG, 'Install failed: module does not exist: ' + cacheName);
+      exitCode = 1;
+    }
+    if (cb) {
+      cb();
     }
   });
-});
+}
 
 function checkCache(data) {
   var name = data.shift();
