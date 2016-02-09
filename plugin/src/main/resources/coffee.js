@@ -15,31 +15,15 @@ var extensions = null;
 var includedFiles = [];
 var TAG = 'CoffeeScript';
 
-// Calling exit from async function does not work,
-// so hook exiting event and exit again.
 var exitCode = 0;
-process.on('exit', function() {
-  process.reallyExit(exitCode);
-});
+common.handleExit(logLevel, TAG, function() { return exitCode; }, null);
 
 if (parallelize) {
   coffeeSrcSet.forEach(function(item) {
     coffeeConvertItem(item, null);
   });
 } else {
-  coffeeConvertAt(0);
-}
-
-function coffeeConvertAt(idx) {
-  if (coffeeSrcSet.length <= idx) {
-    return;
-  }
-  var item = coffeeSrcSet[idx];
-  coffeeConvertItem(item, function() {
-    if (exitCode === 0) {
-      coffeeConvertAt(idx + 1);
-    }
-  });
+  common.installSequentially(coffeeSrcSet, coffeeConvertItem, function() { return exitCode === 0; });
 }
 
 function coffeeConvertItem(item, cb) {
