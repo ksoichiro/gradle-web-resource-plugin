@@ -46,9 +46,9 @@ function mkdirsIfNotExistSync(dir) {
 }
 
 function pin(exitCondition) {
-  setTimeout(function() {
+  setImmediate(function() {
     if (!exitCondition()) {
       pin(exitCondition);
     }
-  }, 500);
+  });
 }

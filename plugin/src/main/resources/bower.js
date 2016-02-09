@@ -2,6 +2,7 @@ var fs = require('fs');
 var util = require('util');
 var bower = require('bower');
 var Q = require('q');
+var EventEmitter = require('events').EventEmitter;
 var common = require('./common.js');
 
 // [ {name: 'foo', version: '1.0.0', cacheName: 'Foo.js' }, ... ];
@@ -10,7 +11,6 @@ var logLevel = parseInt(process.argv[3]);
 
 var TAG = 'Bower';
 
-var finished = 0;
 // Calling exit from async function does not work,
 // so hook exiting event and exit again.
 var exitCode = 0;
@@ -24,16 +24,26 @@ process.on('exit', function(code) {
   process.reallyExit(exitCode);
 });
 
-installWithCacheIfPossible(0);
+var installer = new EventEmitter;
+setImmediate(function() {
+  installer.emit('install', 0);
+});
+
+var finished = 0;
+installer.on('finish', function() {
+  finished = 1;
+});
 
 common.pin(function() {
   return finished !== 0;
 });
 
-function installWithCacheIfPossible(idx) {
+installer.on('install', function(idx) {
   if (packages.length <= idx) {
     common.logI(logLevel, TAG, 'Finished all ' + idx + ' packages.');
-    finished = 1;
+    setImmediate(function() {
+      installer.emit('finish');
+    });
     return;
   }
   var e = packages[idx];
@@ -58,11 +68,13 @@ function installWithCacheIfPossible(idx) {
         common.logE(logLevel, TAG, 'Install failed: module does not exist: ' + cacheName);
         exitCode = 1;
       } else {
-        installWithCacheIfPossible(idx + 1);
+        setImmediate(function() {
+          installer.emit('install', idx + 1);
+        });
       }
     }
   });
-}
+});
 
 function checkCache(data) {
   var name = data.shift();
