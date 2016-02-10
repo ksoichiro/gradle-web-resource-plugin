@@ -5,32 +5,32 @@ var coffee = require('coffee-script');
 var common = require('./common.js');
 var UglifyJS = require('uglify-js');
 var glob = require('glob');
+var Logger = require('./logger.js');
 
 var coffeeSrcSet = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
 var minify = process.argv[3] === 'true';
 var parallelize = process.argv[4] === 'true';
 var logLevel = parseInt(process.argv[5]);
 
+var log = new Logger(logLevel, 'CoffeeScript');
 var extensions = null;
 var includedFiles = [];
-var TAG = 'CoffeeScript';
 
-var exitCode = 0;
-common.handleExit(logLevel, TAG, function() { return exitCode; }, null);
+common.handleExit();
 
 if (parallelize) {
   coffeeSrcSet.forEach(function(item) {
     coffeeConvertItem(item, null);
   });
 } else {
-  common.installSequentially(coffeeSrcSet, coffeeConvertItem, function() { return exitCode === 0; });
+  common.installSequentially(coffeeSrcSet, coffeeConvertItem);
 }
 
 function coffeeConvertItem(item, cb) {
-  common.logI(logLevel, TAG, 'Started: ' + item.name);
+  log.i('Started: ' + item.name);
   coffeeConvert(item.path, item.name, [path.dirname(item.path)], path.join(item.destDir, item.name.replace(/\.coffee/, '.js')),
     function() {
-      common.logI(logLevel, TAG, 'Finished: ' + item.name);
+      log.i('Finished: ' + item.name);
       if (cb) {
         cb();
       }
@@ -50,7 +50,7 @@ function coffeeConvert(filepath, filename, searchPaths, outputPath, cb) {
       }
       deferred.resolve(js);
     } catch (e) {
-      common.logE(logLevel, TAG, 'Compilation failed: ' + e);
+      log.e('Compilation failed: ' + e);
       deferred.reject(e);
     }
     return deferred.promise;
@@ -60,17 +60,17 @@ function coffeeConvert(filepath, filename, searchPaths, outputPath, cb) {
     common.mkdirsIfNotExistSync(path.dirname(outputPath));
     fs.writeFile(outputPath, js, function(err) {
       if (err) {
-        common.logE(logLevel, TAG, 'Saving file failed: ' + err);
+        log.e('Saving file failed: ' + err);
         deferred.reject(err);
       } else {
-        common.logI(logLevel, TAG, 'Compiled: ' + filepath);
+        log.i('Compiled: ' + filepath);
         deferred.resolve();
       }
     });
     return deferred.promise;
   })
   .catch(function(error) {
-    exitCode = 1;
+    common.setExitCode(1);
   })
   .done(function() {
     if (cb) {

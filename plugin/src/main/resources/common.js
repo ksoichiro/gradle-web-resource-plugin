@@ -1,41 +1,16 @@
-exports.logE = logE;
-exports.logW = logW;
-exports.logI = logI;
-exports.logD = logD;
 exports.mkdirsSync = mkdirsSync;
 exports.mkdirsIfNotExistSync = mkdirsIfNotExistSync;
 exports.handleExit = handleExit;
 exports.installSequentially = installSequentially;
+exports.setExitCode = setExitCode;
+exports.hasError = hasError;
 
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 var gconsole = require('gradle-console');
 var EventEmitter = require('events').EventEmitter;
 
-// 0: error, 1: warning, 2: info, 3: debug
-function logE(level, tag, message) {
-  if (0 <= level) {
-    gconsole.log('ERROR', tag, message);
-  }
-}
-
-function logW(level, tag, message) {
-  if (1 <= level) {
-    gconsole.log('WARN', tag, message);
-  }
-}
-
-function logI(level, tag, message) {
-  if (2 <= level) {
-    gconsole.log('INFO', tag, message);
-  }
-}
-
-function logD(level, tag, message) {
-  if (3 <= level) {
-    gconsole.log('DEBUG', tag, message);
-  }
-}
+this.exitCode = 0;
 
 function mkdirsSync(dir) {
   mkdirp.sync(dir);
@@ -47,6 +22,14 @@ function mkdirsIfNotExistSync(dir) {
   }
 }
 
+function setExitCode(exitCode) {
+  this.exitCode = exitCode;
+}
+
+function hasError() {
+  return this.exitCode !== 0;
+}
+
 function pin(exitCondition) {
   setImmediate(function() {
     if (!exitCondition()) {
@@ -55,23 +38,27 @@ function pin(exitCondition) {
   });
 }
 
-function handleExit(logLevel, logTag, exitCodeCb, validationCb) {
+function handleExit(validationCb) {
   // Calling exit from async function does not work,
   // so hook exiting event and exit again.
+  var that = this;
   process.on('exit', function(code) {
-    if (exitCodeCb() === 0) {
-      if (code !== 0) {
-        logW(logLevel, logTag, 'Process is exited by some module with code ' + code + '.');
+    if (code === 0) {
+      if (that.exitCode === 0) {
+        if (validationCb) {
+          validationCb();
+        }
       }
-      if (validationCb) {
-        validationCb();
+    } else {
+      if (that.exitCode === 0) {
+        that.exitCode = code;
       }
     }
-    process.reallyExit(exitCodeCb());
+    process.reallyExit(that.exitCode);
   });
 }
 
-function installSequentially(elements, singleInstaller, continueCondition) {
+function installSequentially(elements, singleInstaller) {
   var installer = new EventEmitter;
   setImmediate(function() {
     installer.emit('install', 0);
@@ -86,6 +73,7 @@ function installSequentially(elements, singleInstaller, continueCondition) {
     return finished !== 0;
   });
 
+  var that = this;
   installer.on('install', function(idx) {
     if (elements.length <= idx) {
       setImmediate(function() {
@@ -95,9 +83,14 @@ function installSequentially(elements, singleInstaller, continueCondition) {
     }
     var item = elements[idx];
     singleInstaller(item, function() {
-      if (continueCondition() === true) {
+      if (that.exitCode === 0) {
         setImmediate(function() {
           installer.emit('install', idx + 1);
+        });
+      } else {
+        that.exitCode = 1;
+        setImmediate(function() {
+          installer.emit('finish');
         });
       }
     });

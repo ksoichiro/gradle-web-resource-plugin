@@ -3,17 +3,17 @@ var util = require('util');
 var bower = require('bower');
 var Q = require('q');
 var common = require('./common.js');
+var Logger = require('./logger.js');
 
 // [ {name: 'foo', version: '1.0.0', cacheName: 'Foo.js' }, ... ];
 var packages = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
 var logLevel = parseInt(process.argv[3]);
 
-var TAG = 'Bower';
+var log = new Logger(logLevel, 'Bower');
 
-var exitCode = 0;
-common.handleExit(logLevel, TAG, function() { return exitCode; }, validateInstalledPackages);
+common.handleExit(validateInstalledPackages);
 
-common.installSequentially(packages, bowerInstallPackage, function() { return exitCode === 0; });
+common.installSequentially(packages, bowerInstallPackage);
 
 function bowerInstallPackage(item, cb) {
   var cacheName = item.name;
@@ -25,16 +25,16 @@ function bowerInstallPackage(item, cb) {
   .then(install)
   .catch(function(error) {
     if (error) {
-      common.logE(logLevel, TAG, error.toString());
+      log.e(error.toString());
     } else {
-      common.logE(logLevel, TAG, 'Error is reported for ' + cacheName);
+      log.e('Error is reported for ' + cacheName);
     }
-    exitCode = 1;
+    common.setExitCode(1);
   })
   .done(function() {
-    if (exitCode === 0 && !fs.existsSync('bower_components/' + cacheName)) {
-      common.logE(logLevel, TAG, 'Install failed: module does not exist: ' + cacheName);
-      exitCode = 1;
+    if (!common.hasError() && !fs.existsSync('bower_components/' + cacheName)) {
+      log.e('Install failed: module does not exist: ' + cacheName);
+      common.setExitCode(1);
     }
     if (cb) {
       cb();
@@ -49,7 +49,7 @@ function checkCache(data) {
   var deferred = Q.defer();
   bower.commands.cache.list([cacheName], {}, {})
   .on('error', function(err) {
-    common.logE(logLevel, TAG, 'Checking cache failed: ' + err);
+    log.e('Checking cache failed: ' + err);
     deferred.reject();
   })
   .on('end', function (r) {
@@ -76,7 +76,7 @@ function install(data) {
   if (installedVersion !== '') {
     // already installed
     if (version !== installedVersion) {
-      common.logE(logLevel, TAG, util.format('Update required for %s: please remove bower_components/%s and execute again.', name, name));
+      log.e(util.format('Update required for %s: please remove bower_components/%s and execute again.', name, name));
       deferred.reject();
     } else {
       deferred.resolve();
@@ -96,48 +96,48 @@ function install(data) {
       validCacheName = log.data.pkgMeta.name;
       validate = true;
     } else if (log.id === 'resolve') {
-      common.logI(logLevel, TAG, util.format("Resolving: %s", log.data.resolver.name));
+      log.i(util.format("Resolving: %s", log.data.resolver.name));
     } else if (log.id === 'download') {
-      common.logI(logLevel, TAG, util.format("Downloading: %s", log.data.resolver.name));
+      log.i(util.format("Downloading: %s", log.data.resolver.name));
     } else if (log.id === 'progress') {
-      common.logI(logLevel, TAG, util.format("Downloading: %s#%s: %s", name, version, log.message));
+      log.i(util.format("Downloading: %s#%s: %s", name, version, log.message));
     } else if (log.id === 'extract') {
-      common.logI(logLevel, TAG, util.format("Extracting: %s", log.data.resolver.name));
+      log.i(util.format("Extracting: %s", log.data.resolver.name));
     }
   })
   .on('error', function (err) {
-    common.logE(logLevel, TAG, 'Install failed: ' + err);
+    log.e('Install failed: ' + err);
     deferred.reject();
   })
   .on('end', function (installed) {
-    common.logI(logLevel, TAG, 'Installed: ' + name + '#' + version + (offline ? ' (offline)' : ''));
+    log.i('Installed: ' + name + '#' + version + (offline ? ' (offline)' : ''));
     if (cached && validate) {// offline === false) {
       // Installed with cache, but validation occurred
-      common.logW(logLevel, TAG, util.format('  Note: cache key does not match to the package name.'));
-      common.logW(logLevel, TAG, util.format('  It means, the package "%s" is cached ', name));
-      common.logW(logLevel, TAG, util.format('  but still needed a network connection to validate the package '));
-      common.logW(logLevel, TAG, util.format('  because the cache could not be found by the name "%s".', name));
-      common.logW(logLevel, TAG, util.format('  To execute installation without any network connections, add cacheName: "%s"', validCacheName));
-      common.logW(logLevel, TAG, util.format('  to "install" definition in your build.gradle. Example:'));
-      common.logW(logLevel, TAG, util.format('      bower {'));
-      common.logW(logLevel, TAG, util.format('          dependencies {'));
-      common.logW(logLevel, TAG, util.format('              install name: "%s", version: "%s", cacheName: "%s"', name, version, validCacheName));
-      common.logW(logLevel, TAG, util.format('          }'));
-      common.logW(logLevel, TAG, util.format('      }'));
+      log.w(util.format('  Note: cache key does not match to the package name.'));
+      log.w(util.format('  It means, the package "%s" is cached ', name));
+      log.w(util.format('  but still needed a network connection to validate the package '));
+      log.w(util.format('  because the cache could not be found by the name "%s".', name));
+      log.w(util.format('  To execute installation without any network connections, add cacheName: "%s"', validCacheName));
+      log.w(util.format('  to "install" definition in your build.gradle. Example:'));
+      log.w(util.format('      bower {'));
+      log.w(util.format('          dependencies {'));
+      log.w(util.format('              install name: "%s", version: "%s", cacheName: "%s"', name, version, validCacheName));
+      log.w(util.format('          }'));
+      log.w(util.format('      }'));
     } else if (installed[name] !== undefined && cacheName != installed[name].pkgMeta.name) {
       // Installed without cache but the name doesn't match to the cache key.
       validCacheName = installed[name].pkgMeta.name;
-      common.logW(logLevel, TAG, util.format('  Note: cache key does not match to the package name.'));
-      common.logW(logLevel, TAG, util.format('  It means, the package "%s" was cached ', name));
-      common.logW(logLevel, TAG, util.format('  but you cannot use this cache in the next installation '));
-      common.logW(logLevel, TAG, util.format('  because the cache will not be found by the name "%s".', name));
-      common.logW(logLevel, TAG, util.format('  To use this cache in the next installation, add cacheName: "%s"', validCacheName));
-      common.logW(logLevel, TAG, util.format('  to "install" definition in your build.gradle. Example:'));
-      common.logW(logLevel, TAG, util.format('      bower {'));
-      common.logW(logLevel, TAG, util.format('          dependencies {'));
-      common.logW(logLevel, TAG, util.format('              install name: "%s", version: "%s", cacheName: "%s"', name, version, validCacheName));
-      common.logW(logLevel, TAG, util.format('          }'));
-      common.logW(logLevel, TAG, util.format('      }'));
+      log.w(util.format('  Note: cache key does not match to the package name.'));
+      log.w(util.format('  It means, the package "%s" was cached ', name));
+      log.w(util.format('  but you cannot use this cache in the next installation '));
+      log.w(util.format('  because the cache will not be found by the name "%s".', name));
+      log.w(util.format('  To use this cache in the next installation, add cacheName: "%s"', validCacheName));
+      log.w(util.format('  to "install" definition in your build.gradle. Example:'));
+      log.w(util.format('      bower {'));
+      log.w(util.format('          dependencies {'));
+      log.w(util.format('              install name: "%s", version: "%s", cacheName: "%s"', name, version, validCacheName));
+      log.w(util.format('          }'));
+      log.w(util.format('      }'));
     }
     deferred.resolve();
   });
@@ -151,12 +151,12 @@ function validateInstalledPackages() {
       cacheName = e.cacheName;
     }
     if (!fs.existsSync('bower_components/' + cacheName)) {
-      exitCode = 1;
-      common.logW(logLevel, TAG, 'Not installed: ' + cacheName);
+      common.setExitCode(1);
+      log.w('Not installed: ' + cacheName);
     }
   });
-  if (exitCode !== 0) {
-    common.logE(logLevel, TAG, 'Some packages are not installed.');
+  if (common.hasError()) {
+    log.e('Some packages are not installed.');
   }
 }
 
