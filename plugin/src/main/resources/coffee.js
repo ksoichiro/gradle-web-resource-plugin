@@ -2,10 +2,10 @@ var fs = require('fs');
 var path = require('path');
 var Q = require('q');
 var coffee = require('coffee-script');
-var common = require('./common.js');
+var common = require('./common');
 var UglifyJS = require('uglify-js');
 var glob = require('glob');
-var Logger = require('./logger.js');
+var Logger = require('./logger');
 
 var coffeeSrcSet = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
 var minify = process.argv[3] === 'true';

@@ -2,8 +2,8 @@ var fs = require('fs');
 var path = require('path');
 var less = require('less');
 var Q = require('q');
-var common = require('./common.js');
-var Logger = require('./logger.js');
+var common = require('./common');
+var Logger = require('./logger');
 
 var lessSrcSet = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
 var minify = process.argv[3] === 'true';

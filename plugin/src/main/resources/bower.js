@@ -2,8 +2,8 @@ var fs = require('fs');
 var util = require('util');
 var bower = require('bower');
 var Q = require('q');
-var common = require('./common.js');
-var Logger = require('./logger.js');
+var common = require('./common');
+var Logger = require('./logger');
 
 // [ {name: 'foo', version: '1.0.0', cacheName: 'Foo.js' }, ... ];
 var packages = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
