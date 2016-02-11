@@ -43,7 +43,7 @@ function coffeeConvert(filepath, filename, searchPaths, outputPath, cb) {
     var coffeeString = fs.readFileSync(filepath, 'utf8');
     try {
       coffeeString = processInclude(coffeeString, filepath)
-      var js = coffee.compile(coffeeString, {});
+      var js = coffee.compile(coffeeString, {filename: filepath});
       if (minify) {
         var minified = UglifyJS.minify(js, {fromString: true, compress: {evaluate: false}});
         js = minified.code;
