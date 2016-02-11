@@ -49,9 +49,9 @@ function coffeeConvert(filepath, filename, searchPaths, outputPath, cb) {
         js = minified.code;
       }
       deferred.resolve(js);
-    } catch (e) {
-      log.e('Compilation failed: ' + e);
-      deferred.reject(e);
+    } catch (err) {
+      log.e('Compilation failed: ' + err);
+      deferred.reject();
     }
     return deferred.promise;
   })()
@@ -61,7 +61,7 @@ function coffeeConvert(filepath, filename, searchPaths, outputPath, cb) {
     fs.writeFile(outputPath, js, function(err) {
       if (err) {
         log.e('Saving file failed: ' + err);
-        deferred.reject(err);
+        deferred.reject();
       } else {
         log.i('Compiled: ' + filepath);
         deferred.resolve();
@@ -69,7 +69,13 @@ function coffeeConvert(filepath, filename, searchPaths, outputPath, cb) {
     });
     return deferred.promise;
   })
-  .catch(function(error) {
+  .catch(function(err) {
+    if (err) {
+      log.e('Compilation failed: ' + filename + ': ' + err);
+      if (err.stack) {
+        log.w(err.stack);
+      }
+    }
     common.setExitCode(1);
   })
   .done(function() {

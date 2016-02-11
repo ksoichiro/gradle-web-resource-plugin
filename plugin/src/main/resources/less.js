@@ -43,10 +43,10 @@ function lessConvert(filepath, filename, searchPaths, outputPath, cb) {
         filename: filename,
         compress: minify
       },
-      function (e, output) {
-        if (e) {
-          log.e('Compilation failed: ' + e);
-          deferred.reject(e);
+      function (err, output) {
+        if (err) {
+          log.e('Compilation failed: ' + err);
+          deferred.reject();
         } else {
           deferred.resolve(output);
         }
@@ -59,7 +59,7 @@ function lessConvert(filepath, filename, searchPaths, outputPath, cb) {
     fs.writeFile(outputPath, output.css, function(err) {
       if (err) {
         log.e('Saving file failed: ' + err);
-        deferred.reject(err);
+        deferred.reject();
       } else {
         log.i('Compiled: ' + filepath);
         deferred.resolve();
@@ -67,7 +67,13 @@ function lessConvert(filepath, filename, searchPaths, outputPath, cb) {
     });
     return deferred.promise;
   })
-  .catch(function(error) {
+  .catch(function(err) {
+    if (err) {
+      log.e('Compilation failed: ' + filename + ': ' + err);
+      if (err.stack) {
+        log.w(err.stack);
+      }
+    }
     common.setExitCode(1);
   })
   .done(function() {
