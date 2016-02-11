@@ -60,10 +60,10 @@ class GradleConsoleModule implements NodeModule {
             String tag = stringArg(args, 1)
             String message = stringArg(args, 2)
             if ('ERROR'.equals(level)) {
-                message = red(message)
+                level = red(level)
             }
             String now = new Date().format("HH:mm:ss.SSS")
-            println "${gray(now)} [${cyan(tag)}] ${message}"
+            println "${gray(now)} [${level}] [${cyan(tag)}] ${message}"
         }
 
         static def red(def s) {
