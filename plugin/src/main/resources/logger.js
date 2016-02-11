@@ -10,7 +10,7 @@ function Logger(level, tag) {
 // 0: error, 1: warning, 2: info, 3: debug
 Logger.prototype.e = function(message) {
   if (0 <= this.level) {
-    gconsole.log('ERROR', this.tag, this.message);
+    gconsole.log('ERROR', this.tag, message);
   }
 }
 
