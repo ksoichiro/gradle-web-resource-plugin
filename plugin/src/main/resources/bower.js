@@ -87,20 +87,20 @@ function install(data) {
   var validate = false;
   var validCacheName = name;
   bower.commands.install([name + '#' + version], {}, { 'offline': offline })
-  .on('log', function (log) {
-    if (log.id === 'cached') {
+  .on('log', function (l) {
+    if (l.id === 'cached') {
       cached = true;
-    } else if (log.id === 'validate') {
-      validCacheName = log.data.pkgMeta.name;
+    } else if (l.id === 'validate') {
+      validCacheName = l.data.pkgMeta.name;
       validate = true;
-    } else if (log.id === 'resolve') {
-      log.i(util.format("Resolving: %s", log.data.resolver.name));
-    } else if (log.id === 'download') {
-      log.i(util.format("Downloading: %s", log.data.resolver.name));
-    } else if (log.id === 'progress') {
-      log.i(util.format("Downloading: %s#%s: %s", name, version, log.message));
-    } else if (log.id === 'extract') {
-      log.i(util.format("Extracting: %s", log.data.resolver.name));
+    } else if (l.id === 'resolve') {
+      log.i(util.format("Resolving: %s", l.data.resolver.name));
+    } else if (l.id === 'download') {
+      log.i(util.format("Downloading: %s", l.data.resolver.name));
+    } else if (l.id === 'progress') {
+      log.i(util.format("Downloading: %s#%s: %s", name, version, l.message));
+    } else if (l.id === 'extract') {
+      log.i(util.format("Extracting: %s", l.data.resolver.name));
     }
   })
   .on('error', function (err) {
