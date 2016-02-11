@@ -25,9 +25,9 @@ function bowerInstallPackage(item, cb) {
   .then(install)
   .catch(function(error) {
     if (error) {
-      log.e(error.toString());
+      log.e('Install failed: ' + cacheName + ': ' + error.stack);
     } else {
-      log.e('Error is reported for ' + cacheName);
+      log.e('Install failed: ' + cacheName);
     }
     common.setExitCode(1);
   })
@@ -49,8 +49,7 @@ function checkCache(data) {
   var deferred = Q.defer();
   bower.commands.cache.list([cacheName], {}, {})
   .on('error', function(err) {
-    log.e('Checking cache failed: ' + err);
-    deferred.reject();
+    deferred.reject(err);
   })
   .on('end', function (r) {
     var offline = false;
@@ -76,8 +75,7 @@ function install(data) {
   if (installedVersion !== '') {
     // already installed
     if (version !== installedVersion) {
-      log.e(util.format('Update required for %s: please remove bower_components/%s and execute again.', name, name));
-      deferred.reject();
+      deferred.reject(new Error(util.format('Update required for %s: please remove bower_components/%s and execute again.', name, name)));
     } else {
       deferred.resolve();
     }
@@ -106,8 +104,7 @@ function install(data) {
     }
   })
   .on('error', function (err) {
-    log.e('Install failed: ' + err);
-    deferred.reject();
+    deferred.reject(err);
   })
   .on('end', function (installed) {
     log.i('Installed: ' + name + '#' + version + (offline ? ' (offline)' : ''));
