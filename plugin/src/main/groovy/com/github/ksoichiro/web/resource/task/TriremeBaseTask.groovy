@@ -30,7 +30,7 @@ class TriremeBaseTask extends DefaultTask {
     }
 
     static String mapLogLevel(LogLevel logLevel) {
-        String level = "0"
+        String level = "1"
         switch (logLevel) {
             case LogLevel.DEBUG:
                 level = "3"
@@ -40,6 +40,9 @@ class TriremeBaseTask extends DefaultTask {
                 break
             case LogLevel.WARN:
                 level = "1"
+                break
+            case LogLevel.ERROR:
+                level = "0"
                 break
         }
         level
