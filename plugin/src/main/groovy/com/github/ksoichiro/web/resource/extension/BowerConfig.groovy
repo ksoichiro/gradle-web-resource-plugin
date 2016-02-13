@@ -15,6 +15,7 @@ class BowerConfig implements Serializable {
     LogLevel logLevel
     List<BowerDependency> dependencies
     List<BowerDependencyResolution> dependencyResolutions
+    boolean parallelize
 
     BowerConfig() {
         this.dependencies = []

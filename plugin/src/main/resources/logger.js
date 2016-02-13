@@ -1,6 +1,16 @@
 module.exports = Logger;
 
-var gconsole = require('gradle-console');
+var gconsole;
+try {
+  gconsole = require('gradle-console');
+} catch (err) {
+  gconsole = (function() {
+    this.log = function(level, tag, message) {
+      console.log(level + ' ' + tag + ' ' + message);
+    }
+    return this;
+  })();
+}
 
 function Logger(level, tag) {
   this.level = level;

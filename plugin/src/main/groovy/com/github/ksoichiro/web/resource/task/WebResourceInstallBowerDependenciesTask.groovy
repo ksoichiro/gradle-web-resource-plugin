@@ -84,6 +84,7 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
             workingDir: extension.workDir,
             args: [
                 tmpFile.absolutePath,
+                extension.bower.parallelize,
                 mapLogLevel(extension.bower.logLevel),
             ] as String[])
         triremeNodeRunner.exec()
