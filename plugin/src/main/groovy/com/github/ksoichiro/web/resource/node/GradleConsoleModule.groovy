@@ -61,6 +61,8 @@ class GradleConsoleModule implements NodeModule {
             String message = stringArg(args, 2)
             if ('ERROR'.equals(level)) {
                 level = red(level)
+            } else if ('WARN'.equals(level)) {
+                level = yellow(level)
             }
             String now = new Date().format("HH:mm:ss.SSS")
             println "${gray(now)} [${level}] [${cyan(tag)}] ${message}"
@@ -72,6 +74,10 @@ class GradleConsoleModule implements NodeModule {
 
         static def cyan(def s) {
             ansi().fg(Ansi.Color.CYAN).a(s).reset()
+        }
+
+        static def yellow(def s) {
+            ansi().fg(Ansi.Color.YELLOW).a(s).reset()
         }
 
         static def gray(def s) {
