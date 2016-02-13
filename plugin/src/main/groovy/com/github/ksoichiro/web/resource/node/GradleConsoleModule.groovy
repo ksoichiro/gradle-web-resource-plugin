@@ -56,18 +56,18 @@ class GradleConsoleModule implements NodeModule {
         @JSFunction
         @SuppressWarnings("unused")
         public static void log(Context cx, Scriptable thisObj, Object[] args, Function func) {
-            String level = stringArg(args, 0)
+            String level = stringArg(args, 0).padRight(5, ' ')
             String tag = stringArg(args, 1)
             String message = stringArg(args, 2)
             if ('ERROR'.equals(level)) {
                 level = red(level)
-            } else if ('WARN'.equals(level)) {
+            } else if ('WARN '.equals(level)) {
                 level = yellow(level)
             } else if ('DEBUG'.equals(level)) {
                 level = blue(level)
             }
             String now = new Date().format("HH:mm:ss.SSS")
-            println "${gray(now)} ${level.padRight(5, ' ')} [${cyan(tag)}] ${message}"
+            println "${gray(now)} ${level} [${cyan(tag)}] ${message}"
         }
 
         static def red(def s) {

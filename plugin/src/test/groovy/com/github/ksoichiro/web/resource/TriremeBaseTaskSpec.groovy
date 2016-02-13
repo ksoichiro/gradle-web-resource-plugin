@@ -14,7 +14,7 @@ class TriremeBaseTaskSpec extends BaseSpec {
         LogLevel.INFO       | "2"
         LogLevel.WARN       | "1"
         LogLevel.ERROR      | "0"
-        LogLevel.LIFECYCLE  | "0"
-        LogLevel.QUIET      | "0"
+        LogLevel.LIFECYCLE  | "1"
+        LogLevel.QUIET      | "1"
     }
 }
