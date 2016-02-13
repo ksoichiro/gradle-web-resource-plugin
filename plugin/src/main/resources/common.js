@@ -2,12 +2,12 @@ exports.mkdirsSync = mkdirsSync;
 exports.mkdirsIfNotExistSync = mkdirsIfNotExistSync;
 exports.handleExit = handleExit;
 exports.installSequentially = installSequentially;
+exports.install = install;
 exports.setExitCode = setExitCode;
 exports.hasError = hasError;
 
 var fs = require('fs');
 var mkdirp = require('mkdirp');
-var gconsole = require('gradle-console');
 var EventEmitter = require('events').EventEmitter;
 
 this.exitCode = 0;
@@ -96,3 +96,7 @@ function installSequentially(elements, singleInstaller) {
     });
   });
 };
+
+function install(parallelInstaller) {
+  installSequentially([1], parallelInstaller);
+}

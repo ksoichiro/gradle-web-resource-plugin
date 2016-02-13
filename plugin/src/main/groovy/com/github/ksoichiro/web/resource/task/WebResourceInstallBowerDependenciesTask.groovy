@@ -1,5 +1,6 @@
 package com.github.ksoichiro.web.resource.task
 
+import com.github.ksoichiro.web.resource.extension.BowerDependencyResolution
 import com.github.ksoichiro.web.resource.node.TriremeNodeRunner
 import com.github.ksoichiro.web.resource.util.PathResolver
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
@@ -42,7 +43,8 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
             project.delete(rootBowerJson)
         }
 
-        List bowerConfig = []
+        def packages = [:]
+        List dependencies = []
         extension.bower.dependencies.each {
             File bowerJson = new File(extension.workDir, "${BOWER_COMPONENTS_DIR}/${it.name}/bower.json")
             if (bowerJson.exists()) {
@@ -59,12 +61,21 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
             if (it.cacheName) {
                 dependency['cacheName'] = it.cacheName
             }
-            bowerConfig.add(dependency)
+            dependencies.add(dependency)
         }
-        def dependencies = bowerConfig.isEmpty() ? '[]'
-            : JsonOutput.toJson(bowerConfig)
+        packages.dependencies = dependencies
+
+        def resolutions = [:]
+        if (extension.bower.dependencyResolutions.size() > 0) {
+            extension.bower.dependencyResolutions.each { BowerDependencyResolution resolution ->
+                resolutions[resolution.name] = resolution.version
+            }
+        }
+        packages.resolutions = resolutions
+
         def tmpFile = project.file("${extension.workDir}/.bowerpkg.json")
-        tmpFile.text = dependencies
+        tmpFile.text = JsonOutput.toJson(packages)
+
         new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
         writeCommonScript()
 
@@ -73,6 +84,7 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
             workingDir: extension.workDir,
             args: [
                 tmpFile.absolutePath,
+                extension.bower.parallelize,
                 mapLogLevel(extension.bower.logLevel),
             ] as String[])
         triremeNodeRunner.exec()
