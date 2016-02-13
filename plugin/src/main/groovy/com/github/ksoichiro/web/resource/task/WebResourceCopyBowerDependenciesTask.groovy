@@ -70,6 +70,13 @@ class WebResourceCopyBowerDependenciesTask extends DefaultTask {
             }
             into "${extension.base.dest}/${extension.lib.dest}"
         }
+        project.file("${extension.base.dest}/${extension.lib.dest}").eachDir{ dir ->
+            extension.bower.dependencies.each { dependency ->
+                if (dir.name == dependency.cacheName && dir.name != dependency.name) {
+                    dir.renameTo(project.file("${extension.base.dest}/${extension.lib.dest}/${dependency.name}"))
+                }
+            }
+        }
     }
 
     void renameDependencyDirIfRequired(BowerDependency dependency) {

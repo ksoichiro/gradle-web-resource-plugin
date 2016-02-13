@@ -170,6 +170,9 @@ webResource {
             // 'filter' filters files like main-bower-files
             install name: 'jquery', version: '1.11.2', filter: ['dist/*.min.*']
             install name: 'bootstrap', version: '3.3.4', filter: ['dist/css/*.min.css', 'dist/js/*.min.js', 'dist/fonts/*']
+
+            // If there is a conflict, you can resolve it by using "resolve"
+            //resolve name: 'jquery', version: '1.9.0'
         }
     }
 }

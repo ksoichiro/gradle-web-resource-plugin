@@ -1,13 +1,15 @@
 var fs = require('fs');
 var util = require('util');
 var bower = require('bower');
+var chalk = require('bower/lib/node_modules/chalk');
 var Q = require('q');
 var common = require('./common');
 var Logger = require('./logger');
 
 // [ {name: 'foo', version: '1.0.0', cacheName: 'Foo.js' }, ... ];
 var packages = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
-var logLevel = parseInt(process.argv[3]);
+var resolutions = JSON.parse(fs.readFileSync(process.argv[3], 'utf-8'));
+var logLevel = parseInt(process.argv[4]);
 
 var log = new Logger(logLevel, 'Bower');
 
@@ -85,11 +87,21 @@ function install(data) {
   var cached = false;
   var validate = false;
   var validCacheName = name;
-  bower.commands.install([name + '#' + version], {}, { 'offline': offline })
+  var hasResolutions = resolutions && Object.keys(resolutions).length > 0;
+  if (hasResolutions) {
+    saveCurrentPackageJson(cacheName, version);
+  } else {
+    deletePackageJson();
+  }
+  // If 1st arg(targets) is specified, their dependencies are marked as unresolvable, and resolutions have no effect.
+  var targets = hasResolutions ? [] : [name + '#' + version]
+  var config = { 'offline': offline }
+  bower.commands.install(targets, {}, config)
   .on('log', function (l) {
     if (l.id === 'cached') {
       cached = true;
     } else if (l.id === 'validate') {
+      log.d('Validating: ' + l.data.resolver.name);
       validCacheName = l.data.pkgMeta.name;
       validate = true;
     } else if (l.id === 'resolve') {
@@ -103,12 +115,44 @@ function install(data) {
     }
   })
   .on('error', function (err) {
-    log.e('Install failed: ' + err.stack);
+    if (err) {
+      if (err.code === 'ECONFLICT') {
+        log.e('Install failed: Unable to find a suitable version for ' + err.name + ' while installing ' + name + '#' + version + '.');
+        log.w('To resolve this conflict, please define resolution to your build.gradle.');
+        log.w('Example:');
+        log.w('    bower {');
+        log.w('        dependencies {');
+        log.w("            resolve name: '" + err.name + "', version: '" + err.picks[0].pkgMeta.version + "'");
+        log.w('        }');
+        log.w('    }');
+
+        log.w('Candidate versions:');
+        for (var i = 1; i <= err.picks.length; i++) {
+          var pick = err.picks[i - 1];
+          var dependants = pick.dependants.map(function(dependant) {
+            var result = dependant.pkgMeta.name + '#' + dependant.pkgMeta.version;
+            if (result === 'webResource#undefined') {
+              result = 'this project'
+            }
+            return result;
+          });
+          log.w('    ' + chalk.magenta(i + ') ') + chalk.cyan(pick.endpoint.name + '#' + pick.endpoint.target) + ' which resolved to ' + chalk.green(pick.pkgMeta.version) + ' and is required by ' + chalk.green(dependants.join(', ')));
+        }
+        log.w('Some candidates might not be shown above because they are not installed yet.');
+        log.w('This is a limitation of this plugin.');
+      } else {
+        log.e('Install failed: ' + err.code + ': ' + err.stack);
+      }
+    }
     deferred.reject();
   })
   .on('end', function (installed) {
     log.i('Installed: ' + name + '#' + version + (offline ? ' (offline)' : ''));
-    if (cached && validate) {// offline === false) {
+    var validatedDueToDependencies = false;
+    if (installed[cacheName] && installed[cacheName].dependencies) {
+      validatedDueToDependencies = installed[cacheName].dependencies.hasOwnProperty(validCacheName);
+    }
+    if (cached && validate && !validatedDueToDependencies) {// offline === false) {
       // Installed with cache, but validation occurred
       log.w(util.format('  Note: cache key does not match to the package name.'));
       log.w(util.format('  It means, the package "%s" is cached ', name));
@@ -175,4 +219,22 @@ function getInstalledVersion(name) {
     }
   }
   return '';
+}
+
+function saveCurrentPackageJson(name, version) {
+  var json = {
+    name: "bower",
+    dependencies: {},
+    resolutions: {}
+  };
+  json.dependencies[name] = version;
+  json.resolutions = resolutions;
+  var jsonStr = JSON.stringify(json, null, '  ');
+  fs.writeFileSync('bower.json', jsonStr);
+}
+
+function deletePackageJson() {
+  if (fs.existsSync('bower.json')) {
+    fs.unlinkSync('bower.json');
+  }
 }

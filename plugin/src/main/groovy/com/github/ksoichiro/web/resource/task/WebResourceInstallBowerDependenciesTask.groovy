@@ -1,5 +1,6 @@
 package com.github.ksoichiro.web.resource.task
 
+import com.github.ksoichiro.web.resource.extension.BowerDependencyResolution
 import com.github.ksoichiro.web.resource.node.TriremeNodeRunner
 import com.github.ksoichiro.web.resource.util.PathResolver
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
@@ -65,6 +66,18 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
             : JsonOutput.toJson(bowerConfig)
         def tmpFile = project.file("${extension.workDir}/.bowerpkg.json")
         tmpFile.text = dependencies
+
+        def tmpResolutionFile = project.file("${extension.workDir}/.bowerresolutions.json")
+        def resolutionsConfig = [:]
+        if (extension.bower.dependencyResolutions.size() > 0) {
+            extension.bower.dependencyResolutions.each { BowerDependencyResolution resolution ->
+                resolutionsConfig[resolution.name] = resolution.version
+            }
+        }
+        def resolutions = resolutionsConfig.isEmpty() ? '{}'
+            : JsonOutput.toJson(resolutionsConfig)
+        tmpResolutionFile.text = resolutions
+
         new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
         writeCommonScript()
 
@@ -73,6 +86,7 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
             workingDir: extension.workDir,
             args: [
                 tmpFile.absolutePath,
+                tmpResolutionFile.absolutePath,
                 mapLogLevel(extension.bower.logLevel),
             ] as String[])
         triremeNodeRunner.exec()

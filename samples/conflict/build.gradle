@@ -1,0 +1,53 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url '../repo'
+        }
+    }
+    dependencies {
+        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:+'
+        classpath 'net.rdrei.android.buildtimetracker:gradle-plugin:0.5.0'
+    }
+}
+
+apply plugin: 'base'
+apply plugin: 'com.github.ksoichiro.web.resource'
+apply plugin: 'build-time-tracker'
+
+webResource {
+    bower {
+        // You can check the difference to the native bower by using bower.json in this directory.
+        dependencies {
+            // bower install as Chart.js, and this plugin renames it to chartjs
+            install name: 'chartjs', version: '1.0.2', cacheName: 'Chart.js', filter: ['*.min.*']
+
+            install name: "jquery", version: "1.10.2"
+            install name: "bootstrap", version: "3.3.6"
+            install name: "angular", version: "1.5.0"
+            install name: "angular-bootstrap", version: "1.1.2"
+            install name: "angular-route", version: "1.5.0"
+            install name: "angular-scroll", version: "1.0.0"
+            install name: "font-awesome", version: "4.5.0"
+            install name: "angular-ui-tinymce", version: "0.0.12"
+            install name: "angular-translate", version: "2.9.0"
+            install name: "angular-translate-loader-static-files", version: "2.9.0"
+            install name: "angular-google-client", version: "2.0.2"
+
+            resolve name: 'angular', version: '1.5.0'
+        }
+
+        logLevel LogLevel.DEBUG
+    }
+}
+
+buildtimetracker {
+    reporters {
+        summary {
+            ordered true
+            threshold 50
+            barstyle 'unicode'
+        }
+    }
+}

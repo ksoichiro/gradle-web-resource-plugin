@@ -14,9 +14,11 @@ class BowerConfig implements Serializable {
     static final long serialVersionUID = -1L
     LogLevel logLevel
     List<BowerDependency> dependencies
+    List<BowerDependencyResolution> dependencyResolutions
 
     BowerConfig() {
         this.dependencies = []
+        this.dependencyResolutions = []
     }
 
     /**
@@ -36,6 +38,16 @@ class BowerConfig implements Serializable {
      */
     void install(Map configuration) {
         dependencies.add(new BowerDependency(configuration))
+    }
+
+    /**
+     * Add a bower dependency resolution by ${@code configuration} map.
+     * This is equivalent to resolutions in bower.json.
+     *
+     * @param configuration configuration map containing dependency resolution information
+     */
+    void resolve(Map configuration) {
+        dependencyResolutions.add(new BowerDependencyResolution(configuration))
     }
 
     def methodMissing(String name, args) {
