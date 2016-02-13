@@ -27,10 +27,10 @@ if (parallelize) {
 }
 
 function coffeeConvertItem(item, cb) {
-  log.i('Started: ' + item.name);
+  log.d('Started: ' + item.name);
   coffeeConvert(item.path, item.name, [path.dirname(item.path)], path.join(item.destDir, item.name.replace(/\.coffee/, '.js')),
     function() {
-      log.i('Finished: ' + item.name);
+      log.d('Finished: ' + item.name);
       if (cb) {
         cb();
       }

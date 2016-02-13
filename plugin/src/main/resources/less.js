@@ -23,10 +23,10 @@ if (parallelize) {
 }
 
 function lessConvertItem(item, cb) {
-  log.i('Started: ' + item.name);
+  log.d('Started: ' + item.name);
   lessConvert(item.path, item.name, [path.dirname(item.path)], path.join(item.destDir, item.name.replace(/\.less/, '.css')),
     function() {
-      log.i('Finished: ' + item.name);
+      log.d('Finished: ' + item.name);
       if (cb) {
         cb();
       }
