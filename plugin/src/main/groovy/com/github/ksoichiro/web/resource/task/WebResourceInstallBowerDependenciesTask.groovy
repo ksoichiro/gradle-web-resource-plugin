@@ -43,7 +43,8 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
             project.delete(rootBowerJson)
         }
 
-        List bowerConfig = []
+        def packages = [:]
+        List dependencies = []
         extension.bower.dependencies.each {
             File bowerJson = new File(extension.workDir, "${BOWER_COMPONENTS_DIR}/${it.name}/bower.json")
             if (bowerJson.exists()) {
@@ -60,23 +61,20 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
             if (it.cacheName) {
                 dependency['cacheName'] = it.cacheName
             }
-            bowerConfig.add(dependency)
+            dependencies.add(dependency)
         }
-        def dependencies = bowerConfig.isEmpty() ? '[]'
-            : JsonOutput.toJson(bowerConfig)
-        def tmpFile = project.file("${extension.workDir}/.bowerpkg.json")
-        tmpFile.text = dependencies
+        packages.dependencies = dependencies
 
-        def tmpResolutionFile = project.file("${extension.workDir}/.bowerresolutions.json")
-        def resolutionsConfig = [:]
+        def resolutions = [:]
         if (extension.bower.dependencyResolutions.size() > 0) {
             extension.bower.dependencyResolutions.each { BowerDependencyResolution resolution ->
-                resolutionsConfig[resolution.name] = resolution.version
+                resolutions[resolution.name] = resolution.version
             }
         }
-        def resolutions = resolutionsConfig.isEmpty() ? '{}'
-            : JsonOutput.toJson(resolutionsConfig)
-        tmpResolutionFile.text = resolutions
+        packages.resolutions = resolutions
+
+        def tmpFile = project.file("${extension.workDir}/.bowerpkg.json")
+        tmpFile.text = JsonOutput.toJson(packages)
 
         new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
         writeCommonScript()
@@ -86,7 +84,6 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
             workingDir: extension.workDir,
             args: [
                 tmpFile.absolutePath,
-                tmpResolutionFile.absolutePath,
                 mapLogLevel(extension.bower.logLevel),
             ] as String[])
         triremeNodeRunner.exec()

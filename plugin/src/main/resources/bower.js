@@ -6,18 +6,18 @@ var Q = require('q');
 var common = require('./common');
 var Logger = require('./logger');
 
-// [ {name: 'foo', version: '1.0.0', cacheName: 'Foo.js' }, ... ];
 var packages = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
-var resolutions = JSON.parse(fs.readFileSync(process.argv[3], 'utf-8'));
-var logLevel = parseInt(process.argv[4]);
+var dependencies = packages.dependencies;
+var resolutions = packages.resolutions;
+var logLevel = parseInt(process.argv[3]);
 
 var log = new Logger(logLevel, 'Bower');
 
-common.handleExit(validateInstalledPackages);
+common.handleExit(validateInstalledDependencies);
 
-common.installSequentially(packages, bowerInstallPackage);
+common.installSequentially(dependencies, bowerInstallDependency);
 
-function bowerInstallPackage(item, cb) {
+function bowerInstallDependency(item, cb) {
   var cacheName = item.name;
   if (item.hasOwnProperty('cacheName')) {
     cacheName = item.cacheName;
@@ -87,16 +87,9 @@ function install(data) {
   var cached = false;
   var validate = false;
   var validCacheName = name;
-  var hasResolutions = resolutions && Object.keys(resolutions).length > 0;
-  if (hasResolutions) {
-    saveCurrentPackageJson(cacheName, version);
-  } else {
-    deletePackageJson();
-  }
-  // If 1st arg(targets) is specified, their dependencies are marked as unresolvable, and resolutions have no effect.
-  var targets = hasResolutions ? [] : [name + '#' + version]
-  var config = { 'offline': offline }
-  bower.commands.install(targets, {}, config)
+  saveCurrentDependencyToJson(cacheName, version);
+  // If 1st arg is specified, they are marked as unresolvable, and resolutions have no effect.
+  bower.commands.install([], {}, { 'offline': offline })
   .on('log', function (l) {
     if (l.id === 'cached') {
       cached = true;
@@ -185,8 +178,8 @@ function install(data) {
   return deferred.promise;
 }
 
-function validateInstalledPackages() {
-  packages.forEach(function(e) {
+function validateInstalledDependencies() {
+  dependencies.forEach(function(e) {
     var cacheName = e.name;
     if (e.hasOwnProperty('cacheName')) {
       cacheName = e.cacheName;
@@ -197,7 +190,7 @@ function validateInstalledPackages() {
     }
   });
   if (common.hasError()) {
-    log.e('Some packages are not installed.');
+    log.e('Some dependencies are not installed.');
   }
 }
 
@@ -221,7 +214,7 @@ function getInstalledVersion(name) {
   return '';
 }
 
-function saveCurrentPackageJson(name, version) {
+function saveCurrentDependencyToJson(name, version) {
   var json = {
     name: "bower",
     dependencies: {},
@@ -233,7 +226,7 @@ function saveCurrentPackageJson(name, version) {
   fs.writeFileSync('bower.json', jsonStr);
 }
 
-function deletePackageJson() {
+function deleteBowerJson() {
   if (fs.existsSync('bower.json')) {
     fs.unlinkSync('bower.json');
   }
