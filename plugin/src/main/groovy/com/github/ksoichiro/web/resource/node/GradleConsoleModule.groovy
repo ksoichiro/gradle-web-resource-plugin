@@ -63,9 +63,11 @@ class GradleConsoleModule implements NodeModule {
                 level = red(level)
             } else if ('WARN'.equals(level)) {
                 level = yellow(level)
+            } else if ('DEBUG'.equals(level)) {
+                level = blue(level)
             }
             String now = new Date().format("HH:mm:ss.SSS")
-            println "${gray(now)} [${level}] [${cyan(tag)}] ${message}"
+            println "${gray(now)} ${level.padRight(5, ' ')} [${cyan(tag)}] ${message}"
         }
 
         static def red(def s) {
@@ -78,6 +80,10 @@ class GradleConsoleModule implements NodeModule {
 
         static def yellow(def s) {
             ansi().fg(Ansi.Color.YELLOW).a(s).reset()
+        }
+
+        static def blue(def s) {
+            ansi().fg(Ansi.Color.BLUE).a(s).reset()
         }
 
         static def gray(def s) {
