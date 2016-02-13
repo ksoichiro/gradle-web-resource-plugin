@@ -175,6 +175,9 @@ webResource {
             //resolve name: 'jquery', version: '1.9.0'
         }
 
+        // Giving --force-latest option also work for resolving conflict
+        //options = ["--force-latest"]
+
         // You can make bower install parallel (like using bower CLI),
         // but it always needs network connection (offline install is disabled).
         //parallelize true
