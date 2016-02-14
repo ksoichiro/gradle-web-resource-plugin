@@ -4,7 +4,7 @@ build:
   verbosity: detailed
 
 build_script:
-  - gradlew.bat --full-stacktrace clean build
+  - gradlew.bat --full-stacktrace clean assemble
 
 test_script:
   - gradlew.bat --full-stacktrace check
