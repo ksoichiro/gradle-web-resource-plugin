@@ -1,7 +1,7 @@
 package com.github.ksoichiro.web.resource.task
 
-import com.github.ksoichiro.web.resource.util.PathResolver
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
+import com.github.ksoichiro.web.resource.util.PathResolver
 import org.gradle.api.DefaultTask
 import org.gradle.api.logging.LogLevel
 
@@ -11,9 +11,6 @@ import org.gradle.api.logging.LogLevel
  * @author Soichiro Kashima
  */
 class TriremeBaseTask extends DefaultTask {
-    static final String COMMON_SCRIPT_NAME = "common.js"
-    static final String LOGGER_SCRIPT_NAME = "logger.js"
-
     WebResourceExtension extension
     PathResolver pathResolver
 
@@ -24,9 +21,11 @@ class TriremeBaseTask extends DefaultTask {
         }
     }
 
-    void writeCommonScript() {
-        new File(extension.workDir, COMMON_SCRIPT_NAME).text = getClass().getResourceAsStream("/${COMMON_SCRIPT_NAME}").text
-        new File(extension.workDir, LOGGER_SCRIPT_NAME).text = getClass().getResourceAsStream("/${LOGGER_SCRIPT_NAME}").text
+    void prepareWorkDir() {
+        def workDir = extension.workDir
+        if (!workDir.exists()) {
+            workDir.mkdirs()
+        }
     }
 
     static String mapLogLevel(LogLevel logLevel) {

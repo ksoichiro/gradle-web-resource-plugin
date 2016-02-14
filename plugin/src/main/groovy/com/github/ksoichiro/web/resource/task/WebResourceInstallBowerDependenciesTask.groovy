@@ -1,9 +1,9 @@
 package com.github.ksoichiro.web.resource.task
 
 import com.github.ksoichiro.web.resource.extension.BowerDependencyResolution
+import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import com.github.ksoichiro.web.resource.node.TriremeNodeRunner
 import com.github.ksoichiro.web.resource.util.PathResolver
-import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.gradle.api.tasks.TaskAction
@@ -14,7 +14,6 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
     static final String BOWER_COMPONENTS_DIR = "bower_components"
 
     WebResourceInstallBowerDependenciesTask() {
-        dependsOn([WebResourceSetupNodeDependenciesTask.NAME])
         project.afterEvaluate {
             extension = project.extensions.webResource
             pathResolver = new PathResolver(project, extension)
@@ -31,6 +30,7 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
         if (extension.bower?.dependencies?.isEmpty()) {
             return
         }
+        prepareWorkDir()
 
         File bowerComponentsDir = new File(extension.workDir, BOWER_COMPONENTS_DIR)
         if (!bowerComponentsDir.exists()) {
@@ -77,8 +77,7 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
         def tmpFile = project.file("${extension.workDir}/.bowerpkg.json")
         tmpFile.text = JsonOutput.toJson(packages)
 
-        new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
-        writeCommonScript()
+        writeBowerScript()
 
         def triremeNodeRunner = new TriremeNodeRunner(
             scriptName: SCRIPT_NAME,
@@ -89,6 +88,10 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
                 mapLogLevel(extension.bower.logLevel),
             ] as String[])
         triremeNodeRunner.exec()
+    }
+
+    void writeBowerScript() {
+        new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
     }
 
     File getBowerScript() {

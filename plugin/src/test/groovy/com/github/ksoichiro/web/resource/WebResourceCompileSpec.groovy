@@ -20,7 +20,6 @@ class WebResourceCompileSpec extends BaseSpec {
         Project project = ProjectBuilder.builder().withProjectDir(temporaryFolder.root).build()
         project.apply plugin: PLUGIN_ID
         project.evaluate()
-        project.tasks.webResourceSetupNodeDependencies.execute()
         project.tasks.webResourceInstallBowerDependencies.execute()
     }
 

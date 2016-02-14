@@ -15,6 +15,12 @@
         "osenv": "0.1.3",
         "less": "2.5.3",
         "q": "1.4.1",
-        "glob": "4.5.3"
+        "glob": "4.5.3",
+        "browserify": "12.0.1"
+    },
+    "scripts": {
+        "browserifyBower": "browserify bower.js --ignore-missing --node -o scripts/bower.js",
+        "browserifyCoffee": "browserify coffee.js --ignore-missing --node -o scripts/coffee.js",
+        "browserifyLess": "browserify less.js --ignore-missing --node -o scripts/less.js"
     }
 }

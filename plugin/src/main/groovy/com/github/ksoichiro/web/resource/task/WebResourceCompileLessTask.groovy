@@ -35,8 +35,8 @@ class WebResourceCompileLessTask extends TriremeBaseTask {
         if (!extension.less.enabled) {
             return
         }
+        prepareWorkDir()
         writeLessScript()
-        writeCommonScript()
         def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.less.src)
         def srcRootFile = project.file(srcRootDir)
         def src = filterSource(srcRootDir)

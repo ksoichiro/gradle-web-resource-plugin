@@ -35,8 +35,8 @@ class WebResourceCompileCoffeeScriptTask extends TriremeBaseTask {
         if (!extension.coffeeScript.enabled) {
             return
         }
+        prepareWorkDir()
         writeCoffeeScript()
-        writeCommonScript()
         def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.coffeeScript.src)
         def srcRootFile = project.file(srcRootDir)
         def src = filterSource(srcRootFile)

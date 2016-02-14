@@ -42,7 +42,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:1.2.1-SNAPSHOT'
+        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:1.5.0-SNAPSHOT'
     }
 }
 
@@ -315,6 +315,8 @@ This plugin deeply depends on these excellent projects.
     * Node/npm wrapper for Gradle to aggregating npm dependencies.
 * [npm/npm](https://github.com/npm/npm)
     * Node packages manager used in build phase to aggregate Node libraries.
+* [substack/node-browserify](https://github.com/substack/node-browserify)
+    * Used in build phase to merge and remove redundant Node modules.
 * [bower/bower](https://github.com/bower/bower)
     * Bundled in the plugin jar to manage Browser JavaScript libraries.
 * [less/less.js](https://github.com/less/less.js)

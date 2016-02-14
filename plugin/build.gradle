@@ -94,95 +94,85 @@ buildtimetracker {
     }
 }
 
-apply from: "${rootDir}/gradle/exclude.gradle"
-
-task copyPackageInfo << {
+task copyJavaScript << {
     copy {
-        from 'src/main/javascript/package.json'
+        from "src/main/javascript"
         into project.buildDir
     }
+    project.file("${project.buildDir}/scripts").mkdirs()
 }
 
-task copyNodeModules {
-    inputs.dir file("${project.buildDir}/node_modules")
-    outputs.dir file("${projectDir}/src/main/resources/node_modules")
-    doLast {
-        // Copy installed node modules to resources
-        copy {
-            from("${project.buildDir}/node_modules") {
-                excludeModules.each { exclude it }
-            }
-            into 'src/main/resources/node_modules'
-        }
+task applyPatch(dependsOn: 'npmInstall') << {
+    // Resolving cache while installing dependency in bower fails when executing with Trireme,
+    // so apply a patch for it
+    File f = new File("${project.buildDir}/node_modules/bower/lib/lib/core/ResolveCache.js")
+    def replaced = f.text.replaceAll(
+        "if \\(err\\.code === 'ENOENT'\\) \\{",
+        "if (err.code === 'ENOENT' || err.code === 'ENOTDIR') {")
+    f.text = replaced
 
-        // Delete unused files
-        def baseDir = "${projectDir}/src/main/resources/node_modules"
-        excludeModules.each { e ->
-            if (0 <= e.indexOf('*')) {
-                def tree = fileTree(dir: baseDir)
-                tree.include(e)
-                tree.each { File f ->
-                    project.delete(f.absolutePath)
-                }
-            } else {
-                project.delete("${baseDir}/${e}")
-            }
-        }
+    // When using browserify, bower's internal function commandFactory is not handled
+    // because it uses require with variables.
+    // To solve this problem, we pass module path directly to require().
+    f = new File("${project.buildDir}/node_modules/bower/lib/lib/commands/index.js")
+    replaced = f.text.replaceAll(/commandFactory\('([^']*)'\)/) { all, path ->
+        "commandFactory(require('${path}'))"
+    }.replaceAll("var command = require\\(id\\)", "var command = id")
+    f.text = replaced
 
-        // Modify local paths in package.json
-        fileTree(dir: baseDir).include('**/package.json').each { File f ->
-            def json = new JsonSlurper().parseText(f.text)
-            json._args = []
-            json._where = ''
-            f.text = JsonOutput.prettyPrint(JsonOutput.toJson(json))
-        }
+    // bower 1.7.6 includes git avialability check with `which` module,
+    // but `which` doesn't work with node 0.12 on trireme.
+    // So if we use bower 1.7.6 and node 0.12 included in trireme 0.8.8 together,
+    // we must skip this check to execute bower.
+    // I confirmed this behavior with a simple, small index.js:
+    //   var which = require('which');
+    //   try {
+    //     which.sync('git');
+    //     console.log('git is installed');
+    //   } catch(ex) {
+    //     console.log(ex);
+    //   }
+    // This produces different result in node 0.10 and 0.12:
+    //   $ trireme --node-version=0.12 index.js
+    //   { [Error: not found: git]
+    //     message: 'not found: git',
+    //     fileName: '/Users/dev/.nvm/v5.3.0/lib/node_modules/which/which.js',
+    //     lineNumber: 120 }
+    //   $ trireme --node-version=0.10 index.js
+    //   git is installed
+    //
+    //f = new File("${projectDir}/src/main/resources/node_modules/bower/lib/lib/core/resolvers/GitResolver.js")
+    //replaced = f.text.replaceAll(
+    //    "hasGit = false;",
+    //    "hasGit = true;")
+    //f.text = replaced
+}
 
-        // Apply patches:
-        // Resolving cache while installing dependency in bower fails when executing with Trireme,
-        // so apply a patch for it
-        File f = new File("${projectDir}/src/main/resources/node_modules/bower/lib/lib/core/ResolveCache.js")
-        def replaced = f.text.replaceAll(
-            "if \\(err\\.code === 'ENOENT'\\) \\{",
-            "if (err.code === 'ENOENT' || err.code === 'ENOTDIR') {")
-        f.text = replaced
-
-        // bower 1.7.6 includes git avialability check with `which` module,
-        // but `which` doesn't work with node 0.12 on trireme.
-        // So if we use bower 1.7.6 and node 0.12 included in trireme 0.8.8 together,
-        // we must skip this check to execute bower.
-        // I confirmed this behavior with a simple, small index.js:
-        //   var which = require('which');
-        //   try {
-        //     which.sync('git');
-        //     console.log('git is installed');
-        //   } catch(ex) {
-        //     console.log(ex);
-        //   }
-        // This produces different result in node 0.10 and 0.12:
-        //   $ trireme --node-version=0.12 index.js
-        //   { [Error: not found: git]
-        //     message: 'not found: git',
-        //     fileName: '/Users/dev/.nvm/v5.3.0/lib/node_modules/which/which.js',
-        //     lineNumber: 120 }
-        //   $ trireme --node-version=0.10 index.js
-        //   git is installed
-        //
-        //f = new File("${projectDir}/src/main/resources/node_modules/bower/lib/lib/core/resolvers/GitResolver.js")
-        //replaced = f.text.replaceAll(
-        //    "hasGit = false;",
-        //    "hasGit = true;")
-        //f.text = replaced
+task browserify(dependsOn: 'processResources') << {
+    def resDir = project.file("${project.buildDir}/resources/main")
+    if (!resDir.exists()) {
+        resDir.mkdirs()
+    }
+    copy {
+        from "${project.buildDir}/scripts"
+        into "${project.buildDir}/resources/main"
     }
 }
 
-task cleanNodeModules << {
-    project.delete('src/main/resources/node_modules')
+['bower', 'coffee', 'less'].each {
+    def name = it
+    def taskName = "browserify${name.capitalize()}"
+    task "${taskName}"(type: NpmTask, dependsOn: 'applyPatch') {
+        args = ['run', "${taskName}"]
+        execOverrides {
+            it.workingDir = project.buildDir
+        }
+    }
+    browserify.dependsOn "${taskName}"
 }
 
-npmInstall.dependsOn('copyPackageInfo')
-copyNodeModules.dependsOn('npmInstall')
-compileGroovy.dependsOn('copyNodeModules')
-clean.dependsOn('cleanNodeModules')
+npmInstall.dependsOn('copyJavaScript')
+classes.dependsOn('browserify')
 check.dependsOn('cobertura')
 
 apply from: "${rootDir}/gradle/release.gradle"
