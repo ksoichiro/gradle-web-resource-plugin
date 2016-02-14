@@ -20,7 +20,6 @@ class PluginSpec extends BaseSpec {
 
         then:
         project.tasks.webResourceInstallBowerDependencies instanceof WebResourceInstallBowerDependenciesTask
-        project.tasks.webResourceSetupNodeDependencies instanceof WebResourceSetupNodeDependenciesTask
         project.tasks.webResourceCompileCoffeeScript instanceof WebResourceCompileCoffeeScriptTask
         project.tasks.webResourceCompileLess instanceof WebResourceCompileLessTask
         project.tasks.webResourceCopyBowerDependencies instanceof WebResourceCopyBowerDependenciesTask

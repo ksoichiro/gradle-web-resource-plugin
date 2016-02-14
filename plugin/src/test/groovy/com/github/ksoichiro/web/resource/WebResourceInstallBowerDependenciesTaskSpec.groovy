@@ -5,7 +5,6 @@ import org.gradle.api.Project
 import org.gradle.api.logging.LogLevel
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.ClassRule
-import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Shared
 
@@ -13,13 +12,6 @@ class WebResourceInstallBowerDependenciesTaskSpec extends BaseSpec {
     @ClassRule
     @Shared
     TemporaryFolder temporaryFolder = new TemporaryFolder()
-
-    def setupSpec() {
-        Project project = ProjectBuilder.builder().withProjectDir(temporaryFolder.root).build()
-        project.apply plugin: PLUGIN_ID
-        project.evaluate()
-        project.tasks.webResourceSetupNodeDependencies.execute()
-    }
 
     def exec() {
         setup:

@@ -4,7 +4,6 @@ import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.ClassRule
-import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Shared
 
@@ -12,13 +11,6 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
     @ClassRule
     @Shared
     TemporaryFolder temporaryFolder = new TemporaryFolder()
-
-    def setupSpec() {
-        Project project = ProjectBuilder.builder().withProjectDir(temporaryFolder.root).build()
-        project.apply plugin: PLUGIN_ID
-        project.evaluate()
-        project.tasks.webResourceSetupNodeDependencies.execute()
-    }
 
     def exec() {
         setup:
