@@ -34,7 +34,7 @@ function bowerInstallDependency(item, cb) {
   .then(install)
   .catch(function(error) {
     if (error) {
-      log.e('Install failed: ' + cacheName + ': ' + error.stack);
+      log.e('Install failed: ' + cacheName + ': ' + (error.stack ? error.stack : error));
     }
     common.setExitCode(1);
   })
