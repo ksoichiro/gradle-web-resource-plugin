@@ -183,11 +183,8 @@ function install(data) {
   .on('end', function (installed) {
     if (isSerialInstall) {
       log.i('Installed: ' + name + '#' + version + (offline ? ' (offline)' : ''));
-      var validatedDueToDependencies = false;
-      if (installed[cacheName] && installed[cacheName].dependencies) {
-        validatedDueToDependencies = installed[cacheName].dependencies.hasOwnProperty(validCacheName);
-      }
-      if (cached && validate && !validatedDueToDependencies) {// offline === false) {
+      var hasDependencies = Object.keys(installed).length > 1;
+      if (cached && validate && !hasDependencies) {// offline === false) {
         // Installed with cache, but validation occurred
         log.w(util.format('  Note: cache key does not match to the package name.'));
         log.w(util.format('  It means, the package "%s" is cached ', name));
