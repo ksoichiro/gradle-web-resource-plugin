@@ -73,6 +73,7 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
         }
         packages.resolutions = resolutions
         packages.options = extension.bower.options.collectEntries { [(it.replaceAll(/^--/, "")): true] }
+        packages.configs = extension.bower.configs.collectEntries { [(it.replaceAll(/^--/, "")): true] }
 
         def tmpFile = project.file("${extension.workDir}/.bowerpkg.json")
         tmpFile.text = JsonOutput.toJson(packages)

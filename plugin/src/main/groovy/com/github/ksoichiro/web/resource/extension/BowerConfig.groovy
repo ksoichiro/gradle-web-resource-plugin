@@ -17,11 +17,13 @@ class BowerConfig implements Serializable {
     List<BowerDependencyResolution> dependencyResolutions
     boolean parallelize
     List options
+    List configs
 
     BowerConfig() {
         this.dependencies = []
         this.dependencyResolutions = []
         this.options = []
+        this.configs = []
         this.parallelize = true
     }
 

@@ -11,6 +11,7 @@ var packages = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
 var dependencies = packages.dependencies;
 var resolutions = packages.resolutions;
 var options = packages.options;
+var configs = packages.configs;
 var parallelize = process.argv[3] === 'true';
 var logLevel = parseInt(process.argv[4]);
 
@@ -127,11 +128,15 @@ function install(data) {
   var validate = false;
   var validCacheName = name;
   var installOptions = {};
+  var installConfigs = configs || {};
+  if (!installConfigs.hasOwnProperty('offline')) {
+    installConfigs['offline'] = offline;
+  }
   Object.keys(options).forEach(function(k) {
     installOptions[mout.string.camelCase(k)] = options[k];
   });
   // If 1st arg is specified, they are marked as unresolvable, and resolutions have no effect.
-  bower.commands.install([], installOptions, { 'offline': offline })
+  bower.commands.install([], installOptions, installConfigs)
   .on('log', function (l) {
     if (l.id === 'cached') {
       cached = true;
