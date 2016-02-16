@@ -182,7 +182,10 @@ function install(data) {
   })
   .on('end', function (installed) {
     if (isSerialInstall) {
-      log.i('Installed: ' + name + '#' + version + (offline ? ' (offline)' : ''));
+      Object.keys(installed).forEach(function(k) {
+        var i = installed[k];
+        log.i('Installed: ' + i.pkgMeta.name + '#' + i.pkgMeta.version + (offline ? ' (offline)' : ''));
+      });
       var hasDependencies = Object.keys(installed).length > 1;
       if (cached && validate && !hasDependencies) {// offline === false) {
         // Installed with cache, but validation occurred
