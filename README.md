@@ -178,9 +178,9 @@ webResource {
         // Giving --force-latest option also work for resolving conflict
         //options = ["--force-latest"]
 
-        // You can make bower install parallel (like using bower CLI),
-        // but it always needs network connection (offline install is disabled).
-        //parallelize true
+        // You can make bower installation serial, but be careful.
+        // (See "Parallel installation for bower" section for details.) 
+        //parallelize false
     }
 }
 ```
@@ -269,6 +269,34 @@ As a result, you can see the compiled and concatenated CSS file `app.css`.
 
 /* b.css: (will not be generated) */
 ```
+
+## Parallel installation for bower
+
+By default, `webResourceInstallBowerDependencies` task will
+install dependencies in parallel.  
+This can be controlled by `bower.parallelize` option,
+but we recommend not to overwrite it to `false`.
+
+Serial install have issues around version resolution.  
+When `bower.json` is created for each dependency,
+some dependencies that has child dependencies
+would install child dependencies without checking
+installed or other dependencies.  
+This will cause unintentional update, for example,
+when jquery 1.11.2 is installed at first, and then bootstrap 3.3.4
+is installed, bootstrap will also install jquery 2.2.0
+(current latest stable version) because bootstrap doesn't know
+that the compatible jquery version is already installed.  
+This situation cannot be avoided as long as we use this method.  
+Therefore we should execute normal bower installation in parallel.  
+One reason that we had chosen the serial installation is
+that bower's install API allows `offline` option that does not use
+any network connections, and it could be used for each dependency
+according to cache status.  
+Offline installation is faster than one that uses network connection,
+and often it's good for builds at restricted environment,
+but when you have any dependencies that has child dependencies,
+it is recommended to install them in parallel.
 
 ## Why do you need this plugin?
 

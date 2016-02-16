@@ -20,6 +20,11 @@ if (parallelize) {
   common.handleExit();
   common.install(installParallel);
 } else {
+  log.w('parallelize option is set to false.');
+  log.w('  Parallel installation is recommended because');
+  log.w('  the serial installation might cause version resolution issues.');
+  log.w('  If you continue to use parallelize = false, use it carefully.');
+
   common.handleExit(validateInstalledDependencies);
   common.installSequentially(dependencies, bowerInstallDependency);
 }

@@ -22,6 +22,7 @@ class BowerConfig implements Serializable {
         this.dependencies = []
         this.dependencyResolutions = []
         this.options = []
+        this.parallelize = true
     }
 
     /**

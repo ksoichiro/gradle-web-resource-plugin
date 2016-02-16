@@ -49,7 +49,7 @@ webResource {
             install name: 'jquery.slimscroll', version: '1.3.6', cacheName: 'slimScroll', filter: ['*.js']
             install name: 'components-font-awesome', version: '4.3.0', outputName: 'font-awesome'
         }
-        logLevel LogLevel.INFO
+        logLevel LogLevel.DEBUG
     }
 }
 
