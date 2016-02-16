@@ -149,7 +149,7 @@ function install(data) {
     } else if (l.id === 'download') {
       log.i(util.format("Downloading: %s", l.data.resolver.name));
     } else if (l.id === 'progress') {
-      log.i(util.format("Downloading: %s#%s: %s", name, version, l.message));
+      log.i(util.format("Downloading: %s#%s: %s", l.data.resolver.name, l.data.resolver.target, l.message));
     } else if (l.id === 'extract') {
       log.i(util.format("Extracting: %s", l.data.resolver.name));
     } else if (l.id === 'install') {
