@@ -81,8 +81,7 @@ function checkCache(data) {
 }
 
 function installParallel(dummy, cb) {
-  Q.fcall(function() { return undefined; })
-  .then(install)
+  Q.fcall(install)
   .catch(function(error) {
     if (error) {
       log.e('Install failed: ' + error.stack);
