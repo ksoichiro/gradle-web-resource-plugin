@@ -35,8 +35,7 @@ function bowerInstallDependency(item, cb) {
   if (item.hasOwnProperty('cacheName')) {
     cacheName = item.cacheName;
   }
-  Q.fcall(function() { return [item.name, item.version, cacheName]; })
-  .then(checkCache)
+  Q.fcall(checkCache, [item.name, item.version, cacheName])
   .then(install)
   .catch(function(error) {
     if (error) {
