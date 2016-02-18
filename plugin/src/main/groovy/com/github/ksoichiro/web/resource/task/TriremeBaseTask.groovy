@@ -11,6 +11,7 @@ import org.gradle.api.logging.LogLevel
  * @author Soichiro Kashima
  */
 class TriremeBaseTask extends DefaultTask {
+    static final String SCRIPT_NAME = "build.js"
     WebResourceExtension extension
     PathResolver pathResolver
 

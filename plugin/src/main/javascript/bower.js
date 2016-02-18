@@ -1,3 +1,5 @@
+module.exports = function() {
+
 var fs = require('fs');
 var util = require('util');
 var bower = require('bower');
@@ -7,13 +9,13 @@ var mout = require('bower/lib/node_modules/mout');
 var common = require('./common');
 var Logger = require('./logger');
 
-var packages = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
+var packages = JSON.parse(fs.readFileSync(process.argv[3], 'utf-8'));
 var dependencies = packages.dependencies;
 var resolutions = packages.resolutions;
 var options = packages.options;
 var configs = packages.configs;
-var parallelize = process.argv[3] === 'true';
-var logLevel = parseInt(process.argv[4]);
+var parallelize = process.argv[4] === 'true';
+var logLevel = parseInt(process.argv[5]);
 
 var log = new Logger(logLevel, 'Bower');
 
@@ -294,3 +296,5 @@ function saveBowerJson() {
   var jsonStr = JSON.stringify(json, null, '  ');
   fs.writeFileSync('bower.json', jsonStr);
 }
+
+};

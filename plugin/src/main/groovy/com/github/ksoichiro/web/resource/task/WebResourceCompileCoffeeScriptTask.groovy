@@ -15,7 +15,6 @@ import org.gradle.api.tasks.TaskAction
  */
 class WebResourceCompileCoffeeScriptTask extends TriremeBaseTask {
     static final String NAME = "webResourceCompileCoffeeScript"
-    static final String SCRIPT_NAME = "coffee.js"
 
     WebResourceCompileCoffeeScriptTask() {
         dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
@@ -69,6 +68,7 @@ class WebResourceCompileCoffeeScriptTask extends TriremeBaseTask {
             scriptName: SCRIPT_NAME,
             workingDir: extension.workDir,
             args: [
+                'coffee',
                 tmpFile.absolutePath,
                 extension.coffeeScript.minify,
                 extension.coffeeScript.parallelize,

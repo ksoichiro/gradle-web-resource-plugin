@@ -19,8 +19,6 @@
         "browserify": "12.0.1"
     },
     "scripts": {
-        "browserifyBower": "browserify bower.js --ignore-missing --node -o scripts/bower.js",
-        "browserifyCoffee": "browserify coffee.js --ignore-missing --node -o scripts/coffee.js",
-        "browserifyLess": "browserify less.js --ignore-missing --node -o scripts/less.js"
+        "browserifyBuild": "browserify build.js --ignore-missing --node -o scripts/build.js"
     }
 }

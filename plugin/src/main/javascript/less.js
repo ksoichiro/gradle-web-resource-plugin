@@ -1,3 +1,5 @@
+module.exports = function() {
+
 var fs = require('fs');
 var path = require('path');
 var less = require('less');
@@ -5,10 +7,10 @@ var Q = require('q');
 var common = require('./common');
 var Logger = require('./logger');
 
-var lessSrcSet = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
-var minify = process.argv[3] === 'true';
-var parallelize = process.argv[4] === 'true';
-var logLevel = parseInt(process.argv[5]);
+var lessSrcSet = JSON.parse(fs.readFileSync(process.argv[3], 'utf-8'));
+var minify = process.argv[4] === 'true';
+var parallelize = process.argv[5] === 'true';
+var logLevel = parseInt(process.argv[6]);
 
 var log = new Logger(logLevel, 'LESS');
 
@@ -82,3 +84,5 @@ function lessConvert(filepath, filename, searchPaths, outputPath, cb) {
     }
   });
 }
+
+};

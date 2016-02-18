@@ -10,7 +10,6 @@ import org.gradle.api.tasks.TaskAction
 
 class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
     static final String NAME = "webResourceInstallBowerDependencies"
-    static final String SCRIPT_NAME = "bower.js"
     static final String BOWER_COMPONENTS_DIR = "bower_components"
 
     WebResourceInstallBowerDependenciesTask() {
@@ -84,6 +83,7 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
             scriptName: SCRIPT_NAME,
             workingDir: extension.workDir,
             args: [
+                'bower',
                 tmpFile.absolutePath,
                 extension.bower.parallelize,
                 mapLogLevel(extension.bower.logLevel),

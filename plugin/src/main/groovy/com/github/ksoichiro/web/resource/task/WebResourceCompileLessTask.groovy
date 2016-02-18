@@ -15,7 +15,6 @@ import org.gradle.api.tasks.TaskAction
  */
 class WebResourceCompileLessTask extends TriremeBaseTask {
     static final String NAME = "webResourceCompileLess"
-    static final String SCRIPT_NAME = "less.js"
 
     WebResourceCompileLessTask() {
         dependsOn([WebResourceInstallBowerDependenciesTask.NAME])
@@ -80,6 +79,7 @@ class WebResourceCompileLessTask extends TriremeBaseTask {
             scriptName: SCRIPT_NAME,
             workingDir: extension.workDir,
             args: [
+                'less',
                 tmpFile.absolutePath,
                 extension.less.minify,
                 extension.less.parallelize,

@@ -148,7 +148,14 @@ task applyPatch(dependsOn: 'npmInstall') << {
     //f.text = replaced
 }
 
-task browserify(dependsOn: 'processResources') << {
+task browserifyBuild(type: NpmTask, dependsOn: 'applyPatch') {
+    args = ['run', 'browserifyBuild']
+    execOverrides {
+        it.workingDir = project.buildDir
+    }
+}
+
+task browserify(dependsOn: ['processResources', 'browserifyBuild']) << {
     def resDir = project.file("${project.buildDir}/resources/main")
     if (!resDir.exists()) {
         resDir.mkdirs()
@@ -157,18 +164,6 @@ task browserify(dependsOn: 'processResources') << {
         from "${project.buildDir}/scripts"
         into "${project.buildDir}/resources/main"
     }
-}
-
-['bower', 'coffee', 'less'].each {
-    def name = it
-    def taskName = "browserify${name.capitalize()}"
-    task "${taskName}"(type: NpmTask, dependsOn: 'applyPatch') {
-        args = ['run', "${taskName}"]
-        execOverrides {
-            it.workingDir = project.buildDir
-        }
-    }
-    browserify.dependsOn "${taskName}"
 }
 
 npmInstall.dependsOn('copyJavaScript')

@@ -1,3 +1,5 @@
+module.exports = function() {
+
 var fs = require('fs');
 var path = require('path');
 var Q = require('q');
@@ -7,10 +9,10 @@ var UglifyJS = require('uglify-js');
 var glob = require('glob');
 var Logger = require('./logger');
 
-var coffeeSrcSet = JSON.parse(fs.readFileSync(process.argv[2], 'utf-8'));
-var minify = process.argv[3] === 'true';
-var parallelize = process.argv[4] === 'true';
-var logLevel = parseInt(process.argv[5]);
+var coffeeSrcSet = JSON.parse(fs.readFileSync(process.argv[3], 'utf-8'));
+var minify = process.argv[4] === 'true';
+var parallelize = process.argv[5] === 'true';
+var logLevel = parseInt(process.argv[6]);
 
 var log = new Logger(logLevel, 'CoffeeScript');
 var extensions = null;
@@ -187,3 +189,5 @@ function inExtensions(filePath) {
   }
   return false;
 }
+
+};
