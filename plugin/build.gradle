@@ -151,6 +151,21 @@ task applyPatch(dependsOn: 'npmInstall') << {
     f = new File("${project.buildDir}/node_modules/bower/lib/lib/version.js")
     replaced = f.text.replaceAll("module.exports = .*", "module.exports = '1.7.6';")
     f.text = replaced
+
+    [
+        'node_modules/bower/lib/node_modules/hawk/lib/utils.js',
+        'node_modules/bower/lib/node_modules/tough-cookie/lib/cookie.js',
+        'node_modules/elliptic/lib/elliptic.js',
+        'node_modules/hawk/lib/utils.js',
+        'node_modules/npm/node_modules/request/node_modules/hawk/lib/utils.js',
+        'node_modules/npm/node_modules/request/node_modules/tough-cookie/lib/cookie.js',
+        'node_modules/npm/scripts/publish-tag.js',
+        'node_modules/tough-cookie/lib/cookie.js',
+    ].each { String path ->
+        f = new File("${project.buildDir}/${path}")
+        replaced = f.text.replaceAll("require\\('../package.json'\\).version", "0")
+        f.text = replaced
+    }
 }
 
 task browserifyBuild(type: NpmTask, dependsOn: 'applyPatch') {
