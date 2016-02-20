@@ -19,6 +19,6 @@
         "browserify": "12.0.1"
     },
     "scripts": {
-        "browserifyBuild": "browserify build.js --ignore-missing --node -o scripts/build.js"
+        "browserifyBuild": "browserify --im --noparse=./node_modules/amdefine/amdefine.js --norparse=./node_modules/bower/lib/node_modules/amdefine/amdefine.js --noparse=./node_modules/bower/lib/node_modules/graceful-fs/fs.js --noparse=./node_modules/graceful-fs/fs.js --noparse=./node_modules/bower/lib/node_modules/fs-write-stream-atomic/index.js --node build.js > scripts/build.js"
     }
 }
