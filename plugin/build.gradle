@@ -146,6 +146,11 @@ task applyPatch(dependsOn: 'npmInstall') << {
     //    "hasGit = false;",
     //    "hasGit = true;")
     //f.text = replaced
+
+    // Remove unused features for browserify to work
+    f = new File("${project.buildDir}/node_modules/bower/lib/lib/version.js")
+    replaced = f.text.replaceAll("module.exports = .*", "module.exports = '1.7.6';")
+    f.text = replaced
 }
 
 task browserifyBuild(type: NpmTask, dependsOn: 'applyPatch') {
