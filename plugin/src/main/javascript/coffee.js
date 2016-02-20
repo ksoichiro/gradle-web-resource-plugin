@@ -5,7 +5,6 @@ var path = require('path');
 var Q = require('q');
 var coffee = require('coffee-script');
 var common = require('./common');
-var UglifyJS = require('uglify-js');
 var glob = require('glob');
 var Logger = require('./logger');
 
@@ -47,7 +46,7 @@ function coffeeConvert(filepath, filename, searchPaths, outputPath, cb) {
       coffeeString = processInclude(coffeeString, filepath)
       var js = coffee.compile(coffeeString, {filename: filepath});
       if (minify) {
-        var minified = UglifyJS.minify(js, {fromString: true, compress: {evaluate: false}});
+        var minified = require('./uglifyjs').minify(js, {fromString: true, compress: {evaluate: false}});
         js = minified.code;
       }
       deferred.resolve(js);

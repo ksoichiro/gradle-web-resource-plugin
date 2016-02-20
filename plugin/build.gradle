@@ -184,6 +184,24 @@ task browserify(dependsOn: ['processResources', 'browserifyBuild']) << {
         from "${project.buildDir}/scripts"
         into "${project.buildDir}/resources/main"
     }
+
+    // UglifyJS reads external files on runtime.
+    // To copy less files, we merge those files into 1 file on build time.
+    File f = new File("${project.buildDir}/resources/main/uglifyjs-lib.js")
+    f.text = ""
+    [
+        'utils.js',
+        'ast.js',
+        'parse.js',
+        'transform.js',
+        'scope.js',
+        'output.js',
+        'compress.js',
+        'sourcemap.js',
+        'mozilla-ast.js',
+    ].each { String fileName ->
+        f.text += new File("${project.buildDir}/node_modules/uglify-js/lib/${fileName}").text
+    }
 }
 
 npmInstall.dependsOn('copyJavaScript')

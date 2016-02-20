@@ -44,6 +44,7 @@ class WebResourceCompileCoffeeScriptTask extends TriremeBaseTask {
 
     void writeCoffeeScript() {
         new File(extension.workDir, SCRIPT_NAME).text = getClass().getResourceAsStream("/${SCRIPT_NAME}").text
+        new File(extension.workDir, "uglifyjs-lib.js").text = getClass().getResourceAsStream("/uglifyjs-lib.js").text
     }
 
     FileTree filterSource(def srcRootDir) {
