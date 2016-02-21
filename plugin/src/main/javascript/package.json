@@ -16,9 +16,10 @@
         "less": "2.5.3",
         "q": "1.4.1",
         "glob": "4.5.3",
-        "browserify": "12.0.1"
+        "browserify": "12.0.1",
+        "licensify": "2.2.0"
     },
     "scripts": {
-        "browserifyBuild": "browserify --im --noparse=./node_modules/amdefine/amdefine.js --norparse=./node_modules/bower/lib/node_modules/amdefine/amdefine.js --noparse=./node_modules/bower/lib/node_modules/graceful-fs/fs.js --noparse=./node_modules/graceful-fs/fs.js --noparse=./node_modules/bower/lib/node_modules/fs-write-stream-atomic/index.js --noparse='./node_modules/bower/lib/lib/commands/help.js' --noparse=./node_modules/bower/lib/lib/util/template.js --ignore=opn --node build.js | uglifyjs -c > scripts/build.js"
+        "browserifyBuild": "browserify -p licensify --im --noparse=./node_modules/amdefine/amdefine.js --norparse=./node_modules/bower/lib/node_modules/amdefine/amdefine.js --noparse=./node_modules/bower/lib/node_modules/graceful-fs/fs.js --noparse=./node_modules/graceful-fs/fs.js --noparse=./node_modules/bower/lib/node_modules/fs-write-stream-atomic/index.js --noparse='./node_modules/bower/lib/lib/commands/help.js' --noparse=./node_modules/bower/lib/lib/util/template.js --ignore=opn --node build.js | uglifyjs -c --comments > scripts/build.js"
     }
 }
