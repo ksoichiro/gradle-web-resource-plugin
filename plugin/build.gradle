@@ -206,12 +206,22 @@ task browserifyBuild(type: NpmTask, dependsOn: 'applyPatch') {
     execOverrides {
         it.workingDir = project.buildDir
     }
+    doLast {
+        if (!project.file("${project.buildDir}/scripts/build.tmp.js").exists()) {
+            throw new GradleException("browserifyBuild failed")
+        }
+    }
 }
 
 task uglifyBuild(type: NpmTask, dependsOn: 'browserifyBuild') {
     args = ['run', 'uglify']
     execOverrides {
         it.workingDir = project.buildDir
+    }
+    doLast {
+        if (!project.file("${project.buildDir}/scripts/build.js").exists()) {
+            throw new GradleException("uglifyBuild failed")
+        }
     }
 }
 
