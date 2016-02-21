@@ -171,9 +171,24 @@ webResource {
             install name: 'jquery', version: '1.11.2', filter: ['dist/*.min.*']
             install name: 'bootstrap', version: '3.3.4', filter: ['dist/css/*.min.css', 'dist/js/*.min.js', 'dist/fonts/*']
 
+            // You can set your favorite name to 'outputName'.
+            // e.g.
+            //   build/webResource/bower_components/components-font-awesome
+            // will be copied to
+            //   build/webResource/outputs/lib/font-awesome
+            install name: 'components-font-awesome', version: '4.3.0', outputName: 'font-awesome'
+
             // If there is a conflict, you can resolve it by using "resolve"
             //resolve name: 'jquery', version: '1.9.0'
         }
+
+        // Set this option to true if you want to copy
+        // all dependencies in build/webResource/bower_components directory
+        // to lib.dest directory.
+        // This is useful when your dependencies have transitive dependencies.
+        // However this option can cause problems that old dependencies
+        // are unintentionally copied, so it is false by default.
+        copyAll true
 
         // Giving --force-latest option also work for resolving conflict
         //options = ["--force-latest"]
