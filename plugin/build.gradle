@@ -237,7 +237,8 @@ task browserify(dependsOn: ['processResources', 'uglifyBuild']) << {
         resDir.mkdirs()
     }
     copy {
-        from "${project.buildDir}/scripts"
+        // Copy only 1 file
+        from "${project.buildDir}/scripts/build.js"
         into "${project.buildDir}/resources/main"
     }
 
