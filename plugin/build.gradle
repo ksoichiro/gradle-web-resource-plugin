@@ -167,13 +167,20 @@ task applyPatch(dependsOn: 'npmInstall') << {
 }
 
 task browserifyBuild(type: NpmTask, dependsOn: 'applyPatch') {
-    args = ['run', 'browserifyBuild']
+    args = ['run', 'browserify']
     execOverrides {
         it.workingDir = project.buildDir
     }
 }
 
-task browserify(dependsOn: ['processResources', 'browserifyBuild']) << {
+task uglifyBuild(type: NpmTask, dependsOn: 'browserifyBuild') {
+    args = ['run', 'uglify']
+    execOverrides {
+        it.workingDir = project.buildDir
+    }
+}
+
+task browserify(dependsOn: ['processResources', 'uglifyBuild']) << {
     def resDir = project.file("${project.buildDir}/resources/main")
     if (!resDir.exists()) {
         resDir.mkdirs()

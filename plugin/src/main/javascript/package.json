@@ -20,6 +20,7 @@
         "licensify": "2.2.0"
     },
     "scripts": {
-        "browserifyBuild": "browserify -p licensify --im --noparse=./node_modules/amdefine/amdefine.js --norparse=./node_modules/bower/lib/node_modules/amdefine/amdefine.js --noparse=./node_modules/bower/lib/node_modules/graceful-fs/fs.js --noparse=./node_modules/graceful-fs/fs.js --noparse=./node_modules/bower/lib/node_modules/fs-write-stream-atomic/index.js --noparse='./node_modules/bower/lib/lib/commands/help.js' --noparse=./node_modules/bower/lib/lib/util/template.js --ignore=opn --node build.js | uglifyjs -c --comments > scripts/build.js"
+        "browserify": "browserify -p licensify --im --noparse=./node_modules/amdefine/amdefine.js --norparse=./node_modules/bower/lib/node_modules/amdefine/amdefine.js --noparse=./node_modules/bower/lib/node_modules/graceful-fs/fs.js --noparse=./node_modules/graceful-fs/fs.js --noparse=./node_modules/bower/lib/node_modules/fs-write-stream-atomic/index.js --noparse='./node_modules/bower/lib/lib/commands/help.js' --noparse=./node_modules/bower/lib/lib/util/template.js --ignore=opn --node build.js -o scripts/build.tmp.js",
+        "uglify": "uglifyjs scripts/build.tmp.js --comments -o scripts/build.js"
     }
 }
