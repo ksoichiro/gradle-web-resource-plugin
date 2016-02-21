@@ -180,6 +180,12 @@ task applyPatch(dependsOn: 'npmInstall') << {
     //    "hasGit = true;")
     //f.text = replaced
 
+    // Remove whitespace in uglifyjs
+    // https://github.com/npm/npm/issues/1994
+    f = new File("${project.buildDir}/node_modules/uglify-js/bin/uglifyjs")
+    replaced = f.text.replaceAll("#! /usr/bin/env node", "#!/usr/bin/env node")
+    f.text = replaced
+
     // Remove unused features for browserify to work
     f = new File("${project.buildDir}/node_modules/bower/lib/lib/version.js")
     replaced = f.text.replaceAll("module.exports = .*", "module.exports = '1.7.6';")
