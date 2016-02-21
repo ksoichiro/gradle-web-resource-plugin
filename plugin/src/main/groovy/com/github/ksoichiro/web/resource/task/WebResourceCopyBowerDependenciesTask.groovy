@@ -57,24 +57,31 @@ class WebResourceCopyBowerDependenciesTask extends DefaultTask {
     }
 
     void copyDependencies() {
-        project.copy {
-            from project.fileTree("${extension.workDir}/bower_components").matching {
-                extension.bower.dependencies.each { dependency ->
-                    String[] expr = dependency.filter
-                    // Try copying both the name and the cache name
-                    // not to drop some dependencies accidentally
-                    if (expr) {
-                        expr.each { e ->
-                            it.include("${dependency.getCacheName()}/${e}")
-                            it.include("${dependency.getName()}/${e}")
+        if (extension.bower.copyAll) {
+            project.copy {
+                from project.fileTree("${extension.workDir}/bower_components")
+                into "${extension.base.dest}/${extension.lib.dest}"
+            }
+        } else {
+            project.copy {
+                from project.fileTree("${extension.workDir}/bower_components").matching {
+                    extension.bower.dependencies.each { dependency ->
+                        String[] expr = dependency.filter
+                        // Try copying both the name and the cache name
+                        // not to drop some dependencies accidentally
+                        if (expr) {
+                            expr.each { e ->
+                                it.include("${dependency.getCacheName()}/${e}")
+                                it.include("${dependency.getName()}/${e}")
+                            }
+                        } else {
+                            it.include("${dependency.getCacheName()}/**/*")
+                            it.include("${dependency.getName()}/**/*")
                         }
-                    } else {
-                        it.include("${dependency.getCacheName()}/**/*")
-                        it.include("${dependency.getName()}/**/*")
                     }
                 }
+                into "${extension.base.dest}/${extension.lib.dest}"
             }
-            into "${extension.base.dest}/${extension.lib.dest}"
         }
         project.file("${extension.base.dest}/${extension.lib.dest}").eachDir{ dir ->
             extension.bower.dependencies.each { dependency ->

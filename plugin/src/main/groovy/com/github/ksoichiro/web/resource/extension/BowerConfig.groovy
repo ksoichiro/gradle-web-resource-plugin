@@ -18,6 +18,7 @@ class BowerConfig implements Serializable {
     boolean parallelize
     List options
     List configs
+    boolean copyAll
 
     BowerConfig() {
         this.dependencies = []
@@ -25,6 +26,7 @@ class BowerConfig implements Serializable {
         this.options = []
         this.configs = []
         this.parallelize = true
+        this.copyAll = false
     }
 
     /**
