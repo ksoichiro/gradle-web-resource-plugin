@@ -46,7 +46,7 @@ function coffeeConvert(filepath, filename, searchPaths, outputPath, cb) {
       coffeeString = processInclude(coffeeString, filepath)
       var js = coffee.compile(coffeeString, {filename: filepath});
       if (minify) {
-        var minified = require('./uglifyjs').minify(js, {fromString: true, compress: {evaluate: false}});
+        var minified = require('./uglify').minify(js, {fromString: true, compress: {evaluate: false}});
         js = minified.code;
       }
       deferred.resolve(js);
