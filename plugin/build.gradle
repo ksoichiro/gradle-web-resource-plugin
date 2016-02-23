@@ -95,189 +95,174 @@ buildtimetracker {
     }
 }
 
-task copyJavaScript << {
-    def packageInfo = [
-        'private': true,
-        'devDependencies': [
-            'bower': '1.7.6',
-            'request': '2.53.0',
-            'coffee-script': '1.10.0',
-            'uglify-js': '2.3.6',
-            'source-map': '0.4.4',
-            'graceful-fs': '3.0.8',
-            'inflight': '1.0.4',
-            'inherits': '2.0.1',
-            'ansi-regex': '2.0.0',
-            'core-util-is': '1.0.1',
-            'mime': '1.3.4',
-            'osenv': '0.1.3',
-            'less': '2.5.3',
-            'q': '1.4.1',
-            'glob': '4.5.3',
-            'browserify': '12.0.1',
-            'licensify': '2.2.0',
-        ],
-        'scripts': [
-            'browserify': [
-                'browserify',
-                '-p licensify',
-                '--im',
-                '--noparse=./node_modules/amdefine/amdefine.js',
-                '--noparse=./node_modules/bower/lib/node_modules/amdefine/amdefine.js',
-                '--noparse=./node_modules/bower/lib/node_modules/graceful-fs/fs.js',
-                '--noparse=./node_modules/graceful-fs/fs.js',
-                '--noparse=./node_modules/bower/lib/node_modules/fs-write-stream-atomic/index.js',
-                '--noparse=./node_modules/bower/lib/lib/commands/help.js',
-                '--noparse=./node_modules/bower/lib/lib/util/template.js',
-                '--ignore=opn',
-                '--node',
-                'build.js',
-                '-o scripts/build.tmp.js',
-            ].join(' '),
-            'uglify': [
-                'uglifyjs',
-                'scripts/build.tmp.js',
-                '--comments',
-                '-o scripts/build.js',
-            ].join(' '),
-        ]
-    ]
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        packageInfo.scripts.browserify = packageInfo.scripts.browserify.replaceAll('/', '\\\\')
-        packageInfo.scripts.uglify = packageInfo.scripts.uglify.replaceAll('/', '\\\\')
-    }
-    project.file("${project.buildDir}/package.json").text = JsonOutput.prettyPrint(JsonOutput.toJson(packageInfo))
+apply from: "${rootDir}/gradle/npm-packages.gradle"
 
-    copy {
-        from "src/main/javascript"
-        into project.buildDir
+task copyJavaScript {
+    def destPackageJson = project.file("${project.buildDir}/package.json")
+    inputs.property 'packageInfo', packageInfo
+    outputs.file destPackageJson
+    outputs.files project.fileTree(dir: project.buildDir).include('*.js')
+    doLast {
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            packageInfo.scripts.browserify = packageInfo.scripts.browserify.replaceAll('/', '\\\\')
+            packageInfo.scripts.uglify = packageInfo.scripts.uglify.replaceAll('/', '\\\\')
+        }
+        destPackageJson.text = JsonOutput.prettyPrint(JsonOutput.toJson(packageInfo))
+
+        copy {
+            from "src/main/javascript"
+            into project.buildDir
+        }
     }
-    project.file("${project.buildDir}/scripts").mkdirs()
 }
 
-task applyPatch(dependsOn: 'npmInstall') << {
-    // Resolving cache while installing dependency in bower fails when executing with Trireme,
-    // so apply a patch for it
-    File f = new File("${project.buildDir}/node_modules/bower/lib/lib/core/ResolveCache.js")
-    def replaced = f.text.replaceAll(
-        "if \\(err\\.code === 'ENOENT'\\) \\{",
-        "if (err.code === 'ENOENT' || err.code === 'ENOTDIR') {")
-    f.text = replaced
-
-    // When using browserify, bower's internal function commandFactory is not handled
-    // because it uses require with variables.
-    // To solve this problem, we pass module path directly to require().
-    f = new File("${project.buildDir}/node_modules/bower/lib/lib/commands/index.js")
-    replaced = f.text.replaceAll(/commandFactory\('([^']*)'\)/) { all, path ->
-        "commandFactory(require('${path}'))"
-    }.replaceAll("var command = require\\(id\\)", "var command = id")
-    f.text = replaced
-
-    // bower 1.7.6 includes git avialability check with `which` module,
-    // but `which` doesn't work with node 0.12 on trireme.
-    // So if we use bower 1.7.6 and node 0.12 included in trireme 0.8.8 together,
-    // we must skip this check to execute bower.
-    // I confirmed this behavior with a simple, small index.js:
-    //   var which = require('which');
-    //   try {
-    //     which.sync('git');
-    //     console.log('git is installed');
-    //   } catch(ex) {
-    //     console.log(ex);
-    //   }
-    // This produces different result in node 0.10 and 0.12:
-    //   $ trireme --node-version=0.12 index.js
-    //   { [Error: not found: git]
-    //     message: 'not found: git',
-    //     fileName: '/Users/dev/.nvm/v5.3.0/lib/node_modules/which/which.js',
-    //     lineNumber: 120 }
-    //   $ trireme --node-version=0.10 index.js
-    //   git is installed
-    //
-    //f = new File("${projectDir}/src/main/resources/node_modules/bower/lib/lib/core/resolvers/GitResolver.js")
-    //replaced = f.text.replaceAll(
-    //    "hasGit = false;",
-    //    "hasGit = true;")
-    //f.text = replaced
-
-    // Remove whitespace in uglifyjs
-    // https://github.com/npm/npm/issues/1994
-    f = new File("${project.buildDir}/node_modules/uglify-js/bin/uglifyjs")
-    replaced = f.text.replaceAll("#! /usr/bin/env node", "#!/usr/bin/env node")
-    f.text = replaced
-
-    // Remove unused features for browserify to work
-    f = new File("${project.buildDir}/node_modules/bower/lib/lib/version.js")
-    replaced = f.text.replaceAll("module.exports = .*", "module.exports = '1.7.6';")
-    f.text = replaced
-
-    [
-        'node_modules/bower/lib/node_modules/hawk/lib/utils.js',
-        'node_modules/bower/lib/node_modules/tough-cookie/lib/cookie.js',
-        'node_modules/elliptic/lib/elliptic.js',
-        'node_modules/hawk/lib/utils.js',
-        'node_modules/npm/node_modules/request/node_modules/hawk/lib/utils.js',
-        'node_modules/npm/node_modules/request/node_modules/tough-cookie/lib/cookie.js',
-        'node_modules/npm/scripts/publish-tag.js',
-        'node_modules/tough-cookie/lib/cookie.js',
-    ].each { String path ->
-        f = new File("${project.buildDir}/${path}")
-        replaced = f.text.replaceAll("require\\('../package.json'\\).version", "0")
+task applyPatch(dependsOn: 'npmInstall') {
+    inputs.dir project.file("${project.buildDir}/node_modules")
+    outputs.dir project.file("${project.buildDir}/node_modules")
+    doLast {
+        // Resolving cache while installing dependency in bower fails when executing with Trireme,
+        // so apply a patch for it
+        File f = new File("${project.buildDir}/node_modules/bower/lib/lib/core/ResolveCache.js")
+        def replaced = f.text.replaceAll(
+            "if \\(err\\.code === 'ENOENT'\\) \\{",
+            "if (err.code === 'ENOENT' || err.code === 'ENOTDIR') {")
         f.text = replaced
+
+        // When using browserify, bower's internal function commandFactory is not handled
+        // because it uses require with variables.
+        // To solve this problem, we pass module path directly to require().
+        f = new File("${project.buildDir}/node_modules/bower/lib/lib/commands/index.js")
+        replaced = f.text.replaceAll(/commandFactory\('([^']*)'\)/) { all, path ->
+            "commandFactory(require('${path}'))"
+        }.replaceAll("var command = require\\(id\\)", "var command = id")
+        f.text = replaced
+
+        // bower 1.7.6 includes git avialability check with `which` module,
+        // but `which` doesn't work with node 0.12 on trireme.
+        // So if we use bower 1.7.6 and node 0.12 included in trireme 0.8.8 together,
+        // we must skip this check to execute bower.
+        // I confirmed this behavior with a simple, small index.js:
+        //   var which = require('which');
+        //   try {
+        //     which.sync('git');
+        //     console.log('git is installed');
+        //   } catch(ex) {
+        //     console.log(ex);
+        //   }
+        // This produces different result in node 0.10 and 0.12:
+        //   $ trireme --node-version=0.12 index.js
+        //   { [Error: not found: git]
+        //     message: 'not found: git',
+        //     fileName: '/Users/dev/.nvm/v5.3.0/lib/node_modules/which/which.js',
+        //     lineNumber: 120 }
+        //   $ trireme --node-version=0.10 index.js
+        //   git is installed
+        //
+        //f = new File("${projectDir}/src/main/resources/node_modules/bower/lib/lib/core/resolvers/GitResolver.js")
+        //replaced = f.text.replaceAll(
+        //    "hasGit = false;",
+        //    "hasGit = true;")
+        //f.text = replaced
+
+        // Remove whitespace in uglifyjs
+        // https://github.com/npm/npm/issues/1994
+        f = new File("${project.buildDir}/node_modules/uglify-js/bin/uglifyjs")
+        replaced = f.text.replaceAll("#! /usr/bin/env node", "#!/usr/bin/env node")
+        f.text = replaced
+
+        // Remove unused features for browserify to work
+        f = new File("${project.buildDir}/node_modules/bower/lib/lib/version.js")
+        replaced = f.text.replaceAll("module.exports = .*", "module.exports = '1.7.6';")
+        f.text = replaced
+
+        [
+            'node_modules/bower/lib/node_modules/hawk/lib/utils.js',
+            'node_modules/bower/lib/node_modules/tough-cookie/lib/cookie.js',
+            'node_modules/elliptic/lib/elliptic.js',
+            'node_modules/hawk/lib/utils.js',
+            'node_modules/npm/node_modules/request/node_modules/hawk/lib/utils.js',
+            'node_modules/npm/node_modules/request/node_modules/tough-cookie/lib/cookie.js',
+            'node_modules/npm/scripts/publish-tag.js',
+            'node_modules/tough-cookie/lib/cookie.js',
+        ].each { String path ->
+            f = new File("${project.buildDir}/${path}")
+            replaced = f.text.replaceAll("require\\('../package.json'\\).version", "0")
+            f.text = replaced
+        }
     }
 }
 
 task browserifyBuild(type: NpmTask, dependsOn: 'applyPatch') {
+    def dest = project.file("${project.buildDir}/scripts/build.tmp.js")
+    inputs.files project.fileTree(dir: project.buildDir).include('*.js')
+    outputs.file dest
     args = ['run', 'browserify']
     execOverrides {
         it.workingDir = project.buildDir
     }
+    doFirst {
+        project.file("${project.buildDir}/scripts").mkdirs()
+    }
     doLast {
-        if (!project.file("${project.buildDir}/scripts/build.tmp.js").exists()) {
+        if (!dest.exists()) {
             throw new GradleException("browserifyBuild failed")
         }
     }
 }
 
 task uglifyBuild(type: NpmTask, dependsOn: 'browserifyBuild') {
+    def src = project.file("${project.buildDir}/scripts/build.tmp.js")
+    def dest = project.file("${project.buildDir}/scripts/build.js")
+    inputs.file src
+    outputs.file dest
     args = ['run', 'uglify']
     execOverrides {
         it.workingDir = project.buildDir
     }
+    doFirst {
+        project.file("${project.buildDir}/scripts").mkdirs()
+    }
     doLast {
-        if (!project.file("${project.buildDir}/scripts/build.js").exists()) {
+        if (!dest.exists()) {
             throw new GradleException("uglifyBuild failed")
         }
     }
 }
 
-task browserify(dependsOn: ['processResources', 'uglifyBuild']) << {
-    def resDir = project.file("${project.buildDir}/resources/main")
-    if (!resDir.exists()) {
-        resDir.mkdirs()
-    }
-    copy {
-        // Copy only 1 file
-        from "${project.buildDir}/scripts/build.js"
-        into "${project.buildDir}/resources/main"
-    }
+task browserify(dependsOn: ['processResources', 'uglifyBuild']) {
+    inputs.file project.file("${project.buildDir}/scripts/build.js")
+    inputs.file project.file("${project.buildDir}/resources/main/uglifyjs-lib.js")
+    inputs.dir project.file("${project.buildDir}/node_modules/uglify-js/lib")
+    outputs.file project.file("${project.buildDir}/resources/main/build.js")
+    outputs.file project.file("${project.buildDir}/resources/main/uglifyjs-lib.js")
+    doLast {
+        def resDir = project.file("${project.buildDir}/resources/main")
+        if (!resDir.exists()) {
+            resDir.mkdirs()
+        }
+        copy {
+            // Copy only 1 file
+            from "${project.buildDir}/scripts/build.js"
+            into "${project.buildDir}/resources/main"
+        }
 
-    // UglifyJS reads external files on runtime.
-    // To copy less files, we merge those files into 1 file on build time.
-    File f = new File("${project.buildDir}/resources/main/uglifyjs-lib.js")
-    f.text = ""
-    [
-        'utils.js',
-        'ast.js',
-        'parse.js',
-        'transform.js',
-        'scope.js',
-        'output.js',
-        'compress.js',
-        'sourcemap.js',
-        'mozilla-ast.js',
-    ].each { String fileName ->
-        f.text += new File("${project.buildDir}/node_modules/uglify-js/lib/${fileName}").text
+        // UglifyJS reads external files on runtime.
+        // To copy less files, we merge those files into 1 file on build time.
+        File f = new File("${project.buildDir}/resources/main/uglifyjs-lib.js")
+        f.text = ""
+        [
+            'utils.js',
+            'ast.js',
+            'parse.js',
+            'transform.js',
+            'scope.js',
+            'output.js',
+            'compress.js',
+            'sourcemap.js',
+            'mozilla-ast.js',
+        ].each { String fileName ->
+            f.text += new File("${project.buildDir}/node_modules/uglify-js/lib/${fileName}").text
+        }
     }
 }
 
