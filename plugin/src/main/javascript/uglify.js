@@ -1,4 +1,8 @@
 // This script replaces UglifyJS to use browserify.
+// Do not rename this file to uglifyjs.js,
+// because when uglify-js is executed from npm scripts,
+// node_modules/.bin/uglifyjs is invoked
+// and uglifyjs.js will hide it, which will break build.
 
 var path = require("path");
 var fs = require("fs");
@@ -92,6 +96,8 @@ exports.minify = function(files, options) {
     };
 };
 
+// External files are defined in uglifyjs-lib.js.
+// This file would be bundled in JAR.
 load_global(fs.readFileSync("./uglifyjs-lib.js", "utf8"), "uglifyjs-lib.js");
 
 UglifyJS.AST_Node.warn_function = function(txt) {
