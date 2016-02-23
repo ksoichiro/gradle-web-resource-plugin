@@ -103,12 +103,7 @@ task copyJavaScript {
     outputs.file destPackageJson
     outputs.files project.fileTree(dir: project.buildDir).include('*.js')
     doLast {
-        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            packageInfo.scripts.browserify = packageInfo.scripts.browserify.replaceAll('/', '\\\\')
-            packageInfo.scripts.uglify = packageInfo.scripts.uglify.replaceAll('/', '\\\\')
-        }
         destPackageJson.text = JsonOutput.prettyPrint(JsonOutput.toJson(packageInfo))
-
         copy {
             from "src/main/javascript"
             into project.buildDir
@@ -163,12 +158,6 @@ task applyPatch(dependsOn: 'npmInstall') {
         //    "hasGit = false;",
         //    "hasGit = true;")
         //f.text = replaced
-
-        // Remove whitespace in uglifyjs
-        // https://github.com/npm/npm/issues/1994
-        f = new File("${project.buildDir}/node_modules/uglify-js/bin/uglifyjs")
-        replaced = f.text.replaceAll("#! /usr/bin/env node", "#!/usr/bin/env node")
-        f.text = replaced
 
         // Remove unused features for browserify to work
         f = new File("${project.buildDir}/node_modules/bower/lib/lib/version.js")
