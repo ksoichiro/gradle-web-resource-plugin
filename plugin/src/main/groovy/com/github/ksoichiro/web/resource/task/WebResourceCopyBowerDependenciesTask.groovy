@@ -85,7 +85,7 @@ class WebResourceCopyBowerDependenciesTask extends DefaultTask {
         }
 
         // Force directory name to dependency.name
-        project.file("${extension.base.dest}/${extension.lib.dest}").eachDir{ dir ->
+        project.file("${extension.base.dest}/${extension.lib.dest}").eachDir { dir ->
             extension.bower.dependencies.each { dependency ->
                 if (dir.name == dependency.cacheName && dir.name != dependency.name) {
                     dir.renameTo(project.file("${extension.base.dest}/${extension.lib.dest}/${dependency.name}"))
