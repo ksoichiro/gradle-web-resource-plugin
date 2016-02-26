@@ -1,5 +1,9 @@
+// npm package requirements to generate package.json dynamically.
+// This map will be converted to JSON.
 ext.packageInfo = [
+    // We need this to suppress npm's warning messages.
     'private': true,
+    // To keep modules' version consistent, we specify version without ^, >=, etc.
     'devDependencies': [
         'bower': '1.7.6',
         'request': '2.53.0',
@@ -22,15 +26,19 @@ ext.packageInfo = [
     'scripts': [
         'browserify': [
             'browserify',
+            // Keep license comments in the bundled JavaScript file.
             '-p licensify',
+            // Suppress errors for missing internal modules for trireme (gradle-console).
             '--im',
+            // To avoid some global vars to be replaced, set noparse options.
             '--noparse=./node_modules/amdefine/amdefine.js',
-            '--noparse=./node_modules/bower/lib/node_modules/amdefine/amdefine.js',
-            '--noparse=./node_modules/bower/lib/node_modules/graceful-fs/fs.js',
-            '--noparse=./node_modules/graceful-fs/fs.js',
-            '--noparse=./node_modules/bower/lib/node_modules/fs-write-stream-atomic/index.js',
             '--noparse=./node_modules/bower/lib/lib/commands/help.js',
             '--noparse=./node_modules/bower/lib/lib/util/template.js',
+            '--noparse=./node_modules/bower/lib/node_modules/amdefine/amdefine.js',
+            '--noparse=./node_modules/bower/lib/node_modules/fs-write-stream-atomic/index.js',
+            '--noparse=./node_modules/bower/lib/node_modules/graceful-fs/fs.js',
+            '--noparse=./node_modules/graceful-fs/fs.js',
+            // This is "require"d but we don't need this.
             '--ignore=opn',
             '--node',
             'build.js',
@@ -39,7 +47,9 @@ ext.packageInfo = [
         'uglify': [
             'uglifyjs',
             'scripts/build.tmp.js',
+            // Preserve license comments.
             '--comments',
+            // This file is the final artifact to bundle.
             '-o scripts/build.js',
         ].join(' '),
     ]
