@@ -1,17 +1,75 @@
+import groovy.json.JsonOutput
+
+buildscript {
+    repositories {
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.gradle.publish:plugin-publish-plugin:0.9.1'
+        classpath 'com.moowork.gradle:gradle-node-plugin:0.10'
+        classpath 'net.rdrei.android.buildtimetracker:gradle-plugin:0.5.0'
+    }
+}
+
+plugins {
+    id 'maven'
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.2'
+    id 'net.saliman.cobertura' version '2.2.8'
+    id 'com.github.kt3k.coveralls' version '2.3.1'
+    id 'com.github.ksoichiro.console.reporter' version '0.3.1'
+}
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'com.moowork.node'
+apply plugin: 'idea'
+apply plugin: 'build-time-tracker'
+apply plugin: 'com.gradle.plugin-publish'
+apply plugin: 'signing'
+
+group = GROUP
+version = VERSION_NAME
+archivesBaseName = POM_ARTIFACT_ID
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
 repositories {
     mavenCentral()
+    jcenter()
 }
 
-allprojects {
-    apply plugin: 'java'
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.6
+dependencies {
+    // Thanks to a workaround in https://issues.gradle.org/browse/GRADLE-1715,
+    // using additional build script to exclude Rhino that is bundled with Gradle distribution,
+    // we can avoid the error that occurs when executing Trireme on tests:
+    // java.lang.NoSuchMethodError: org.mozilla.javascript.ScriptRuntime.setObjectProp
+    // Gradle distribution has an older Rhino (1.7R3) and causing conflict.
+    // In 1.7R3, ScriptRuntime does not have setObjectProp() method, which causes the above error.
+    compile new GradleDist(project, GRADLE_VERSION).asFileTree
+    compile localGroovy()
+    compile 'io.apigee.trireme:trireme-jar:0.8.8'
+    compile 'org.fusesource.jansi:jansi:1.11'
+    testCompile ('org.spockframework:spock-core:1.0-groovy-2.4') {
+        exclude module: 'groovy-all'
+    }
 }
 
-apply plugin: 'idea'
+node {
+    version = '0.12.7'
+    npmVersion = '3.3.9'
+    download = true
+    workDir = file("${project.buildDir}/nodejs")
+    nodeModulesDir = project.buildDir
+}
 
 idea.module.excludeDirs += [
     file('.vagrant'),
+    file('src/main/resources/node_modules'),
     file('samples/repo'),
 ]
 fileTree(dir: "samples").visit { details ->
@@ -19,3 +77,194 @@ fileTree(dir: "samples").visit { details ->
         idea.module.excludeDirs << details.file
     }
 }
+
+test {
+    maxParallelForks = 1
+    if (System.env.CI) {
+        maxHeapSize = '512m'
+    }
+    testLogging {
+        events 'failed', 'passed', 'skipped', 'started', 'standard_out', 'standard_error'
+    }
+}
+
+cobertura {
+    coverageFormats = ['html', 'xml']
+    coverageSourceDirs = sourceSets.main.groovy.srcDirs
+}
+
+buildtimetracker {
+    reporters {
+        summary {
+            ordered true
+            threshold 50
+            barstyle 'unicode'
+        }
+    }
+}
+
+apply from: "${rootDir}/gradle/npm-packages.gradle"
+
+task copyJavaScript {
+    def destPackageJson = project.file("${project.buildDir}/package.json")
+    inputs.property 'packageInfo', packageInfo
+    outputs.file destPackageJson
+    outputs.files project.fileTree(dir: project.buildDir).include('*.js')
+    doLast {
+        destPackageJson.text = JsonOutput.prettyPrint(JsonOutput.toJson(packageInfo))
+        copy {
+            from "src/main/javascript"
+            into project.buildDir
+        }
+    }
+}
+
+task applyPatch(dependsOn: 'npmInstall') {
+    inputs.dir project.file("${project.buildDir}/node_modules")
+    outputs.dir project.file("${project.buildDir}/node_modules")
+    doLast {
+        // Resolving cache while installing dependency in bower fails when executing with Trireme,
+        // so apply a patch for it
+        File f = new File("${project.buildDir}/node_modules/bower/lib/lib/core/ResolveCache.js")
+        def replaced = f.text.replaceAll(
+            "if \\(err\\.code === 'ENOENT'\\) \\{",
+            "if (err.code === 'ENOENT' || err.code === 'ENOTDIR') {")
+        f.text = replaced
+
+        // When using browserify, bower's internal function commandFactory is not handled
+        // because it uses require with variables.
+        // To solve this problem, we pass module path directly to require().
+        f = new File("${project.buildDir}/node_modules/bower/lib/lib/commands/index.js")
+        replaced = f.text.replaceAll(/commandFactory\('([^']*)'\)/) { all, path ->
+            "commandFactory(require('${path}'))"
+        }.replaceAll("var command = require\\(id\\)", "var command = id")
+        f.text = replaced
+
+        // bower 1.7.6 includes git avialability check with `which` module,
+        // but `which` doesn't work with node 0.12 on trireme.
+        // So if we use bower 1.7.6 and node 0.12 included in trireme 0.8.8 together,
+        // we must skip this check to execute bower.
+        // I confirmed this behavior with a simple, small index.js:
+        //   var which = require('which');
+        //   try {
+        //     which.sync('git');
+        //     console.log('git is installed');
+        //   } catch(ex) {
+        //     console.log(ex);
+        //   }
+        // This produces different result in node 0.10 and 0.12:
+        //   $ trireme --node-version=0.12 index.js
+        //   { [Error: not found: git]
+        //     message: 'not found: git',
+        //     fileName: '/Users/dev/.nvm/v5.3.0/lib/node_modules/which/which.js',
+        //     lineNumber: 120 }
+        //   $ trireme --node-version=0.10 index.js
+        //   git is installed
+        //
+        //f = new File("${projectDir}/src/main/resources/node_modules/bower/lib/lib/core/resolvers/GitResolver.js")
+        //replaced = f.text.replaceAll(
+        //    "hasGit = false;",
+        //    "hasGit = true;")
+        //f.text = replaced
+
+        // Remove unused features for browserify to work
+        f = new File("${project.buildDir}/node_modules/bower/lib/lib/version.js")
+        replaced = f.text.replaceAll("module.exports = .*", "module.exports = '1.7.6';")
+        f.text = replaced
+
+        [
+            'node_modules/bower/lib/node_modules/hawk/lib/utils.js',
+            'node_modules/bower/lib/node_modules/tough-cookie/lib/cookie.js',
+            'node_modules/elliptic/lib/elliptic.js',
+            'node_modules/hawk/lib/utils.js',
+            'node_modules/npm/node_modules/request/node_modules/hawk/lib/utils.js',
+            'node_modules/npm/node_modules/request/node_modules/tough-cookie/lib/cookie.js',
+            'node_modules/npm/scripts/publish-tag.js',
+            'node_modules/tough-cookie/lib/cookie.js',
+        ].each { String path ->
+            f = new File("${project.buildDir}/${path}")
+            replaced = f.text.replaceAll("require\\('../package.json'\\).version", "0")
+            f.text = replaced
+        }
+    }
+}
+
+task browserifyBuild(type: NpmTask, dependsOn: 'applyPatch') {
+    def dest = project.file("${project.buildDir}/scripts/build.tmp.js")
+    inputs.files project.fileTree(dir: project.buildDir).include('*.js')
+    outputs.file dest
+    args = ['run', 'browserify']
+    execOverrides {
+        it.workingDir = project.buildDir
+    }
+    doFirst {
+        project.file("${project.buildDir}/scripts").mkdirs()
+    }
+    doLast {
+        if (!dest.exists()) {
+            throw new GradleException("browserifyBuild failed")
+        }
+    }
+}
+
+task uglifyBuild(type: NpmTask, dependsOn: 'browserifyBuild') {
+    def src = project.file("${project.buildDir}/scripts/build.tmp.js")
+    def dest = project.file("${project.buildDir}/scripts/build.js")
+    inputs.file src
+    outputs.file dest
+    args = ['run', 'uglify']
+    execOverrides {
+        it.workingDir = project.buildDir
+    }
+    doFirst {
+        project.file("${project.buildDir}/scripts").mkdirs()
+    }
+    doLast {
+        if (!dest.exists()) {
+            throw new GradleException("uglifyBuild failed")
+        }
+    }
+}
+
+task browserify(dependsOn: ['processResources', 'uglifyBuild']) {
+    inputs.file project.file("${project.buildDir}/scripts/build.js")
+    inputs.file project.file("${project.buildDir}/resources/main/uglifyjs-lib.js")
+    inputs.dir project.file("${project.buildDir}/node_modules/uglify-js/lib")
+    outputs.file project.file("${project.buildDir}/resources/main/build.js")
+    outputs.file project.file("${project.buildDir}/resources/main/uglifyjs-lib.js")
+    doLast {
+        def resDir = project.file("${project.buildDir}/resources/main")
+        if (!resDir.exists()) {
+            resDir.mkdirs()
+        }
+        copy {
+            // Copy only 1 file
+            from "${project.buildDir}/scripts/build.js"
+            into "${project.buildDir}/resources/main"
+        }
+
+        // UglifyJS reads external files on runtime.
+        // To copy less files, we merge those files into 1 file on build time.
+        File f = new File("${project.buildDir}/resources/main/uglifyjs-lib.js")
+        f.text = ""
+        [
+            'utils.js',
+            'ast.js',
+            'parse.js',
+            'transform.js',
+            'scope.js',
+            'output.js',
+            'compress.js',
+            'sourcemap.js',
+            'mozilla-ast.js',
+        ].each { String fileName ->
+            f.text += new File("${project.buildDir}/node_modules/uglify-js/lib/${fileName}").text
+        }
+    }
+}
+
+npmInstall.dependsOn('copyJavaScript')
+classes.dependsOn('browserify')
+check.dependsOn('cobertura')
+
+apply from: "${rootDir}/gradle/release.gradle"
