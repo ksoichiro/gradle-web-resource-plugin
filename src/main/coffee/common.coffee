@@ -20,11 +20,9 @@ handleExit = (validationCb) ->
   that = @
   process.on 'exit', (code) ->
     if code is 0
-      if that.exitCode is 0
-        validationCb?()
+      validationCb?() if that.exitCode is 0
     else
-      if that.exitCode is 0
-        that.exitCode = code
+      that.exitCode = code if that.exitCode is 0
     process.reallyExit that.exitCode
 
 installSequentially = (elements, singleInstaller) ->

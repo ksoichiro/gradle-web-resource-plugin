@@ -110,7 +110,7 @@ module.exports = ->
 
       # Split the directive and the path
       includeType = split[0]
-      includePath = relativeBasePath + "/" + split[1]
+      includePath = "#{relativeBasePath}/#{split[1]}"
 
       # Use glob for file searching
       fileMatches = glob.sync includePath, mark: true

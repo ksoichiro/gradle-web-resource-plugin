@@ -54,8 +54,7 @@ module.exports = ->
 
   saveBowerJson = ->
     json = name: "webResource", dependencies: {}, resolutions: resolutions
-    for dependency in dependencies
-      json.dependencies[dependency.name] = dependency.version
+    json.dependencies[dependency.name] = dependency.version for dependency in dependencies
     jsonStr = JSON.stringify json, null, '  '
     fs.writeFileSync 'bower.json', jsonStr
 
@@ -105,8 +104,7 @@ module.exports = ->
     installOptions = {}
     installConfigs = configs or {}
     installConfigs['offline'] = offline unless installConfigs.hasOwnProperty 'offline'
-    for k of options
-      installOptions[mout.string.camelCase k] = options[k]
+    installOptions[mout.string.camelCase k] = options[k] for k of options
     # If 1st arg is specified, they are marked as unresolvable, and resolutions have no effect.
     bower.commands.install [], installOptions, installConfigs
     .on 'log', (l) ->
@@ -154,8 +152,7 @@ module.exports = ->
       deferred.reject()
     .on 'end', (installed) ->
       if isSerialInstall
-        for i in installed
-          log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}#{if offline then " (offline)"}"
+        log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}#{if offline then " (offline)"}" for i in installed
         hasDependencies = Object.keys(installed).length > 1
         if cached and validate and !hasDependencies
           # Installed with cache, but validation occurred
@@ -185,10 +182,9 @@ module.exports = ->
           log.w "          }"
           log.w "      }"
       else
-        for i in installed
-          log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}"
+        log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}" for i in installed
       deferred.resolve()
-    return deferred.promise
+    deferred.promise
 
   installParallel = (dummy, cb) ->
     Q.fcall install
