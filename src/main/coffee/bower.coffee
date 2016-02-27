@@ -152,7 +152,9 @@ module.exports = ->
       deferred.reject()
     .on 'end', (installed) ->
       if isSerialInstall
-        log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}#{if offline then " (offline)"}" for i in installed
+        for key in Object.keys(installed)
+          i = installed[key]
+          log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}#{if offline then " (offline)"}"
         hasDependencies = Object.keys(installed).length > 1
         if cached and validate and !hasDependencies
           # Installed with cache, but validation occurred
@@ -182,7 +184,9 @@ module.exports = ->
           log.w "          }"
           log.w "      }"
       else
-        log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}" for i in installed
+        for key in Object.keys(installed)
+          i = installed[key]
+          log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}"
       deferred.resolve()
     deferred.promise
 
