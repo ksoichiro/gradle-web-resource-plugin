@@ -21,14 +21,14 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
                 .property('bower', extension.bower.toString())
                 .property('version', WebResourceExtension.VERSION)
             getOutputs().files(new File(extension.workDir, BOWER_COMPONENTS_DIR), getBowerScript())
+            onlyIf {
+                extension.bower.dependencies.size()
+            }
         }
     }
 
     @TaskAction
     void exec() {
-        if (extension.bower?.dependencies?.isEmpty()) {
-            return
-        }
         prepareWorkDir()
 
         File bowerComponentsDir = new File(extension.workDir, BOWER_COMPONENTS_DIR)

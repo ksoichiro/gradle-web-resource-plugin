@@ -21,6 +21,9 @@ class WebResourceCopyBowerDependenciesTask extends DefaultTask {
                 .property('bower', extension.bower.toString())
                 .property('version', WebResourceExtension.VERSION)
             getOutputs().files(pathResolver.retrieveValidDestLibPaths())
+            onlyIf {
+                extension.bower.dependencies.size()
+            }
         }
     }
 
