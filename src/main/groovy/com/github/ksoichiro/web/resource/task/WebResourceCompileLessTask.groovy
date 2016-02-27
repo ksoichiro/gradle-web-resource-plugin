@@ -26,6 +26,9 @@ class WebResourceCompileLessTask extends TriremeBaseTask {
                 .property('less.minify', extension.less?.minify)
                 .property('version', WebResourceExtension.VERSION)
             getOutputs().files(pathResolver.retrieveValidPaths(pathResolver.getDestLess()))
+            onlyIf {
+                project.file(pathResolver.resolveSrcPathFromProject(extension.less?.src)).exists()
+            }
         }
     }
 

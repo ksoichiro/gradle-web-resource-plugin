@@ -26,6 +26,9 @@ class WebResourceCompileCoffeeScriptTask extends TriremeBaseTask {
                 .property('coffeeScript.minify', extension.coffeeScript?.minify)
                 .property('version', WebResourceExtension.VERSION)
             getOutputs().files(pathResolver.retrieveValidPaths(pathResolver.getDestCoffee()))
+            onlyIf {
+                project.file(pathResolver.resolveSrcPathFromProject(extension.coffeeScript?.src)).exists()
+            }
         }
     }
 
