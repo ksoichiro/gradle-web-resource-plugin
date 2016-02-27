@@ -19,16 +19,14 @@ module.exports = ->
   log = new Logger logLevel, 'Bower'
 
   bowerInstallDependency = (item, cb) ->
-    cacheName = item.name
-    cacheName = item.cacheName if item.hasOwnProperty 'cacheName'
-    Q.fcall checkCache, [item.name, item.version, cacheName]
+    Q.fcall checkCache, item
     .then install
     .catch (error) ->
-      log.e "Install failed: #{cacheName}: #{if error.stack then error.stack else error}" if error
+      log.e "Install failed: #{item.name}: #{if error.stack then error.stack else error}" if error
       common.setExitCode 1
     .done ->
-      if !common.hasError() and !fs.existsSync "bower_components/#{cacheName}"
-        log.e "Install failed: module does not exist: #{cacheName}"
+      if !common.hasError() and !fs.existsSync "bower_components/#{item.name}"
+        log.e "Install failed: module does not exist: #{item.name}"
         common.setExitCode 1
       cb?()
 
@@ -58,11 +56,10 @@ module.exports = ->
     jsonStr = JSON.stringify json, null, '  '
     fs.writeFileSync 'bower.json', jsonStr
 
-  checkCache = (data) ->
-    if data
-      name = data.shift()
-      version = data.shift()
-      cacheName = data.shift()
+  checkCache = (item) ->
+    name = item.name
+    version = item.version
+    cacheName = item.cacheName
     deferred = Q.defer()
     bower.commands.cache.list [cacheName], {}, {}
     .on 'error', (err) ->
@@ -70,22 +67,22 @@ module.exports = ->
       deferred.reject()
     .on 'end', (r) ->
       offline = false
-      for e of r
+      for e in r
         if e.pkgMeta.version is version
           offline = true
           break
-      deferred.resolve [name, version, cacheName, offline]
+      deferred.resolve {name: name, version: version, cacheName: cacheName, offline: offline}
     deferred.promise
 
-  install = (data) ->
-    isSerialInstall = data isnt undefined
+  install = (item) ->
+    isSerialInstall = item isnt undefined
     deferred = Q.defer()
 
     if isSerialInstall
-      name = data.shift()
-      version = data.shift()
-      cacheName = data.shift()
-      offline = data.shift()
+      name = item.name
+      version = item.version
+      cacheName = item.cacheName
+      offline = item.offline
       installedVersion = getInstalledVersion name
       if installedVersion isnt ''
         # already installed
@@ -94,7 +91,7 @@ module.exports = ->
         else
           deferred.resolve()
         return deferred.promise
-      saveCurrentDependencyToJson cacheName, version
+      saveCurrentDependencyToJson name, version
     else
       saveBowerJson()
 
@@ -103,7 +100,7 @@ module.exports = ->
     validCacheName = name
     installOptions = {}
     installConfigs = configs or {}
-    installConfigs['offline'] = offline unless installConfigs.hasOwnProperty 'offline'
+    installConfigs['offline'] = offline unless 'offline' in installConfigs
     installOptions[mout.string.camelCase k] = options[k] for k of options
     # If 1st arg is specified, they are marked as unresolvable, and resolutions have no effect.
     bower.commands.install [], installOptions, installConfigs
@@ -154,7 +151,7 @@ module.exports = ->
       if isSerialInstall
         for key in Object.keys(installed)
           i = installed[key]
-          log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}#{if offline then " (offline)"}"
+          log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}#{if offline then " (offline)" else ""}"
         hasDependencies = Object.keys(installed).length > 1
         if cached and validate and !hasDependencies
           # Installed with cache, but validation occurred
@@ -198,12 +195,10 @@ module.exports = ->
     .done -> cb?()
 
   validateInstalledDependencies = ->
-    for e in dependencies
-      cacheName = e.name
-      cacheName = e.cacheName if e.hasOwnProperty 'cacheName'
-      unless fs.existsSync "bower_components/#{cacheName}"
+    for item in dependencies
+      unless fs.existsSync "bower_components/#{item.name}"
         common.setExitCode 1
-        log.w "Not installed: #{cacheName}"
+        log.w "Not installed: #{item.name}"
     log.e "Some dependencies are not installed." if common.hasError()
 
   if parallelize
