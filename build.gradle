@@ -108,7 +108,6 @@ apply from: "${rootDir}/gradle/npm-packages.gradle"
 
 webResource {
     coffeeScript {
-        src 'javascript'
         dest '../../'
         minify false
     }
