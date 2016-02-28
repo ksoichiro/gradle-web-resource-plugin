@@ -2,5 +2,6 @@ build/
 .gradle/
 .idea/
 *.iml
+*.swp
 samples/repo/
 .vagrant/
