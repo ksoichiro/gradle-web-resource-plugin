@@ -73,6 +73,7 @@ class WebResourceCompileCoffeeScriptTask extends TriremeBaseTask {
             workingDir: extension.workDir,
             args: [
                 'coffee',
+                project.projectDir.canonicalPath,
                 tmpFile.absolutePath,
                 extension.coffeeScript.minify,
                 extension.coffeeScript.parallelize,

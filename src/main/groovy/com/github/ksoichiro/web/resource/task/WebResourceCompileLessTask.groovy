@@ -83,6 +83,7 @@ class WebResourceCompileLessTask extends TriremeBaseTask {
             workingDir: extension.workDir,
             args: [
                 'less',
+                project.projectDir.canonicalPath,
                 tmpFile.absolutePath,
                 extension.less.minify,
                 extension.less.parallelize,

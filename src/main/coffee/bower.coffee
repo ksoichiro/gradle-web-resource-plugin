@@ -8,13 +8,14 @@ module.exports = ->
   common = require './common'
   Logger = require './logger'
 
-  packages = JSON.parse fs.readFileSync process.argv[3], 'utf-8'
+  projectPath = process.argv[3]
+  packages = JSON.parse fs.readFileSync process.argv[4], 'utf-8'
   dependencies = packages.dependencies
   resolutions = packages.resolutions
   options = packages.options
   configs = packages.configs
-  parallelize = process.argv[4] is 'true'
-  logLevel = parseInt process.argv[5]
+  parallelize = process.argv[5] is 'true'
+  logLevel = parseInt process.argv[6]
 
   log = new Logger logLevel, 'Bower'
 

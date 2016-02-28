@@ -1,4 +1,5 @@
 fs = require 'fs'
+path = require 'path'
 mkdirp = require 'mkdirp'
 EventEmitter = require('events').EventEmitter
 
@@ -49,6 +50,16 @@ installSequentially = (elements, singleInstaller) ->
 
 install = (parallelInstaller) -> installSequentially [1], parallelInstaller
 
+projectRelativePath = (projectPath, targetPath) ->
+  if targetPath.lastIndexOf p is 0
+    p = targetPath.substring projectPath.length
+    if p.indexOf '/' is 0
+      p.substring '/'.length
+    else
+      p
+  else
+    targetPath
+
 exports.mkdirsSync = mkdirsSync
 exports.mkdirsIfNotExistSync = mkdirsIfNotExistSync
 exports.handleExit = handleExit
@@ -56,3 +67,4 @@ exports.installSequentially = installSequentially
 exports.install = install
 exports.setExitCode = setExitCode
 exports.hasError = hasError
+exports.projectRelativePath = projectRelativePath
