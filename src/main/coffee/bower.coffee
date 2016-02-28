@@ -5,6 +5,7 @@ module.exports = ->
   chalk = require 'bower/lib/node_modules/chalk'
   Q = require 'q'
   mout = require 'bower/lib/node_modules/mout'
+  semver = require 'bower/lib/node_modules/semver'
   common = require './common'
   Logger = require './logger'
 
@@ -16,6 +17,7 @@ module.exports = ->
   configs = packages.configs
   parallelize = process.argv[5] is 'true'
   logLevel = parseInt process.argv[6]
+  transitiveDependencies = {}
 
   log = new Logger logLevel, 'Bower'
 
@@ -61,30 +63,127 @@ module.exports = ->
     name = item.name
     version = item.version
     cacheName = item.cacheName
+    log.d "Check cache for #{name}##{version}"
     deferred = Q.defer()
     bower.commands.cache.list [cacheName], {}, {}
     .on 'error', (err) ->
       log.e "Checking cache failed: #{err}"
       deferred.reject()
     .on 'end', (r) ->
+      #log.d "checkCache: #{JSON.stringify r, null, '  '}" # FIXME
+      # get all caches and response.dependencies
+      # -> each -> semver.satisfies(ver)
+      # TODO Check caches for dependencies first, then
+      # add transitive dependencies to a global array.
+      # Then check that they all cached with satisfied version.
+      # Perhaps we might have to check their caches again.
+      if item.checkDependencies?
+        log.d "Retrieve transitive dependencies for #{name}##{version}"
+        if 'dependencies' in r.pkgMeta
+          log.d "#{name}##{version} has some dependencies"
+          for dep in Object.keys r.pkgMeta.dependencies
+            ver = r.pkgMeta.dependencies[dep]
+            log.d "#{name}##{version} depends on #{dep}#{ver}"
+            # dep should be jquery
+            # r.pkgMeta.dependencies[dep] should be >= 1.7
+            if dep in transitiveDependencies
+              transitiveDependencies[dep].push ver
+            else
+              transitiveDependencies[dep] = [ver]
       offline = false
       for e in r
         if e.pkgMeta.version is version
           offline = true
           break
+      log.d "Cache #{if offline then "found" else "not found"} for #{name}##{version}"
       deferred.resolve {name: name, version: version, cacheName: cacheName, offline: offline}
     deferred.promise
 
-  install = (item) ->
-    isSerialInstall = item isnt undefined
+  checkCacheForAllDependencies = ->
+    log.d "Check cache for all dependencies"
+    @.allCacheExists = true
+    that = @
     deferred = Q.defer()
 
+    # all dependencies must have the exact version, including transitives.
+    # >,<,=,~,^ should not exist.
+    for dependency in dependencies
+      if dependency.version is "latest" or dependency.version.match /[><=~\^]/
+        log.d "Dependency #{dependency.name} requires online install"
+        deferred.resolve {offline: false}
+        return deferred.promise
+    log.d "Check cache status for top level #{dependencies.length} dependencies"
+    Q.all dependencies.map (dependency) ->
+      dep = mout.object.mixIn {}, dependency
+      dep.checkDependencies = true
+      checkCache dep
+    .then (results) ->
+      deferred2 = Q.defer()
+      log.d "Checked all top level #{results.length} dependencies cache"
+      for result in results
+        # result: {"state": "fulfilled", "values": {"name": "jquery"...
+        if result.state isnt "fulfilled"
+          log.d "Cache checking state for #{result.values.name}##{result.values.version} is not normal: #{result.state}"
+          deferred2.reject()
+          return deferred2.promise
+        log.d "Cache status for #{result.values.name}: #{if result.values.offline then "cached" else "not cached"}"
+        unless result.values.offline
+          log.d "Found dependency that requires online: #{if result.values.name? then result.values.name else "unknown"}"
+          that.allCacheExists = false
+      if that.allCacheExists
+        # Let's go to next step to check transitive dependencies' cache status
+        log.d "Top level dependencies are cached"
+        deferred2.resolve()
+      else
+        log.d "Some top level dependencies are not cached"
+        deferred2.reject()
+      deferred2.promise
+    .then ->
+      deferred3 = Q.defer()
+      nextTransitiveDeps = []
+      for dep in Object.keys transitiveDependencies
+        for ver in transitiveDependencies[dep]
+          if ver is "latest"
+            log.d "Found transitive dependency that requires online for resolving latest version: #{dep}"
+            deferred3.reject()
+            return deferred3.promise
+        for d in dependencies
+          if dep is d.name
+            found = true
+            for ver in transitiveDependencies[dep]
+              unless semver.satisfies d.version, ver
+                log.d "Found transitive dependency that does not satisfy semver: #{dep}"
+                deferred3.reject()
+                return deferred3.promise
+        unless found
+          # Should check cache again, but currently we give up here.
+          # We now assume that we must install online.
+          log.d "Found transitive dependency that is not specified on bower.dependencies, which will require online installation"
+          deferred3.reject()
+          return deferred3.promise
+      log.d "All dependencies are cached"
+      deferred3.resolve()
+      deferred3.promise
+    .catch (err) ->
+      log.d "Some processes are rejected"
+      that.allCacheExists = false
+    .done ->
+      log.d "Check cache for all dependencies: done: offline: #{that.allCacheExists}"
+      deferred.resolve {offline: that.allCacheExists}
+    deferred.promise
+
+  install = (item) ->
+    isSerialInstall = item?.name?
+    deferred = Q.defer()
+
+    # offline param might be passed even when it's parallel install
+    offline = item.offline
     if isSerialInstall
       name = item.name
       version = item.version
       cacheName = item.cacheName
-      offline = item.offline
       installedVersion = getInstalledVersion name
+      log.d "Serial install for #{name}##{version}"
       if installedVersion isnt ''
         # already installed
         if version isnt installedVersion
@@ -94,6 +193,7 @@ module.exports = ->
         return deferred.promise
       saveCurrentDependencyToJson name, version
     else
+      log.d "Parallel install: offline: #{offline}"
       saveBowerJson()
 
     cached = false
@@ -102,7 +202,9 @@ module.exports = ->
     installOptions = {}
     installConfigs = configs or {}
     installConfigs['offline'] = offline unless 'offline' in installConfigs
+    log.d "Install configs: #{JSON.stringify installConfigs}"
     installOptions[mout.string.camelCase k] = options[k] for k of options
+    log.d "Install options: #{JSON.stringify installOptions}"
     # If 1st arg is specified, they are marked as unresolvable, and resolutions have no effect.
     bower.commands.install [], installOptions, installConfigs
     .on 'log', (l) ->
@@ -152,7 +254,7 @@ module.exports = ->
       if isSerialInstall
         for key in Object.keys(installed)
           i = installed[key]
-          log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}#{if offline then " (offline)" else ""}"
+          log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}#{if installConfigs['offline'] then " (offline)" else ""}"
         hasDependencies = Object.keys(installed).length > 1
         if cached and validate and !hasDependencies
           # Installed with cache, but validation occurred
@@ -184,12 +286,13 @@ module.exports = ->
       else
         for key in Object.keys(installed)
           i = installed[key]
-          log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}"
+          log.i "Installed: #{i.pkgMeta.name}##{i.pkgMeta.version}#{if installConfigs['offline'] then " (offline)" else ""}"
       deferred.resolve()
     deferred.promise
 
   installParallel = (dummy, cb) ->
-    Q.fcall install
+    Q.fcall checkCacheForAllDependencies
+    .then install
     .catch (error) ->
       log.e "Install failed: #{error.stack}" if error
       common.setExitCode 1
