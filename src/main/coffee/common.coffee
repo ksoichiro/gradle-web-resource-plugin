@@ -53,8 +53,8 @@ install = (parallelInstaller) -> installSequentially [1], parallelInstaller
 projectRelativePath = (projectPath, targetPath) ->
   if targetPath.lastIndexOf p is 0
     p = targetPath.substring projectPath.length
-    if p.indexOf '/' is 0
-      p.substring '/'.length
+    if p.indexOf path.sep is 0
+      p.substring path.sep.length
     else
       p
   else
