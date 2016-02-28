@@ -8,6 +8,8 @@ build_script:
 
 test_script:
   - gradlew.bat --full-stacktrace check
+  - cd samples\example && gradlew.bat --full-stacktrace clean webResourceCompile && cd ..\..
+
 cache:
   - .gradle
   - C:\Users\appveyor\.gradle
