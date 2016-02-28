@@ -7,7 +7,7 @@ build_script:
   - gradlew.bat --full-stacktrace clean assemble
 
 test_script:
-  - gradlew.bat --full-stacktrace check
+  - gradlew.bat --full-stacktrace check uploadArchives
   - cd samples\example && gradlew.bat --full-stacktrace clean webResourceCompile && cd ..\..
 
 cache:
