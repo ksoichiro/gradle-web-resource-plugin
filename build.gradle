@@ -110,6 +110,7 @@ webResource {
     coffeeScript {
         dest '../../'
         minify false
+        logLevel LogLevel.INFO
     }
 }
 
