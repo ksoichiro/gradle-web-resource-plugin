@@ -41,7 +41,7 @@ webResource {
             // For example, bootstrap has dependency for jquery, so jquery must be written BEFORE bootstrap.
             // If you write jquery AFTER bootstrap, installation of bootstrap will also install jquery,
             // but after that, jquery installation by 'install name:"jquery"...' will fail.
-            //install name: 'jquery', version: '1.11.2', filter: ['dist/*.min.*']
+            install name: 'jquery', version: '1.11.2', filter: ['dist/*.min.*']
             install name: 'chartjs', version: '1.0.2', cacheName: 'Chart.js', filter: ['*.min.*'], outputName: 'chart'
             install name: 'bootstrap', version: '3.3.4', filter: ['dist/css/*.min.css', 'dist/js/*.min.js', 'dist/fonts/*']
             install name: 'respond-minmax', version: '1.4.2', cacheName: 'respond', filter: ['dest/*.min.js']

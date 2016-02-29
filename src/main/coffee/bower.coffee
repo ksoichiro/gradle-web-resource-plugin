@@ -70,26 +70,22 @@ module.exports = ->
       log.e "Checking cache failed: #{err}"
       deferred.reject()
     .on 'end', (r) ->
-      #log.d "checkCache: #{JSON.stringify r, null, '  '}" # FIXME
-      # get all caches and response.dependencies
-      # -> each -> semver.satisfies(ver)
-      # TODO Check caches for dependencies first, then
-      # add transitive dependencies to a global array.
-      # Then check that they all cached with satisfied version.
-      # Perhaps we might have to check their caches again.
+      # Check caches for dependencies first,
+      # then add transitive dependencies to a global array.
       if item.checkDependencies?
         log.d "Retrieve transitive dependencies for #{name}##{version}"
-        if 'dependencies' in r.pkgMeta
-          log.d "#{name}##{version} has some dependencies"
-          for dep in Object.keys r.pkgMeta.dependencies
-            ver = r.pkgMeta.dependencies[dep]
-            log.d "#{name}##{version} depends on #{dep}#{ver}"
-            # dep should be jquery
-            # r.pkgMeta.dependencies[dep] should be >= 1.7
-            if dep in transitiveDependencies
-              transitiveDependencies[dep].push ver
-            else
-              transitiveDependencies[dep] = [ver]
+        for e in r
+          if e.pkgMeta.dependencies?
+            log.d "#{e.pkgMeta.name}##{e.pkgMeta.version} has some dependencies"
+            for dep in Object.keys e.pkgMeta.dependencies
+              ver = e.pkgMeta.dependencies[dep]
+              log.d "#{e.pkgMeta.name}##{e.pkgMeta.version} depends on #{dep}#{ver}"
+              # dep should be jquery
+              # e.pkgMeta.dependencies[dep] should be >= 1.7
+              if dep in transitiveDependencies
+                transitiveDependencies[dep].push ver
+              else
+                transitiveDependencies[dep] = [ver]
       offline = false
       for e in r
         if e.pkgMeta.version is version
@@ -113,7 +109,7 @@ module.exports = ->
         deferred.resolve {offline: false}
         return deferred.promise
     log.d "Check cache status for top level #{dependencies.length} dependencies"
-    Q.all dependencies.map (dependency) ->
+    Q.allSettled dependencies.map (dependency) ->
       dep = mout.object.mixIn {}, dependency
       dep.checkDependencies = true
       checkCache dep
@@ -121,14 +117,13 @@ module.exports = ->
       deferred2 = Q.defer()
       log.d "Checked all top level #{results.length} dependencies cache"
       for result in results
-        # result: {"state": "fulfilled", "values": {"name": "jquery"...
         if result.state isnt "fulfilled"
-          log.d "Cache checking state for #{result.values.name}##{result.values.version} is not normal: #{result.state}"
+          log.d "Cache checking state for #{result.value?.name?}##{result.value.version} is not normal: #{result.state}"
           deferred2.reject()
           return deferred2.promise
-        log.d "Cache status for #{result.values.name}: #{if result.values.offline then "cached" else "not cached"}"
-        unless result.values.offline
-          log.d "Found dependency that requires online: #{if result.values.name? then result.values.name else "unknown"}"
+        log.d "Cache status for #{result.value?.name}: #{if result.value?.offline then "cached" else "not cached"}"
+        unless result.value?.offline
+          log.d "Found dependency that requires online: #{if result.value?.name? then result.value.name else "unknown"}"
           that.allCacheExists = false
       if that.allCacheExists
         # Let's go to next step to check transitive dependencies' cache status
@@ -140,8 +135,9 @@ module.exports = ->
       deferred2.promise
     .then ->
       deferred3 = Q.defer()
-      nextTransitiveDeps = []
+      log.d "Transitive dependencies: #{JSON.stringify transitiveDependencies}"
       for dep in Object.keys transitiveDependencies
+        log.d "Check cache status for transitive dependency #{dep}"
         for ver in transitiveDependencies[dep]
           if ver is "latest"
             log.d "Found transitive dependency that requires online for resolving latest version: #{dep}"
@@ -165,7 +161,7 @@ module.exports = ->
       deferred3.resolve()
       deferred3.promise
     .catch (err) ->
-      log.d "Some processes are rejected"
+      log.d "Some processes are rejected#{if err then " #{err}" else ""}"
       that.allCacheExists = false
     .done ->
       log.d "Check cache for all dependencies: done: offline: #{that.allCacheExists}"
