@@ -6,22 +6,27 @@
 [![jcenter](https://api.bintray.com/packages/ksoichiro/maven/gradle-web-resource-plugin/images/download.svg)](https://bintray.com/ksoichiro/maven/gradle-web-resource-plugin/_latestVersion)
 [![Maven Central](http://img.shields.io/maven-central/v/com.github.ksoichiro/gradle-web-resource-plugin.svg?style=flat)](https://github.com/ksoichiro/gradle-web-resource-plugin/releases/latest)
 
-Gradle plugin to use CoffeeScript, LESS and Bower libraries to focus on writing CoffeeScript and LESS files.  
+> Gradle plugin to use CoffeeScript, LESS and Bower libraries without Node.js/npm.
+
 You don't have to install `node`, `npm`, `bower`, `gulp`, etc.  
 You don't have to write `package.json`, `bower.json`, `gulpfile.js`, etc.  
 Just update your `build.gradle` and execute a task.
 
-## Usage
+## Getting started
 
-Apply plugin in build.gradle:
+### Apply plugin in build.gradle
+
+For Gradle 2.1+:
 
 ```gradle
-// Gradle 2.1+
 plugins {
     id 'com.github.ksoichiro.web.resource' version '1.5.0'
 }
+```
 
-// Gradle 2.0 and former
+Gradle 2.0 and former:
+
+```gradle
 buildscript {
     repositories {
         jcenter()
@@ -32,8 +37,11 @@ buildscript {
 }
 
 apply plugin: 'com.github.ksoichiro.web.resource'
+```
 
-// If you use SNAPSHOT version
+If you use SNAPSHOT version:
+
+```gradle
 buildscript {
     repositories {
         jcenter()
@@ -49,11 +57,12 @@ buildscript {
 apply plugin: 'com.github.ksoichiro.web.resource'
 ```
 
-Configure plugin if needed:
+### Configure plugin if you need
+
+See configuration section for details.
 
 ```gradle
 webResource {
-    // (Option) Write dependencies if you want to use library from bower
     bower {
         dependencies {
             install name: 'jquery', version: '1.11.2'
@@ -63,7 +72,7 @@ webResource {
 }
 ```
 
-Put your CoffeeScript and LESS script:
+### Put your CoffeeScript and LESS source files
 
 ```
 src
@@ -74,7 +83,7 @@ src
         └── app.less
 ```
 
-Execute build task:
+### Execute build task
 
 ```console
 $ ./gradlew webResourceCompile
@@ -93,15 +102,46 @@ build/webResource/outputs
 :
 ```
 
+## Why do you need this plugin?
+
+If I would like to use JavaScript library for browsers,
+Bower or this kind of package manager is good to manage dependencies.
+Bower can be managed with npm, and npm or Bower works on Node.js,
+so I also need to install Node.js to include JavaScript dependencies into our apps.
+
+[srs/gradle-node-plugin](https://github.com/srs/gradle-node-plugin) does most of all things,
+but still I (or other team members who writes Java codes usually) need to learn about node, npm, bower, etc.
+These are so good software but all we want to do is just managing JavaScript dependencies
+just like other jar dependencies.
+I know the Webjars project is also trying to solve this problem,
+but it supports not all of the JavaScript projects and some of the jars are uploaded
+by someone who we don't know and their contents are not necessarily reliable.
+We want to use directly the trusted JavaScript projects.
+
+So I wrapped all of them with a Gradle plugin.
+
 ## Dependency
 
-Git is required: this plugin bundles bower, and it depends on git to handle dependencies.
+### Git
+
+This plugin bundles bower, and it depends on git to handle dependencies.  
 To use bower features, please install git first.
+
+## Task
+
+| Task name          | Description               |
+| ------------------ | ------------------------- |
+| webResourceCompile | Triggers all other tasks. If you need to set task dependency (e.g. `classes.dependsOn 'webResourceCompile'`), you should use this task. |
+| webResourceInstallBowerDependencies | Installs JavaScript dependencies using bower. If the configuration `webResource.bower.dependencies` is empty, this task will be skipped (since v1.6.0). |
+| webResourceCopyBowerDependencies    | Copies bower dependencies which `webResourceInstallBowerDependencies` installed to a certain directory. If the configuration `webResource.bower.dependencies` is empty, this task will be skipped (since v1.6.0). |
+| webResourceCompileCoffeeScript      | Compiles CoffeeScript source files into JavaScript files. If the source directory does not exist, this task will be skipped (since v1.6.0). |
+| webResourceCompileLess              | Compiles LESS source files into CSS files. If the source directory does not exist, this task will be skipped (since v1.6.0). |
 
 ## Configuration
 
+All configurations are optional.
+
 ```gradle
-// All configurations are optional.
 webResource {
     base {
         // Change base directories for src/dest
@@ -112,6 +152,7 @@ webResource {
         // src 'src/main'
         // dest 'src/main/resources/static'
     }
+
     coffeeScript {
         // Set false if you don't use CoffeeScript related features
         enabled = true
@@ -127,6 +168,7 @@ webResource {
         // Default: true
         parallelize = true
     }
+
     less {
         // Set false if you don't use LESS related features
         enabled = true
@@ -161,10 +203,12 @@ webResource {
             //include '**/foo/**/bar*.less'
         }
     }
+
     lib {
         // Change directories for libraries downloaded with bower
         dest = 'lib'
     }
+
     bower {
         dependencies {
             // 'filter' filters files like main-bower-files
@@ -200,29 +244,36 @@ webResource {
 }
 ```
 
-## Sample
+## Samples
 
-See [samples/example](samples/example) directory.
+See [samples](samples) directory.
 
-To build this project:
+## Techniques and notes
 
-```console
-$ git clone https://github.com/ksoichiro/gradle-web-resource-plugin.git
-$ cd gradlew-web-resource-plugin
-$ ./gradlew uploadArchives
-$ cd samples/example
-$ ./gradlew webResourceCompile
+### General
+
+#### Running on Trireme and Rhino
+
+This plugin executes node/npm using [Trireme][trireme] and [Rhino][rhino].  
+Therefore the limitations in Trireme and Rhino might affect to the features in this plugin (e.g. performance).
+
+#### Setting task dependency
+
+If you use this plugin in Java project, you can set task dependency to execute build task provided by this plugin like this:
+
+```gradle
+// If you want to build CoffeeScript/LESS/bower before compiling Java sources,
+// set dependency using 'compileJava' task:
+compileJava.dependsOn 'webResourceCompile'
 ```
-
-## Include/exclude files
-
-By default, the .coffee/.less files that has prefix '`_`' will be excluded (filtered).  
-So if you want to include files into some specific files, and want to filter those files,  
-please try the following instructions.
 
 ### CoffeeScript
 
-Use `include` directive provided by [wiledal/gulp-include](https://github.com/wiledal/gulp-include).  
+#### Including and excluding files
+
+By default, the `.coffee` files that has prefix '`_`' will be excluded (filtered).
+
+If you want to include files into some specific files, and want to filter those files, use `include` directive.  
 This plugin will include this library as a dependency, so you can use it without any configurations.
 
 For example, in `app.coffee`, you can include `a/_b.coffee` by writing this:
@@ -255,7 +306,11 @@ console.log 'b'
 
 ### LESS
 
-Use `import` directive (this feature is provided by LESS).
+#### Including and excluding files
+
+By default, the .coffee/.less files that has prefix '`_`' will be excluded (filtered).
+
+If you want to include files into some specific files, and want to filter those files, use `import` directive (this feature is provided by LESS).
 
 For example, in `app.less`, you can include `a/_b.less` by writing this:
 
@@ -285,11 +340,59 @@ As a result, you can see the compiled and concatenated CSS file `app.css`.
 /* b.css: (will not be generated) */
 ```
 
-## Parallel installation for bower
+### Bower
+
+#### Resolving version conflict
+
+When some dependencies have transitive dependencies and they have conflict,
+bower installation will fail.
+To solve this problem, bower provides `resolutions` config and this plugin
+can handle this option with `resolve`:
+
+```gradle
+webResource {
+    bower {
+        dependencies {
+            resolve name: 'angular', version: '1.5.0'
+        }
+    }
+}
+```
+
+#### Offline installation
+
+When using parallel installation (default), the plugin will check if
+all the dependencies (including transitive dependencies) are cached.
+If they all have *exact version* notation and are cached,
+installation will be executed using offline option.
+This is faster than online installation.
+*Exact version* means that the versions that does not include
+any operator symbols to express version range (see [node-semver](https://github.com/npm/node-semver) for details).
+
+For example, the following notation can be offline because it can be resolved to only 1 artifact.
+
+```gradle
+webResource {
+    bower {
+        dependencies {
+            install name: "jquery", version: "1.10.2"
+```
+
+The following notations are valid but cannot be offline even when cache exists because they can be resolved to several versions. To fix version with cache might cause problems, especially in team development.
+
+```gradle
+webResource {
+    bower {
+        dependencies {
+            install name: "jquery", version: ">= 1.9.0"
+            install name: "angular", version: "latest"
+```
+
+#### Parallel and serial installation
 
 By default, `webResourceInstallBowerDependencies` task will
 install dependencies in parallel.  
-This can be controlled by `bower.parallelize` option,
+This can be controlled by `webResource.bower.parallelize` option,
 but we recommend not to overwrite it to `false`.
 
 Serial install have issues around version resolution.  
@@ -313,34 +416,6 @@ and often it's good for builds at restricted environment,
 but when you have any dependencies that has child dependencies,
 it is recommended to install them in parallel.
 
-## Why do you need this plugin?
-
-If I would like to use JavaScript library for browsers,
-Bower or this kind of package manager is good to manage dependencies.
-Bower can be managed with npm, and npm or Bower works on Node.js,
-so I also need to install Node.js to include JavaScript dependencies into our apps.
-
-[srs/gradle-node-plugin](https://github.com/srs/gradle-node-plugin) does most of all things,
-but still I (or other team members who writes Java codes usually) need to learn about node, npm, bower, etc.
-These are so good software but all we want to do is just managing JavaScript dependencies
-just like other jar dependencies.
-I know the Webjars project is also trying to solve this problem,
-but it supports not all of the JavaScript projects and some of the jars are uploaded
-by someone who we don't know and their contents are not necessarily reliable.
-We want to use directly the trusted JavaScript projects.
-
-So I wrapped all of them with a Gradle plugin.
-
-## Update guide
-
-### 0.1.x -> 1.x
-
-#### Change bower config
-
-`bower` configuration has been a map in v0.1.x,  
-and its format is changed in v1.0.0 to more Gradle like 
-configuration format.
-
 ## Contribution
 
 Contributions are welcome!  
@@ -350,9 +425,9 @@ Please check the [contribution guideline](CONTRIBUTING.md) before submitting iss
 
 This plugin deeply depends on these excellent projects.
 
-* [apigee/trireme](https://github.com/apigee/trireme)
+* [apigee/trireme][trireme]
     * Node engine for JVM used to execute bower, LESS, JavaScript.
-* [mozilla/rhino](https://github.com/mozilla/rhino)
+* [mozilla/rhino][rhino]
     * JavaScript engine for JVM used as the backend of trireme.
 * [srs/gradle-node-plugin](https://github.com/srs/gradle-node-plugin)
     * Node/npm wrapper for Gradle to aggregating npm dependencies.
@@ -372,7 +447,7 @@ This plugin deeply depends on these excellent projects.
     * Bundled in the plugin jar to minify JavaScript files.
 * [kriskowal/q](https://github.com/kriskowal/q)
     * Bundled in the plugin jar to execute async tasks without native Promise class.
-* [glob](https://github.com/isaacs/node-glob)
+* [isaacs/glob](https://github.com/isaacs/node-glob)
     * Bundled in the plugin jar to expand globs for minifying JavaScript files.
 
 ## License
@@ -390,3 +465,6 @@ This plugin deeply depends on these excellent projects.
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+[trireme]:https://github.com/apigee/trireme
+[rhino]:https://github.com/mozilla/rhino
