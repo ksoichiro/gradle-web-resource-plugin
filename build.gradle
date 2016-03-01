@@ -32,8 +32,10 @@ apply plugin: 'build-time-tracker'
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'signing'
 
+apply from: "${rootDir}/gradle/version.gradle"
+
 group = GROUP
-version = VERSION_NAME
+version = PLUGIN_VERSION
 archivesBaseName = POM_ARTIFACT_ID
 
 sourceCompatibility = 1.6

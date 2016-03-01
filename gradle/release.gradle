@@ -114,7 +114,7 @@ afterEvaluate { project ->
             plugin(MavenPublication) {
                 groupId GROUP
                 artifactId POM_ARTIFACT_ID
-                version VERSION_NAME
+                version PLUGIN_VERSION
 
                 from components.java
                 artifact sourcesJar

@@ -12,12 +12,6 @@ buildscript {
     }
 }
 
-// If you use the released version, use plugins closure and
-// comment out buildscript closure and apply plugin statement.
-//plugins {
-//    id 'com.github.ksoichiro.web.resource' version '1.5.0'
-//}
-
 apply plugin: 'java'
 apply plugin: 'com.github.ksoichiro.web.resource'
 apply plugin: 'build-time-tracker'

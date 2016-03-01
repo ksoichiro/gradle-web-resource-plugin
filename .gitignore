@@ -5,3 +5,4 @@ build/
 *.swp
 samples/repo/
 .vagrant/
+src/generated/
