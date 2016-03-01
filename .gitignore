@@ -6,3 +6,4 @@ build/
 samples/repo/
 .vagrant/
 src/generated/
+gradle.properties
