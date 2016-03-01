@@ -24,6 +24,7 @@ module.exports = ->
       cb?()
 
   coffeeConvert = (filepath, filename, searchPaths, outputPath, cb) ->
+    startTime = common.startTime()
     (->
       deferred = Q.defer()
       coffeeString = fs.readFileSync filepath, 'utf8'
@@ -49,7 +50,8 @@ module.exports = ->
           log.e "Saving file failed: #{err}"
           deferred.reject()
         else
-          log.i "Compiled: #{common.projectRelativePath projectPath, filepath}"
+          execTime = common.formatExecutionTime startTime
+          log.i "Compiled #{common.projectRelativePath projectPath, filepath} in #{execTime}"
           deferred.resolve()
       deferred.promise
     .catch (err) ->

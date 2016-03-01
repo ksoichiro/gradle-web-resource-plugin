@@ -60,6 +60,21 @@ projectRelativePath = (projectPath, targetPath) ->
   else
     targetPath
 
+startTime = ->
+  +(new Date)
+
+executionTime  = (startTime) ->
+  +(new Date) - startTime
+
+formatExecutionTime = (startTime) ->
+  diffMs = executionTime startTime
+  ms = "#{Math.floor diffMs % 1000}"
+  while ms.length < 3
+    ms = "0#{ms}"
+  sec = "#{Math.floor (diffMs / 1000) % 60}"
+  min = "#{Math.floor (diffMs / (1000 * 60)) % 60}"
+  "#{if min isnt "0" then "#{min} mins " else ""}#{sec}.#{ms} secs"
+
 exports.mkdirsSync = mkdirsSync
 exports.mkdirsIfNotExistSync = mkdirsIfNotExistSync
 exports.handleExit = handleExit
@@ -68,3 +83,6 @@ exports.install = install
 exports.setExitCode = setExitCode
 exports.hasError = hasError
 exports.projectRelativePath = projectRelativePath
+exports.startTime = startTime
+exports.executionTime = executionTime
+exports.formatExecutionTime = formatExecutionTime
