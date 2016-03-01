@@ -378,7 +378,7 @@ webResource {
             install name: "jquery", version: "1.10.2"
 ```
 
-The following notations are valid but cannot be offline even when cache exists because they can be resolved to several versions. To fix version with cache might cause problems, especially in team development.
+The following notations are valid but cannot be offline even when cache exists because they can be resolved to several versions. To lock version with cache might cause problems, especially in team development.
 
 ```gradle
 webResource {
