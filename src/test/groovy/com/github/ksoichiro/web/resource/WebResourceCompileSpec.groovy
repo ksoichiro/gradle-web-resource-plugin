@@ -47,6 +47,35 @@ class WebResourceCompileSpec extends BaseSpec {
         compiled.text == "!function(){console.log(\"Hello, world!\")}.call(this);"
     }
 
+    def coffeeScriptInclude() {
+        setup:
+        File root = temporaryFolder.root
+        Project project = ProjectBuilder.builder().withProjectDir(root).build()
+        setupProject(root, project)
+        File srcDir = new File(root, "src/main/coffee")
+        new File(srcDir, "sub").mkdir()
+        new File(srcDir, "sub/_module.coffee").text = """\
+            |@foo = () -> console.log 'Hello, world!'
+            |""".stripMargin().stripIndent()
+        new File(srcDir, "app.coffee").text = """\
+            |#=include 'sub/*.coffee'
+            |foo()
+            |""".stripMargin().stripIndent()
+        project.apply plugin: PLUGIN_ID
+        def extension = project.extensions.webResource as WebResourceExtension
+        extension.coffeeScript.logLevel = LogLevel.INFO
+        project.evaluate()
+
+        when:
+        project.tasks.webResourceCompileCoffeeScript.execute()
+        def compiled = new File("${root}/build/webResource/outputs/js/app.js")
+
+        then:
+        notThrown(Exception)
+        compiled.exists()
+        compiled.text == "!function(){this.foo=function(){return console.log(\"Hello, world!\")},foo()}.call(this);"
+    }
+
     def coffeeScriptDisabled() {
         setup:
         File root = temporaryFolder.root
