@@ -29,6 +29,9 @@ fs = require 'fs'
 path = require 'path'
 glob = require 'glob'
 
+extensions = null
+includedFiles = []
+
 addLeadingWhitespace = (whitespace, string) ->
   return string.split("\n").map (line) ->
     return whitespace + line
@@ -41,13 +44,13 @@ inExtensions = (filePath) ->
     return true if filePath.match re
   return false
 
-module.exports.processInclude = (content, filePath) ->
+processInclude = (content, filePath) ->
   matches = content.match /^(\s+)?(\/\/|\/\*|\#)(\s+)?=(\s+)?(include|require)(.+$)/mg
   relativeBasePath = path.dirname filePath
 
   return content unless matches
 
-  for m of matches
+  for m in matches
     leadingWhitespaceMatch = m.match /^(\s+)/
     leadingWhitespace = null
     if leadingWhitespaceMatch
@@ -97,3 +100,5 @@ module.exports.processInclude = (content, filePath) ->
       content = content.replace m, -> return replaceContent
 
   return content
+
+module.exports.processInclude = processInclude
