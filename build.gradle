@@ -234,7 +234,6 @@ task uglifyBuild(type: NpmTask, dependsOn: 'browserifyBuild') {
 
 task browserify(dependsOn: ['processResources', 'uglifyBuild']) {
     inputs.file project.file("${project.buildDir}/scripts/build.js")
-    inputs.file project.file("${project.buildDir}/resources/main/uglifyjs-lib.js")
     inputs.dir project.file("${project.buildDir}/node_modules/uglify-js/lib")
     outputs.file project.file("${project.buildDir}/resources/main/build.js")
     outputs.file project.file("${project.buildDir}/resources/main/uglifyjs-lib.js")
