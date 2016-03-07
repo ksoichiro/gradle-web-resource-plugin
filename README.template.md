@@ -1,10 +1,10 @@
 # gradle-web-resource-plugin
 
-[![Build Status](https://travis-ci.org/ksoichiro/gradle-web-resource-plugin.svg?branch=master)](https://travis-ci.org/ksoichiro/gradle-web-resource-plugin)
-[![Build status](https://ci.appveyor.com/api/projects/status/thdbxdmp9py9a3bt?svg=true)](https://ci.appveyor.com/project/ksoichiro/gradle-web-resource-plugin)
-[![Coverage Status](https://coveralls.io/repos/ksoichiro/gradle-web-resource-plugin/badge.svg?branch=master&service=github)](https://coveralls.io/github/ksoichiro/gradle-web-resource-plugin?branch=master)
-[![jcenter](https://api.bintray.com/packages/ksoichiro/maven/gradle-web-resource-plugin/images/download.svg)](https://bintray.com/ksoichiro/maven/gradle-web-resource-plugin/_latestVersion)
-[![Maven Central](http://img.shields.io/maven-central/v/com.github.ksoichiro/gradle-web-resource-plugin.svg?style=flat)](https://github.com/ksoichiro/gradle-web-resource-plugin/releases/latest)
+[![Build Status](https://img.shields.io/travis/ksoichiro/gradle-web-resource-plugin/master.svg?style=flat-square)](https://travis-ci.org/ksoichiro/gradle-web-resource-plugin)
+[![Build status](https://img.shields.io/appveyor/ci/ksoichiro/gradle-web-resource-plugin/master.svg?style=flat-square)](https://ci.appveyor.com/project/ksoichiro/gradle-web-resource-plugin)
+[![Coverage Stagus](https://img.shields.io/coveralls/ksoichiro/gradle-web-resource-plugin/master.svg?style=flat-square)](https://coveralls.io/github/ksoichiro/gradle-web-resource-plugin?branch=master)
+[![Bintray](https://img.shields.io/bintray/v/ksoichiro/maven/gradle-web-resource-plugin.svg?style=flat-square)](https://bintray.com/ksoichiro/maven/gradle-web-resource-plugin/_latestVersion)
+[![Maven Central](http://img.shields.io/maven-central/v/com.github.ksoichiro/gradle-web-resource-plugin.svg?style=flat-square)](https://github.com/ksoichiro/gradle-web-resource-plugin/releases/latest)
 
 > Gradle plugin to use CoffeeScript, LESS and Bower libraries without Node.js/npm.
 
