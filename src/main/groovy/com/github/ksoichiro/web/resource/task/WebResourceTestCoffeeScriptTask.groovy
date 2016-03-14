@@ -35,7 +35,8 @@ class WebResourceTestCoffeeScriptTask extends TriremeBaseTask {
 
     @TaskAction
     void exec() {
-        if (!extension.coffeeScript.enabled) {
+        // Both the main task and test task should be enabled
+        if (!extension.coffeeScript.enabled || !extension.testCoffeeScript.enabled) {
             return
         }
         def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.coffeeScript.src)
