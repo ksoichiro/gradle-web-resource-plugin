@@ -28,6 +28,10 @@ webResource {
     // You can also set like this:
     //coffeeScript.minify true
 
+    testCoffeeScript {
+        logLevel LogLevel.INFO
+    }
+
     bower {
         dependencies {
             // If the dependency has some dependencies, write them to upper.

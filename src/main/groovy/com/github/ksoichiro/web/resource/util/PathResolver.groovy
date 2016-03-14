@@ -16,12 +16,20 @@ class PathResolver {
         retrieveValidPaths(resolveSrcPath(extension.coffeeScript?.src))
     }
 
+    List retrieveValidSrcTestCoffeePaths() {
+        retrieveValidPaths(resolveSrcTestPath(extension.testCoffeeScript?.src))
+    }
+
     List retrieveValidSrcLessPaths() {
         retrieveValidPaths(resolveSrcPath(extension.less?.src))
     }
 
     String getDestCoffee() {
         resolveDestPath(extension.coffeeScript?.dest)
+    }
+
+    String getDestTestCoffee() {
+        resolveTestDestPath(extension.testCoffeeScript?.dest)
     }
 
     String getDestLess() {
@@ -35,7 +43,7 @@ class PathResolver {
     List retrieveValidPaths(String... paths) {
         List result = []
         paths.findAll { project.file("${extension.workDir}/${it}") }.each {
-            result += "${extension.workDir}/${it}"
+            result += new File("${extension.workDir}/${it}").canonicalPath
         }
         result
     }
@@ -49,14 +57,37 @@ class PathResolver {
         src
     }
 
+    String resolveSrcTestPathFromProject(def path) {
+        String src = ""
+        if (path) {
+            src += extension.testBase?.src ? "${extension.testBase?.src}/" : ""
+            src += path
+        }
+        src
+    }
+
     String resolveSrcPath(def path) {
         "../../${resolveSrcPathFromProject(path)}"
+    }
+
+    String resolveSrcTestPath(def path) {
+        "../../${resolveSrcTestPathFromProject(path)}"
     }
 
     String resolveDestPath(def path) {
         String dest = ""
         if (path) {
             dest = extension.base?.dest ? "${extension.base?.dest}/" : ""
+            dest += path
+            dest = "../../${dest}"
+        }
+        dest
+    }
+
+    String resolveTestDestPath(def path) {
+        String dest = ""
+        if (path) {
+            dest = extension.testBase?.dest ? "${extension.testBase?.dest}/" : ""
             dest += path
             dest = "../../${dest}"
         }

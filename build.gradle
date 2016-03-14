@@ -178,6 +178,10 @@ task applyPatch(dependsOn: 'npmInstall') {
         replaced = f.text.replaceAll("module.exports = .*", "module.exports = '1.7.6';")
         f.text = replaced
 
+        f = new File("${project.buildDir}/node_modules/mocha/lib/mocha.js")
+        replaced = f.text.replaceAll("if \\(!process\\.browser\\) \\{", "if (false && !process.browser) {")
+        f.text = replaced
+
         [
             'node_modules/bower/lib/node_modules/hawk/lib/utils.js',
             'node_modules/bower/lib/node_modules/tough-cookie/lib/cookie.js',
@@ -212,6 +216,18 @@ task browserifyBuild(type: NpmTask, dependsOn: 'applyPatch') {
         }
     }
 }
+
+// Skip uglify for debug
+//task uglifyBuild(dependsOn: 'browserifyBuild') {
+//    def src = project.file("${project.buildDir}/scripts/build.tmp.js")
+//    doLast {
+//        copy {
+//            from src
+//            into src.parentFile.absolutePath
+//            rename "build.tmp.js", "build.js"
+//        }
+//    }
+//}
 
 task uglifyBuild(type: NpmTask, dependsOn: 'browserifyBuild') {
     def src = project.file("${project.buildDir}/scripts/build.tmp.js")
