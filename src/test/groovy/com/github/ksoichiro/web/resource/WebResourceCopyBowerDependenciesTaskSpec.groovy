@@ -2,6 +2,7 @@ package com.github.ksoichiro.web.resource
 
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
 import org.gradle.api.Project
+import org.gradle.api.logging.LogLevel
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.ClassRule
 import org.junit.rules.TemporaryFolder
@@ -110,6 +111,30 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
         new File("${root}/build/webResource/outputs/lib/jquery").exists()
         externalDependency1.exists()
         !externalDependency2.exists()
+    }
+
+    def copyAllTransitiveDependencies() {
+        setup:
+        File root = temporaryFolder.root
+        Project project = ProjectBuilder.builder().withProjectDir(root).build()
+        setupProject(root, project)
+        project.apply plugin: PLUGIN_ID
+        def extension = project.extensions.webResource as WebResourceExtension
+        extension.bower.logLevel = LogLevel.INFO
+        extension.bower.copyAll = true
+        extension.bower.dependencies {
+            install name: "bootstrap", version: "3.3.4", filter: ["dist/*.min.*"]
+        }
+        project.evaluate()
+        project.tasks.webResourceInstallBowerDependencies.execute()
+
+        when:
+        project.tasks.webResourceCopyBowerDependencies.execute()
+
+        then:
+        notThrown(Exception)
+        new File("${root}/build/webResource/outputs/lib/bootstrap").exists()
+        new File("${root}/build/webResource/outputs/lib/jquery").exists()
     }
 
     void setupProject(File root, Project project) {
