@@ -2,7 +2,6 @@ package com.github.ksoichiro.web.resource.node
 
 import io.apigee.trireme.core.NodeModule
 import io.apigee.trireme.core.NodeRuntime
-import org.fusesource.jansi.Ansi
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.Function
 import org.mozilla.javascript.Scriptable
@@ -12,7 +11,6 @@ import org.mozilla.javascript.annotations.JSFunction
 import java.lang.reflect.InvocationTargetException
 
 import static io.apigee.trireme.core.ArgUtils.stringArg
-import static org.fusesource.jansi.Ansi.ansi
 
 /**
  * Utility to log from JavaScript using println in Gradle.
@@ -56,38 +54,7 @@ class GradleConsoleModule implements NodeModule {
         @JSFunction
         @SuppressWarnings("unused")
         public static void log(Context cx, Scriptable thisObj, Object[] args, Function func) {
-            String level = stringArg(args, 0).padRight(5, ' ')
-            String tag = stringArg(args, 1)
-            String message = stringArg(args, 2)
-            if ('ERROR'.equals(level)) {
-                level = red(level)
-            } else if ('WARN '.equals(level)) {
-                level = yellow(level)
-            } else if ('DEBUG'.equals(level)) {
-                level = blue(level)
-            }
-            String now = new Date().format("HH:mm:ss.SSS")
-            println "${gray(now)} ${level} [${cyan(tag)}] ${message}"
-        }
-
-        static def red(def s) {
-            ansi().fg(Ansi.Color.RED).a(s).reset()
-        }
-
-        static def cyan(def s) {
-            ansi().fg(Ansi.Color.CYAN).a(s).reset()
-        }
-
-        static def yellow(def s) {
-            ansi().fg(Ansi.Color.YELLOW).a(s).reset()
-        }
-
-        static def blue(def s) {
-            ansi().fg(Ansi.Color.BLUE).a(s).reset()
-        }
-
-        static def gray(def s) {
-            ansi().fgBright(Ansi.Color.BLACK).a(s).reset()
+            println stringArg(args, 0)
         }
     }
 }
