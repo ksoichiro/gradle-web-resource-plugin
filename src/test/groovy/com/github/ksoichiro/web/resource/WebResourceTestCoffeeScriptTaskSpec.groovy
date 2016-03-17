@@ -1,6 +1,7 @@
 package com.github.ksoichiro.web.resource
 
 import com.github.ksoichiro.web.resource.extension.WebResourceExtension
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.logging.LogLevel
 import org.gradle.testfixtures.ProjectBuilder
@@ -34,12 +35,45 @@ class WebResourceTestCoffeeScriptTaskSpec extends BaseSpec {
         project.tasks.webResourceCompileCoffeeScript.execute()
 
         when:
-        project.tasks.webResourceTestCoffeeScript.execute()
         def compiledSrcJs = new File("${root}/build/webResource/outputs/test/app.js")
         def compiledTestJs = new File("${root}/build/webResource/outputs/test/app_test.js")
+        project.tasks.webResourceTestCoffeeScript.execute()
 
         then:
         notThrown(Exception)
+        compiledSrcJs.exists()
+        compiledTestJs.exists()
+    }
+
+    def testExecFail() {
+        setup:
+        File root = temporaryFolder.root
+        Project project = ProjectBuilder.builder().withProjectDir(root).build()
+        setupProject(root, project)
+        generateCode(root)
+        File testSrcDir = new File(root, "src/test/coffee")
+        new File(testSrcDir, "app_test.coffee").text = """\
+            |app = require './app'
+            |assert = require 'assert'
+            |describe 'app', ->
+            |  describe '#func', ->
+            |    it 'should return 1 when 1 is given', ->
+            |      assert.equal app.func(1), 1
+            |""".stripMargin().stripIndent()
+        project.apply plugin: PLUGIN_ID
+        def extension = project.extensions.webResource as WebResourceExtension
+        extension.coffeeScript.logLevel = LogLevel.INFO
+        extension.testCoffeeScript.logLevel = LogLevel.INFO
+        project.evaluate()
+        project.tasks.webResourceCompileCoffeeScript.execute()
+
+        when:
+        def compiledSrcJs = new File("${root}/build/webResource/outputs/test/app.js")
+        def compiledTestJs = new File("${root}/build/webResource/outputs/test/app_test.js")
+        project.tasks.webResourceTestCoffeeScript.execute()
+
+        then:
+        thrown(GradleException)
         compiledSrcJs.exists()
         compiledTestJs.exists()
     }
@@ -145,7 +179,7 @@ class WebResourceTestCoffeeScriptTaskSpec extends BaseSpec {
             |describe 'app', ->
             |  describe '#func', ->
             |    it 'should return 2 when 1 is given', ->
-            |      assert app.func(1), 2
+            |      assert.equal app.func(1), 2
             |""".stripMargin().stripIndent()
     }
 }
