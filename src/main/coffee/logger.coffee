@@ -33,7 +33,7 @@ log = (level, tag, message) ->
     level = chalk.yellow level
   else if level is "DEBUG"
     level = chalk.blue level
-  console.log "#{chalk.gray timestamp()} #{level} #{chalk.cyan tag} #{message}"
+  console.log "#{chalk.gray timestamp()} #{level} [#{chalk.cyan tag}] #{message}"
 
 Logger.prototype.e = (message) -> log 'ERROR', @.tag, message if 0 <= this.level
 Logger.prototype.w = (message) -> log 'WARN',  @.tag, message if 1 <= this.level
