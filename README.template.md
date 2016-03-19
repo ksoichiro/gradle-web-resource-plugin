@@ -135,6 +135,7 @@ To use bower features, please install git first.
 | webResourceInstallBowerDependencies | Installs JavaScript dependencies using bower. If the configuration `webResource.bower.dependencies` is empty, this task will be skipped (since v1.6.0). |
 | webResourceCopyBowerDependencies    | Copies bower dependencies which `webResourceInstallBowerDependencies` installed to a certain directory. If the configuration `webResource.bower.dependencies` is empty, this task will be skipped (since v1.6.0). |
 | webResourceCompileCoffeeScript      | Compiles CoffeeScript source files into JavaScript files. If the source directory does not exist, this task will be skipped (since v1.6.0). |
+| webResourceTestCoffeeScript         | Tests CoffeeScript source files with Mocha. If the source directory does not exist, this task will be skipped (since v1.7.0). |
 | webResourceCompileLess              | Compiles LESS source files into CSS files. If the source directory does not exist, this task will be skipped (since v1.6.0). |
 
 ## Configuration
@@ -153,6 +154,11 @@ webResource {
         // dest 'src/main/resources/static'
     }
 
+    testBase {
+        // Change base directories
+        src = 'src/test'
+    }
+
     coffeeScript {
         // Set false if you don't use CoffeeScript related features
         enabled = true
@@ -167,6 +173,14 @@ webResource {
         minify = false
         // Default: true
         parallelize = true
+    }
+
+    testCoffeeScript {
+        // Set false if you don't test CoffeeScript source files
+        enabled = true
+        // Change CoffeeScript src/dest directories
+        src = 'coffee'
+        dest = 'test'
     }
 
     less {
