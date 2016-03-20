@@ -1,5 +1,6 @@
 module.exports = ->
   fs = require 'fs'
+  path = require 'path'
   util = require 'util'
   bower = require 'bower'
   chalk = require 'bower/lib/node_modules/chalk'
@@ -9,14 +10,25 @@ module.exports = ->
   common = require './common'
   Logger = require './logger'
 
-  projectPath = process.argv[3]
-  packages = JSON.parse fs.readFileSync process.argv[4], 'utf-8'
+  projectPath = (3 < process.argv.length and process.argv[3]) or path.resolve '../../'
+  if 4 < process.argv.length and process.argv[4]
+    packages = JSON.parse fs.readFileSync process.argv[4], 'utf-8'
+  else
+    defaultPackagesFile = '.bowerpkg.json'
+    if fs.existsSync defaultPackagesFile
+      packages = JSON.parse fs.readFileSync defaultPackagesFile, 'utf-8'
+    else
+      packages =
+        dependencies: []
+        resolutions: {}
+        options: {}
+        configs: {}
   dependencies = packages.dependencies
   resolutions = packages.resolutions
   options = packages.options
   configs = packages.configs
-  parallelize = process.argv[5] is 'true'
-  logLevel = parseInt process.argv[6]
+  parallelize = (5 < process.argv.length and process.argv[5]) or 'true'
+  logLevel = (6 < process.argv.length and parseInt process.argv[6]) or 3
   transitiveDependencies = {}
 
   log = new Logger logLevel, 'Bower'
