@@ -44,15 +44,15 @@ ext.packageInfo = [
             '--ignore=opn',
             '--node',
             'build.js',
-            '-o scripts/build.tmp.js',
+            '-o outputs/build.tmp.js',
         ].join(' '),
         'uglify': [
             'uglifyjs',
-            'scripts/build.tmp.js',
+            'outputs/build.tmp.js',
             // Preserve license comments.
             '--comments',
             // This file is the final artifact to bundle.
-            '-o scripts/build.js',
+            '-o outputs/build.js',
         ].join(' '),
     ]
 ]

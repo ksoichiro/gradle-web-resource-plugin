@@ -67,7 +67,7 @@ node {
     npmVersion = '3.3.9'
     download = true
     workDir = file("${project.buildDir}/nodejs")
-    nodeModulesDir = project.buildDir
+    nodeModulesDir = file("${project.buildDir}/js")
 }
 
 idea.module.excludeDirs += [
@@ -110,28 +110,32 @@ apply from: "${rootDir}/gradle/npm-packages.gradle"
 
 webResource {
     coffeeScript {
-        dest '../../'
+        dest '../../js'
         minify false
+        logLevel LogLevel.INFO
+    }
+    testCoffeeScript {
         logLevel LogLevel.INFO
     }
 }
 
 task generatePackageJson(dependsOn: webResourceCompileCoffeeScript) {
-    def destPackageJson = project.file("${project.buildDir}/package.json")
+    def destPackageJson = project.file("${project.buildDir}/js/package.json")
     inputs.property 'packageInfo', packageInfo
     outputs.file destPackageJson
     doLast {
+        project.file("${project.buildDir}/js").mkdirs()
         destPackageJson.text = JsonOutput.prettyPrint(JsonOutput.toJson(packageInfo))
     }
 }
 
 task applyPatch(dependsOn: 'npmInstall') {
-    inputs.dir project.file("${project.buildDir}/node_modules")
-    outputs.dir project.file("${project.buildDir}/node_modules")
+    inputs.dir project.file("${project.buildDir}/js/node_modules")
+    outputs.dir project.file("${project.buildDir}/js/node_modules")
     doLast {
         // Resolving cache while installing dependency in bower fails when executing with Trireme,
         // so apply a patch for it
-        File f = new File("${project.buildDir}/node_modules/bower/lib/lib/core/ResolveCache.js")
+        File f = new File("${project.buildDir}/js/node_modules/bower/lib/lib/core/ResolveCache.js")
         def replaced = f.text.replaceAll(
             "if \\(err\\.code === 'ENOENT'\\) \\{",
             "if (err.code === 'ENOENT' || err.code === 'ENOTDIR') {")
@@ -140,7 +144,7 @@ task applyPatch(dependsOn: 'npmInstall') {
         // When using browserify, bower's internal function commandFactory is not handled
         // because it uses require with variables.
         // To solve this problem, we pass module path directly to require().
-        f = new File("${project.buildDir}/node_modules/bower/lib/lib/commands/index.js")
+        f = new File("${project.buildDir}/js/node_modules/bower/lib/lib/commands/index.js")
         replaced = f.text.replaceAll(/commandFactory\('([^']*)'\)/) { all, path ->
             "commandFactory(require('${path}'))"
         }.replaceAll("var command = require\\(id\\)", "var command = id")
@@ -174,11 +178,11 @@ task applyPatch(dependsOn: 'npmInstall') {
         //f.text = replaced
 
         // Remove unused features for browserify to work
-        f = new File("${project.buildDir}/node_modules/bower/lib/lib/version.js")
+        f = new File("${project.buildDir}/js/node_modules/bower/lib/lib/version.js")
         replaced = f.text.replaceAll("module.exports = .*", "module.exports = '1.7.6';")
         f.text = replaced
 
-        f = new File("${project.buildDir}/node_modules/mocha/lib/mocha.js")
+        f = new File("${project.buildDir}/js/node_modules/mocha/lib/mocha.js")
         replaced = f.text.replaceAll("if \\(!process\\.browser\\) \\{", "if (false && !process.browser) {")
         f.text = replaced
 
@@ -192,7 +196,7 @@ task applyPatch(dependsOn: 'npmInstall') {
             'node_modules/npm/scripts/publish-tag.js',
             'node_modules/tough-cookie/lib/cookie.js',
         ].each { String path ->
-            f = new File("${project.buildDir}/${path}")
+            f = new File("${project.buildDir}/js/${path}")
             replaced = f.text.replaceAll("require\\('../package.json'\\).version", "0")
             f.text = replaced
         }
@@ -200,15 +204,15 @@ task applyPatch(dependsOn: 'npmInstall') {
 }
 
 task browserifyBuild(type: NpmTask, dependsOn: 'applyPatch') {
-    def dest = project.file("${project.buildDir}/scripts/build.tmp.js")
+    def dest = project.file("${project.buildDir}/js/outputs/build.tmp.js")
     inputs.files project.fileTree(dir: project.buildDir).include('*.js')
     outputs.file dest
     args = ['run', 'browserify']
     execOverrides {
-        it.workingDir = project.buildDir
+        it.workingDir = project.file("${project.buildDir}/js")
     }
     doFirst {
-        project.file("${project.buildDir}/scripts").mkdirs()
+        project.file("${project.buildDir}/js/outputs").mkdirs()
     }
     doLast {
         if (!dest.exists()) {
@@ -219,7 +223,7 @@ task browserifyBuild(type: NpmTask, dependsOn: 'applyPatch') {
 
 // Skip uglify for debug
 //task uglifyBuild(dependsOn: 'browserifyBuild') {
-//    def src = project.file("${project.buildDir}/scripts/build.tmp.js")
+//    def src = project.file("${project.buildDir}/js/outputs/build.tmp.js")
 //    doLast {
 //        copy {
 //            from src
@@ -230,16 +234,16 @@ task browserifyBuild(type: NpmTask, dependsOn: 'applyPatch') {
 //}
 
 task uglifyBuild(type: NpmTask, dependsOn: 'browserifyBuild') {
-    def src = project.file("${project.buildDir}/scripts/build.tmp.js")
-    def dest = project.file("${project.buildDir}/scripts/build.js")
+    def src = project.file("${project.buildDir}/js/outputs/build.tmp.js")
+    def dest = project.file("${project.buildDir}/js/outputs/build.js")
     inputs.file src
     outputs.file dest
     args = ['run', 'uglify']
     execOverrides {
-        it.workingDir = project.buildDir
+        it.workingDir = project.file("${project.buildDir}/js")
     }
     doFirst {
-        project.file("${project.buildDir}/scripts").mkdirs()
+        project.file("${project.buildDir}/js/outputs").mkdirs()
     }
     doLast {
         if (!dest.exists()) {
@@ -249,8 +253,8 @@ task uglifyBuild(type: NpmTask, dependsOn: 'browserifyBuild') {
 }
 
 task browserify(dependsOn: ['processResources', 'uglifyBuild']) {
-    inputs.file project.file("${project.buildDir}/scripts/build.js")
-    inputs.dir project.file("${project.buildDir}/node_modules/uglify-js/lib")
+    inputs.file project.file("${project.buildDir}/js/outputs/build.js")
+    inputs.dir project.file("${project.buildDir}/js/node_modules/uglify-js/lib")
     outputs.file project.file("${project.buildDir}/resources/main/build.js")
     outputs.file project.file("${project.buildDir}/resources/main/uglifyjs-lib.js")
     doLast {
@@ -260,7 +264,7 @@ task browserify(dependsOn: ['processResources', 'uglifyBuild']) {
         }
         copy {
             // Copy only 1 file
-            from "${project.buildDir}/scripts/build.js"
+            from "${project.buildDir}/js/outputs/build.js"
             into "${project.buildDir}/resources/main"
         }
 
@@ -279,7 +283,7 @@ task browserify(dependsOn: ['processResources', 'uglifyBuild']) {
             'sourcemap.js',
             'mozilla-ast.js',
         ].each { String fileName ->
-            f.text += new File("${project.buildDir}/node_modules/uglify-js/lib/${fileName}").text
+            f.text += new File("${project.buildDir}/js/node_modules/uglify-js/lib/${fileName}").text
         }
     }
 }
