@@ -6,11 +6,18 @@ module.exports = ->
   common = require './common'
   Logger = require './logger'
 
-  projectPath = process.argv[3]
-  lessSrcSet = JSON.parse fs.readFileSync process.argv[4], 'utf-8'
-  minify = process.argv[5] is 'true'
-  parallelize = process.argv[6] is 'true'
-  logLevel = parseInt process.argv[7]
+  projectPath = (3 < process.argv.length and process.argv[3]) or path.resolve '../../'
+  if 4 < process.argv.length and process.argv[4]
+    lessSrcSet = JSON.parse fs.readFileSync process.argv[4], 'utf-8'
+  else
+    defaultLessSrcSetFile = '.lesssrc.json'
+    if fs.existsSync defaultLessSrcSetFile
+      lessSrcSet = JSON.parse fs.readFileSync defaultLessSrcSetFile, 'utf-8'
+    else
+      lessSrcSet = []
+  minify = (5 < process.argv.length and process.argv[5]) or 'true'
+  parallelize = (6 < process.argv.length and process.argv[6]) or 'true'
+  logLevel = (7 < process.argv.length and parseInt process.argv[7]) or 3
 
   log = new Logger logLevel, 'LESS'
 
