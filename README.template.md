@@ -463,6 +463,8 @@ This plugin deeply depends on these excellent projects.
     * Bundled in the plugin jar to execute async tasks without native Promise class.
 * [isaacs/glob](https://github.com/isaacs/node-glob)
     * Bundled in the plugin jar to expand globs for minifying JavaScript files.
+* [mochajs/mocha](https://github.com/mochajs/mocha)
+    * Bundled in the plugin jar to test CoffeeScript files.
 
 ## License
 
