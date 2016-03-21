@@ -154,6 +154,37 @@ class WebResourceTestCoffeeScriptTaskSpec extends BaseSpec {
         !compiledTestJs.exists()
     }
 
+    def copyBowerDependencies() {
+        setup:
+        File root = temporaryFolder.root
+        Project project = ProjectBuilder.builder().withProjectDir(root).build()
+        setupProject(root, project)
+        generateCode(root)
+        project.apply plugin: PLUGIN_ID
+        def extension = project.extensions.webResource as WebResourceExtension
+        extension.coffeeScript.logLevel = LogLevel.INFO
+        extension.testCoffeeScript.logLevel = LogLevel.INFO
+        extension.testCoffeeScript.copyBowerDependencies = true
+        extension.bower.dependencies {
+            install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
+        }
+        project.evaluate()
+        project.tasks.webResourceInstallBowerDependencies.execute()
+        project.tasks.webResourceCopyBowerDependencies.execute()
+        project.tasks.webResourceCompileCoffeeScript.execute()
+
+        when:
+        def compiledSrcJs = new File("${root}/build/webResource/outputs/test/app.js")
+        def compiledTestJs = new File("${root}/build/webResource/outputs/test/app_test.js")
+        project.tasks.webResourceTestCoffeeScript.execute()
+
+        then:
+        notThrown(Exception)
+        compiledSrcJs.exists()
+        compiledTestJs.exists()
+        new File("${root}/build/webResource/outputs/test/bower_components/jquery").exists()
+    }
+
     void setupProject(File root, Project project) {
         File srcDir = new File(root, "src/main/coffee")
         project.delete(srcDir)

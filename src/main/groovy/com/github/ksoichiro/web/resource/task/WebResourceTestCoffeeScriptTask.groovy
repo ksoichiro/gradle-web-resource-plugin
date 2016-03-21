@@ -48,6 +48,16 @@ class WebResourceTestCoffeeScriptTask extends TriremeBaseTask {
             from "${extension.base.dest}/${extension.coffeeScript.dest}"
             into "${extension.testBase.dest}/${extension.testCoffeeScript.dest}"
         }
+        // Copy bower components into test working directory
+        if (extension.testCoffeeScript.copyBowerDependencies) {
+            if (project.file("${extension.base.dest}/${extension.lib.dest}").exists()) {
+                project.file("${extension.testBase.dest}/${extension.testCoffeeScript.dest}/bower_components")
+                project.copy {
+                    from "${extension.base.dest}/${extension.lib.dest}"
+                    into "${extension.testBase.dest}/${extension.testCoffeeScript.dest}/bower_components"
+                }
+            }
+        }
 
         test(src, srcRootFile.absolutePath)
     }
