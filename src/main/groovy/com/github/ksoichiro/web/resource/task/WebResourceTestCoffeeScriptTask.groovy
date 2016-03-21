@@ -46,7 +46,7 @@ class WebResourceTestCoffeeScriptTask extends TriremeBaseTask {
         // Copy CoffeeScript built source into test working directory
         project.copy {
             from "${extension.base.dest}/${extension.coffeeScript.dest}"
-            into "${extension.base.dest}/test"
+            into "${extension.testBase.dest}/test"
         }
 
         test(src, srcRootFile.absolutePath)
