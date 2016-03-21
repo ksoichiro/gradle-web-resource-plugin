@@ -291,5 +291,7 @@ task browserify(dependsOn: ['processResources', 'uglifyBuild']) {
 npmInstall.dependsOn('generatePackageJson')
 classes.dependsOn('browserify')
 check.dependsOn('cobertura')
+check.dependsOn('webResourceTestCoffeeScript')
+webResourceTestCoffeeScript.mustRunAfter('cobertura')
 
 apply from: "${rootDir}/gradle/release.gradle"
