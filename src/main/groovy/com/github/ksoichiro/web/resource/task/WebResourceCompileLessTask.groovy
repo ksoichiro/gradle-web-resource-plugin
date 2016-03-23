@@ -39,10 +39,7 @@ class WebResourceCompileLessTask extends TriremeBaseTask {
         }
         prepareWorkDir()
         writeLessScript()
-        def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.less.src)
-        def srcRootFile = project.file(srcRootDir)
-        def src = filterSource(srcRootDir)
-        compile(src, srcRootFile.absolutePath)
+        compile()
     }
 
     void writeLessScript() {
@@ -67,14 +64,17 @@ class WebResourceCompileLessTask extends TriremeBaseTask {
         src
     }
 
-    void compile(FileTree fileTree, String srcRootPath) {
+    void compile() {
+        def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.less.src)
+        def srcRootFile = project.file(srcRootDir)
+        def fileTree = filterSource(srcRootDir)
         def tmpFile = project.file("${extension.workDir}/.lesssrc.json")
         def maps = []
         fileTree.each { File file ->
             maps += [
                 path: file.absolutePath,
                 name: file.name,
-                destDir: new File("${extension.workDir}/${pathResolver.getDestLess()}/${file.parent.replace(srcRootPath, "")}").canonicalPath,
+                destDir: new File("${extension.workDir}/${pathResolver.getDestLess()}/${file.parent.replace(srcRootFile.absolutePath, "")}").canonicalPath,
             ]
         }
         tmpFile.text = JsonOutput.toJson(maps)

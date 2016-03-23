@@ -39,10 +39,7 @@ class WebResourceCompileCoffeeScriptTask extends TriremeBaseTask {
         }
         prepareWorkDir()
         writeCoffeeScript()
-        def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.coffeeScript.src)
-        def srcRootFile = project.file(srcRootDir)
-        def src = filterSource(srcRootFile)
-        compile(src, srcRootFile.absolutePath)
+        compile()
     }
 
     void writeCoffeeScript() {
@@ -57,14 +54,17 @@ class WebResourceCompileCoffeeScriptTask extends TriremeBaseTask {
         src
     }
 
-    void compile(FileTree fileTree, String srcRootPath) {
+    void compile() {
+        def srcRootDir = pathResolver.resolveSrcPathFromProject(extension.coffeeScript.src)
+        def srcRootFile = project.file(srcRootDir)
+        def fileTree = filterSource(srcRootFile)
         def tmpFile = project.file("${extension.workDir}/.coffeesrc.json")
         def maps = []
         fileTree.each { File file ->
             maps += [
                 path: file.absolutePath,
                 name: file.name,
-                destDir: new File("${extension.workDir}/${pathResolver.getDestCoffee()}/${file.parent.replace(srcRootPath, "")}").canonicalPath,
+                destDir: new File("${extension.workDir}/${pathResolver.getDestCoffee()}/${file.parent.replace(srcRootFile.absolutePath, "")}").canonicalPath,
             ]
         }
         tmpFile.text = JsonOutput.toJson(maps)
