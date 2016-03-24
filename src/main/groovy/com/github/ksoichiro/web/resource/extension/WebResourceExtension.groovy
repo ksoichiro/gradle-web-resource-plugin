@@ -17,6 +17,8 @@ class WebResourceExtension {
     Project project
     File workDir
     Map resources
+    WebResourceProcessor base
+    WebResourceProcessor testBase
     BowerConfig bower
     FilterableProcessor coffeeScript
     TestCoffeeScriptConfig testCoffeeScript
