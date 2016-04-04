@@ -402,6 +402,25 @@ webResource {
             install name: "angular", version: "latest"
 ```
 
+#### Installation behind the proxy
+
+If you run `webResourceInstallBowerDependencies` behind the proxy server, you must configure proxies for bower with one of the following methods.
+
+##### Configure proxies with environment variables
+
+Define environment variable `http_proxy` and `https_proxy`.
+
+##### Configure proxies with .bowerrc
+
+Create `~/.bowerrc` that defines `proxy` and `https-proxy`.
+
+```json
+{
+  "proxy": "http://proxy.local",
+  "https-proxy": "https://proxy.local"
+}
+```
+
 #### Parallel and serial installation
 
 By default, `webResourceInstallBowerDependencies` task will
