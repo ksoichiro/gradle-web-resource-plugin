@@ -35,6 +35,7 @@ class WebResourceCompileSpec extends BaseSpec {
         project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.coffeeScript.logLevel = LogLevel.INFO
+        extension.coffeeScript.minify = true
         project.evaluate()
 
         when:
@@ -45,6 +46,35 @@ class WebResourceCompileSpec extends BaseSpec {
         notThrown(Exception)
         compiled.exists()
         compiled.text == "!function(){console.log(\"Hello, world!\")}.call(this);"
+    }
+
+    def coffeeScriptExecNotMinify() {
+        setup:
+        File root = temporaryFolder.root
+        Project project = ProjectBuilder.builder().withProjectDir(root).build()
+        setupProject(root, project)
+        File srcDir = new File(root, "src/main/coffee")
+        new File(srcDir, "app.coffee").text = """\
+            |console.log 'Hello, world!'
+            |""".stripMargin().stripIndent()
+        project.apply plugin: PLUGIN_ID
+        def extension = project.extensions.webResource as WebResourceExtension
+        extension.coffeeScript.logLevel = LogLevel.INFO
+        extension.coffeeScript.minify = false
+        project.evaluate()
+
+        when:
+        project.tasks.webResourceCompileCoffeeScript.execute()
+        def compiled = new File("${root}/build/webResource/outputs/js/app.js")
+
+        then:
+        notThrown(Exception)
+        compiled.exists()
+        compiled.text == """(function() {
+            |  console.log('Hello, world!');
+            |
+            |}).call(this);
+            |""".stripMargin()
     }
 
     def coffeeScriptInclude() {
@@ -114,6 +144,7 @@ class WebResourceCompileSpec extends BaseSpec {
         project.apply plugin: PLUGIN_ID
         def extension = project.extensions.webResource as WebResourceExtension
         extension.less.logLevel = LogLevel.INFO
+        extension.less.minify = true
         project.evaluate()
 
         when:
@@ -124,6 +155,38 @@ class WebResourceCompileSpec extends BaseSpec {
         notThrown(Exception)
         compiled.exists()
         compiled.text == ".foo .bar{color:#f00}"
+    }
+
+    def lessExecNotMinify() {
+        setup:
+        File root = temporaryFolder.root
+        Project project = ProjectBuilder.builder().withProjectDir(root).build()
+        setupProject(root, project)
+        File srcDir = new File(root, "src/main/less")
+        new File(srcDir, "app.less").text = """\
+            |.foo {
+            |  .bar {
+            |    color: #f00;
+            |  }
+            |}
+            |""".stripMargin().stripIndent()
+        project.apply plugin: PLUGIN_ID
+        def extension = project.extensions.webResource as WebResourceExtension
+        extension.less.logLevel = LogLevel.INFO
+        extension.less.minify = false
+        project.evaluate()
+
+        when:
+        project.tasks.webResourceCompileLess.execute()
+        def compiled = new File("${root}/build/webResource/outputs/css/app.css")
+
+        then:
+        notThrown(Exception)
+        compiled.exists()
+        compiled.text == """.foo .bar {
+            |  color: #f00;
+            |}
+            |""".stripMargin()
     }
 
     def lessDisabled() {

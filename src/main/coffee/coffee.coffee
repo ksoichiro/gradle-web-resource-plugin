@@ -16,9 +16,9 @@ module.exports = ->
       coffeeSrcSet = JSON.parse fs.readFileSync defaultCoffeeSrcSetFile, 'utf-8'
     else
       coffeeSrcSet = []
-  minify = (5 < process.argv.length and process.argv[5]) or 'true'
-  parallelize = (6 < process.argv.length and process.argv[6]) or 'true'
-  logLevel = (7 < process.argv.length and parseInt process.argv[7]) or 3
+  minify = if 5 < process.argv.length then process.argv[5] else true
+  parallelize = if 6 < process.argv.length then process.argv[6] else true
+  logLevel = if 7 < process.argv.length then parseInt process.argv[7] else 3
 
   log = new Logger logLevel, 'CoffeeScript'
   extensions = null
@@ -38,7 +38,7 @@ module.exports = ->
       try
         coffeeString = include.processInclude coffeeString, filepath
         js = coffee.compile coffeeString, filename: filepath
-        if minify
+        if "#{minify}" is 'true'
           minified = require('./uglify').minify js,
             fromString: true
             compress: evaluate: false
@@ -70,7 +70,7 @@ module.exports = ->
 
   common.handleExit()
 
-  if parallelize
+  if "#{parallelize}" is 'true'
     for item in coffeeSrcSet
       coffeeConvertItem item, null
   else

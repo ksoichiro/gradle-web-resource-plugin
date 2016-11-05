@@ -10,7 +10,7 @@ module.exports = ->
   common = require './common'
   Logger = require './logger'
 
-  projectPath = (3 < process.argv.length and process.argv[3]) or path.resolve '../../'
+  projectPath = if 3 < process.argv.length then process.argv[3] else path.resolve '../../'
   if 4 < process.argv.length and process.argv[4]
     packages = JSON.parse fs.readFileSync process.argv[4], 'utf-8'
   else
@@ -27,8 +27,8 @@ module.exports = ->
   resolutions = packages.resolutions
   options = packages.options
   configs = packages.configs
-  parallelize = (5 < process.argv.length and process.argv[5]) or 'true'
-  logLevel = (6 < process.argv.length and parseInt process.argv[6]) or 3
+  parallelize = if 5 < process.argv.length then process.argv[5] else true
+  logLevel = if 6 < process.argv.length then parseInt process.argv[6] else logLevel = 3
   transitiveDependencies = {}
 
   log = new Logger logLevel, 'Bower'
@@ -313,7 +313,7 @@ module.exports = ->
         log.w "Not installed: #{item.name}"
     log.e "Some dependencies are not installed." if common.hasError()
 
-  if parallelize
+  if "#{parallelize}" is 'true'
     common.handleExit()
     common.install installParallel
   else
