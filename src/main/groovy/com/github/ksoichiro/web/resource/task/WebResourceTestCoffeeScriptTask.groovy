@@ -21,10 +21,9 @@ class WebResourceTestCoffeeScriptTask extends TriremeBaseTask {
         project.afterEvaluate {
             extension = project.extensions.webResource
             pathResolver = new PathResolver(project, extension)
-            getInputs()
-                .files(pathResolver.retrieveValidSrcCoffeePaths())
-                .files(pathResolver.retrieveValidSrcTestCoffeePaths())
-                .property('version', WebResourceExtension.VERSION)
+            getInputs().files(pathResolver.retrieveValidSrcCoffeePaths())
+            getInputs().files(pathResolver.retrieveValidSrcTestCoffeePaths())
+            getInputs().property('version', WebResourceExtension.VERSION)
             getOutputs().files(pathResolver.retrieveValidPaths(pathResolver.getDestTestCoffee()))
             onlyIf {
                 project.file(pathResolver.resolveSrcPathFromProject(extension.coffeeScript?.src)).exists()
