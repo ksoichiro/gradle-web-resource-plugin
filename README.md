@@ -20,7 +20,7 @@ For Gradle 2.1+:
 
 ```gradle
 plugins {
-    id 'com.github.ksoichiro.web.resource' version '1.7.1'
+    id 'com.github.ksoichiro.web.resource' version '1.7.2'
 }
 ```
 
@@ -32,7 +32,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:1.7.1'
+        classpath 'com.github.ksoichiro:gradle-web-resource-plugin:1.7.2'
     }
 }
 
