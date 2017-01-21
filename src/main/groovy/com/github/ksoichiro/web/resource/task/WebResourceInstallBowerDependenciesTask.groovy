@@ -16,10 +16,9 @@ class WebResourceInstallBowerDependenciesTask extends TriremeBaseTask {
         project.afterEvaluate {
             extension = project.extensions.webResource
             pathResolver = new PathResolver(project, extension)
-            getInputs()
-                .files(pathResolver.retrieveValidSrcLessPaths())
-                .property('bower', extension.bower.toString())
-                .property('version', WebResourceExtension.VERSION)
+            getInputs().files(pathResolver.retrieveValidSrcLessPaths())
+            getInputs().property('bower', extension.bower.toString())
+            getInputs().property('version', WebResourceExtension.VERSION)
             getOutputs().files(new File(extension.workDir, BOWER_COMPONENTS_DIR), getBowerScript())
             onlyIf {
                 extension.bower.dependencies.size()
