@@ -14,8 +14,10 @@ def readVariables() {
 }
 readVariables()
 
-task version << {
-    println PLUGIN_VERSION
+task version {
+    doLast {
+        println PLUGIN_VERSION
+    }
 }
 
 def generatedSrcPath = "src/generated/groovy"
