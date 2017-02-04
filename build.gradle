@@ -20,8 +20,9 @@ plugins {
     id 'com.jfrog.bintray' version '1.2'
     id 'net.saliman.cobertura' version '2.2.8'
     id 'com.github.kt3k.coveralls' version '2.3.1'
-    id 'com.github.ksoichiro.web.resource' version '1.7.0'
-    id 'com.github.ksoichiro.console.reporter' version '0.3.4'
+    id 'com.github.ksoichiro.web.resource' version '1.7.3'
+    // Currently it's not working with Gradle 3
+    // id 'com.github.ksoichiro.console.reporter' version '0.3.4'
 }
 
 apply plugin: 'java'
