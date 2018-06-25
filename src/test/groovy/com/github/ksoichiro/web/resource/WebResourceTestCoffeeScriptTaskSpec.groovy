@@ -168,6 +168,8 @@ class WebResourceTestCoffeeScriptTaskSpec extends BaseSpec {
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
         }
+        // The old registry bower.herokuapp.com is deprecated
+        project.file(".bowerrc").text = "{ \"registry\": \"https://registry.bower.io\" }"
         project.evaluate()
         project.tasks.webResourceInstallBowerDependencies.execute()
         project.tasks.webResourceCopyBowerDependencies.execute()

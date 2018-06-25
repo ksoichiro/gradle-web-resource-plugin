@@ -24,6 +24,8 @@ class WebResourceInstallBowerDependenciesTaskSpec extends BaseSpec {
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
         }
+        // The old registry bower.herokuapp.com is deprecated
+        project.file(".bowerrc").text = "{ \"registry\": \"https://registry.bower.io\" }"
         project.evaluate()
 
         when:
@@ -69,6 +71,8 @@ class WebResourceInstallBowerDependenciesTaskSpec extends BaseSpec {
             |  }
             |}
             |""".stripMargin().stripIndent()
+        // The old registry bower.herokuapp.com is deprecated
+        project.file(".bowerrc").text = "{ \"registry\": \"https://registry.bower.io\" }"
         project.evaluate()
 
         when:
@@ -90,6 +94,8 @@ class WebResourceInstallBowerDependenciesTaskSpec extends BaseSpec {
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["src/**/*"]
         }
+        // The old registry bower.herokuapp.com is deprecated
+        project.file(".bowerrc").text = "{ \"registry\": \"https://registry.bower.io\" }"
         project.evaluate()
         project.tasks.webResourceInstallBowerDependencies.execute()
 
