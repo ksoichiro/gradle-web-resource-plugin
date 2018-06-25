@@ -8,6 +8,9 @@ env:
   global:
   - GRADLE_OPTS="-Xmx1024m"
 
+install:
+  - JAVA_HOME=$(jdk_switcher home openjdk8) ./gradlew classes testClasses
+
 script:
   - ./gradlew check uploadArchives --full-stacktrace
   - cd samples/example && ./gradlew clean webResourceCompile --full-stacktrace && cd ../../
