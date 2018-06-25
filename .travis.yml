@@ -1,4 +1,5 @@
 language: groovy
+dist: precise
 
 jdk:
   - openjdk7
@@ -7,9 +8,6 @@ jdk:
 env:
   global:
   - GRADLE_OPTS="-Xmx1024m"
-
-install:
-  - JAVA_HOME=$(jdk_switcher home openjdk8) ./gradlew classes testClasses
 
 script:
   - ./gradlew check uploadArchives --full-stacktrace
