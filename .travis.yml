@@ -1,8 +1,9 @@
 language: groovy
+sudo: false
 dist: precise
 
 jdk:
-  - oraclejdk7
+  - openjdk7
   - oraclejdk8
 
 env:
