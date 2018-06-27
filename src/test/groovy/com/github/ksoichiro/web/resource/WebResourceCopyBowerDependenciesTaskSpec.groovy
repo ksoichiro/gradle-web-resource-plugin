@@ -25,6 +25,8 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
         }
+        // The old registry bower.herokuapp.com is deprecated
+        project.file(".bowerrc").text = "{ \"registry\": \"https://registry.bower.io\" }"
         project.evaluate()
         project.tasks.webResourceInstallBowerDependencies.execute()
 
@@ -47,6 +49,8 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2"
         }
+        // The old registry bower.herokuapp.com is deprecated
+        project.file(".bowerrc").text = "{ \"registry\": \"https://registry.bower.io\" }"
         project.evaluate()
         project.tasks.webResourceInstallBowerDependencies.execute()
 
@@ -71,6 +75,8 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
         }
+        // The old registry bower.herokuapp.com is deprecated
+        project.file(".bowerrc").text = "{ \"registry\": \"https://registry.bower.io\" }"
         project.evaluate()
         project.tasks.webResourceInstallBowerDependencies.execute()
 
@@ -100,6 +106,8 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
         extension.bower.dependencies {
             install name: "jquery", version: "1.11.2", filter: ["dist/*.min.*"]
         }
+        // The old registry bower.herokuapp.com is deprecated
+        project.file(".bowerrc").text = "{ \"registry\": \"https://registry.bower.io\" }"
         project.evaluate()
         project.tasks.webResourceInstallBowerDependencies.execute()
 
@@ -125,6 +133,8 @@ class WebResourceCopyBowerDependenciesTaskSpec extends BaseSpec {
         extension.bower.dependencies {
             install name: "bootstrap", version: "3.3.4", filter: ["dist/*.min.*"]
         }
+        // The old registry bower.herokuapp.com is deprecated
+        project.file(".bowerrc").text = "{ \"registry\": \"https://registry.bower.io\" }"
         project.evaluate()
         project.tasks.webResourceInstallBowerDependencies.execute()
 
