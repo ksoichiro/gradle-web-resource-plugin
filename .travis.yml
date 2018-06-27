@@ -2,7 +2,7 @@ language: groovy
 dist: precise
 
 jdk:
-  - openjdk7
+  - oraclejdk7
   - oraclejdk8
 
 env:
