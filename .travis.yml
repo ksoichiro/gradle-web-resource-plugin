@@ -3,12 +3,11 @@ sudo: false
 dist: precise
 
 jdk:
-  - openjdk7
+  #- openjdk7
   - oraclejdk8
 
 env:
   global:
-  - JAVA_OPTS="-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2"
   - GRADLE_OPTS="-Xmx1024m"
 
 script:
