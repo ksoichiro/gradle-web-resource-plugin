@@ -8,7 +8,7 @@ jdk:
 
 env:
   global:
-  - JAVA_OPTS="-Dhttps.protocols=SSLv3,TLSv1,TLSv1.1,TLSv1.2"
+  - JAVA_OPTS="-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2"
   - GRADLE_OPTS="-Xmx1024m"
 
 script:
